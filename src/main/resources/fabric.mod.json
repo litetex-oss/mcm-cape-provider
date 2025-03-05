@@ -1,33 +1,50 @@
 {
   "schemaVersion": 1,
-  "id": "template-placeholder",
+  "id": "cape-provider",
   "version": "${version}",
-  "name": "template-placeholder",
-  "description": "template-placeholder",
+  "name": "Cape Provider",
+  "description": "Use capes from various providers",
   "authors": [
     "litetex"
   ],
-  "contact": {
-    "homepage": "https://github.com/litetex-oss/template-placeholder",
-    "sources": "https://github.com/litetex-oss/template-placeholder",
-    "issues": "https://github.com/litetex-oss/template-placeholder/issues"
-  },
-  "license": "Apache-2.0",
-  "icon": "assets/icon.png",
-  "environment": "*",
-  "mixins": [
-    "template-placeholder.mixins.json"
+  "contributors": [
+    {
+      "name": "Cael & Capes mod contributors",
+      "contact": {
+        "homepage": "https://github.com/CaelTheColher/Capes"
+      }
+    }
   ],
-  "accessWidener": "template-placeholder.accesswidener",
+  "contact": {
+    "homepage": "https://github.com/litetex-oss/mcm-cape-provider",
+    "sources": "https://github.com/litetex-oss/mcm-cape-provider",
+    "issues": "https://github.com/litetex-oss/mcm-cape-provider/issues"
+  },
+  "license": "LGPL-2.1-or-later",
+  "icon": "assets/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "net.litetex.capes.fabric.FabricCapes"
+    ],
+    "modmenu": [
+      "net.litetex.capes.fabric.compatibility.ModMenuCompatibility"
+    ]
+  },
+  "mixins": [
+    "cape-provider.mixins.json"
+  ],
+  "accessWidener": "cape-provider.accesswidener",
   "recommends": {
     "fabricloader": ">=${loader_version}",
-    "minecraft": "~${minecraft_version}"
+    "minecraft": "~${minecraft_version}",
+    "modmenu": "~${modmenu_version}"
   },
   "custom": {
     "modmenu": {
       "links": {
-        "modmenu.github_releases": "https://github.com/litetex-oss/template-placeholder/releases",
-        "modmenu.modrinth": "https://modrinth.com/mod/template-placeholder"
+        "modmenu.github_releases": "https://github.com/litetex-oss/mcm-cape-provider/releases",
+        "modmenu.modrinth": "https://modrinth.com/mod/cape-provider"
       }
     }
   }
