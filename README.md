@@ -6,9 +6,9 @@
 
 # Cape Provider
 
-<img align="right" src="src/main/resources/assets/icon.png" width=192 />
-
 <!-- modrinth_exclude.end -->
+
+<img align="right" src="https://raw.githubusercontent.com/litetex-oss/mcm-cape-provider/refs/heads/dev/src/main/resources/assets/icon.png" width=192 />
 
 Provides you with capes!
 
