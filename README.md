@@ -6,6 +6,8 @@
 
 # Cape Provider
 
+<img style="float: right;" src="src/main/resources/assets/icon.png" />
+
 <!-- modrinth_exclude.end -->
 
 Provides you with capes!
