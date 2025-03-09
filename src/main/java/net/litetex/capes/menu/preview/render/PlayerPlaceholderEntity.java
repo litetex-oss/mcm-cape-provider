@@ -13,6 +13,7 @@ import net.minecraft.client.util.SkinTextures;
 import net.minecraft.util.Identifier;
 
 
+@SuppressWarnings("checkstyle:MagicNumber")
 public class PlayerPlaceholderEntity
 {
 	final GameProfile gameProfile;
