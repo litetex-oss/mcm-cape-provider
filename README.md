@@ -29,14 +29,14 @@ This demo showcases how to apply the capes inside [``custom-cape-demo``](./custo
 
 1. Open the config file located in ``config/cape-provider.json5``
 2. In the ``customProviders`` section add the following entry:
-  ```jsonc
-  {
-    "id": "cp1",
-    "name": "CustomProvider1",
-    // You can replace uuid with $id, $name or $idNoHyphen to customize the cape per Player
-    "uriTemplate": "https://raw.githubusercontent.com/litetex-oss/mcm-cape-provider/refs/heads/dev/custom-cape-demo/uuid.png"
-  }
-  ```
+    ```jsonc
+    {
+      "id": "cp1",
+      "name": "CustomProvider1",
+      // You can replace uuid with $id, $name or $idNoHyphen to customize the cape per Player
+      "uriTemplate": "https://raw.githubusercontent.com/litetex-oss/mcm-cape-provider/refs/heads/dev/custom-cape-demo/uuid.png"
+    }
+    ```
 3. Restart the game and activate the provider
 
 For more details have a look at [CustomProvider](./src/main/java/net/litetex/capes/provider/CustomProvider.java) and [CustomProviderConfig](./src/main/java/net/litetex/capes/config/CustomProviderConfig.java)
