@@ -1,6 +1,6 @@
 <!-- modrinth_exclude.start -->
 
-[![Version](https://img.shields.io/modrinth/v/mcm-cape-provider)](https://modrinth.com/mod/mcm-cape-provider)
+[![Version](https://img.shields.io/modrinth/v/cape-provider)](https://modrinth.com/mod/cape-provider)
 [![Build](https://img.shields.io/github/actions/workflow/status/litetex-oss/mcm-cape-provider/check-build.yml?branch=dev)](https://github.com/litetex-oss/mcm-cape-provider/actions/workflows/check-build.yml?query=branch%3Adev)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=litetex-oss_mcm-cape-provider&metric=alert_status)](https://sonarcloud.io/dashboard?id=litetex-oss_mcm-cape-provider)
 
@@ -10,7 +10,7 @@
 
 Provides you with capes!
 
-You can use capes from various providers.
+You can choose from various providers.
 
 Improved/Reworked version of the ["Capes" mod](https://github.com/CaelTheColher/Capes):
 * Improved and easier cape provider integration
