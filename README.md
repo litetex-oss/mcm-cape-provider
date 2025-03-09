@@ -6,7 +6,7 @@
 
 # Cape Provider
 
-<img style="float: right;" src="src/main/resources/assets/icon.png" />
+<img align="right" src="src/main/resources/assets/icon.png" width=192 />
 
 <!-- modrinth_exclude.end -->
 
