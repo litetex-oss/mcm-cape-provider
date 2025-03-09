@@ -27,7 +27,7 @@ This demo showcases how to apply the capes inside [``custom-cape-demo``](./custo
 
 1. Open the config file located in ``config/cape-provider.json5``
 2. In the ``customProviders`` section add the following entry:
-```json
+```jsonc
 {
   "id": "cp1",
   "name": "CustomProvider1",
