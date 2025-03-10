@@ -17,7 +17,7 @@ jobs:
         cache: 'gradle'
     
     - name: Build
-      run: ./gradlew clean build --info
+      run: ./gradlew clean build --info --stacktrace
       timeout-minutes: 10
 
     - name: Upload mod files
@@ -28,7 +28,7 @@ jobs:
         if-no-files-found: error
 
     - name: Publish to Modrinth
-      run: ./gradlew modrinth --info
+      run: ./gradlew modrinth --stacktrace
       env:
         MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
         MODRINTH_VERSION_TYPE: 'alpha'
@@ -36,7 +36,7 @@ jobs:
       timeout-minutes: 10
     
     - name: Publish to OSSRH
-      run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository --info
+      run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository --stacktrace
       env:
         MAVEN_GPG_PRIVATE_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
         MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
