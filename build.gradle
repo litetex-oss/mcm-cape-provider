@@ -52,9 +52,9 @@ dependencies {
     modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
 
     // Only needed during development
-    modRuntimeOnly "me.djtheredstoner:DevAuth-fabric:1.2.1"
+    modLocalRuntime "me.djtheredstoner:DevAuth-fabric:1.2.1"
     // Only needed for modmenu
-    modRuntimeOnly "net.fabricmc.fabric-api:fabric-api:0.117.0+1.21.4"
+    modLocalRuntime "net.fabricmc.fabric-api:fabric-api:0.117.0+1.21.4"
 }
 
 processResources {
