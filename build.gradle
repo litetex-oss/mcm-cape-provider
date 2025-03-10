@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.10.2'
+    id 'fabric-loom' version '1.10.4'
     id 'maven-publish'
     id 'checkstyle'
     id 'org.sonarqube' version '6.0.1.5171'
@@ -21,7 +21,7 @@ base {
 
 loom {
     accessWidenerPath = file("src/main/resources/cape-provider.accesswidener")
-    log4jConfigs.from(file("log4j2-dev.xml"))
+    log4jConfigs.from(file("src/dev/log4j2.xml"))
 }
 
 // https://github.com/gradle/gradle/issues/27035
@@ -128,4 +128,7 @@ modrinth {
     uploadFile = remapJar
     syncBodyFrom = rootProject.file("README.md").text
     changelog = System.getenv("MODRINTH_CHANGELOG_TEXT")
+    dependencies {
+        optional.project 'modmenu'
+    }
 }

@@ -12,7 +12,7 @@
 
 Provides you with capes!
 
-You can choose from various providers.
+You can choose from various providers or add your own.
 
 Improved/Reworked version of the ["Capes" mod](https://github.com/CaelTheColher/Capes):
 * Improved and easier cape provider integration

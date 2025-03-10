@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import com.mojang.authlib.GameProfile;
 
 import net.litetex.capes.Capes;
-import net.litetex.capes.handler.PlayerHandler;
+import net.litetex.capes.handler.PlayerCapeHandler;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.util.SkinTextures;
 import net.minecraft.util.Identifier;
@@ -42,14 +42,14 @@ public abstract class PlayerListEntryMixin
 		if(lastLoadTime == null || lastLoadTime.isBefore(now.minus(Capes.instance().loadThrottleSuppressDuration())))
 		{
 			LOAD_THROTTLE.put(id, now);
-			PlayerHandler.onLoadTexture(profile);
+			PlayerCapeHandler.onLoadTexture(profile);
 		}
 	}
 	
 	@Inject(method = "getSkinTextures", at = @At("TAIL"), cancellable = true)
 	private void getCapeTexture(final CallbackInfoReturnable<SkinTextures> cir)
 	{
-		final PlayerHandler handler = PlayerHandler.getProfile(this.profile);
+		final PlayerCapeHandler handler = PlayerCapeHandler.getProfile(this.profile);
 		if(handler != null && handler.hasCape())
 		{
 			final SkinTextures oldTextures = cir.getReturnValue();

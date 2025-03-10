@@ -1,5 +1,7 @@
-# 1.0.0
+# 1.0.1
+* Improved compatibility information
 
+# 1.0.0
 Improvements and changes in comparison to Capes mod:
 * Improved provider configuration screen
   * Can now be ordered
