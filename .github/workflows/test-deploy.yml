@@ -16,9 +16,13 @@ jobs:
         java-version: '21'
         cache: 'gradle'
     
-    - name: Build
-      run: ./gradlew clean build --info --stacktrace
-      timeout-minutes: 10
+    - name: Build and publish
+      run: ./gradlew clean build modrinth --stacktrace
+      env:
+        MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+        MODRINTH_VERSION_TYPE: 'alpha'
+        MODRINTH_CHANGELOG_TEXT: 'Available at https://github.com/litetex-oss/mcm-cape-provider/blob/dev/CHANGELOG.md<br/><i>Please not that this is a SNAPSHOT which might be unstable</i>'
+      timeout-minutes: 15
 
     - name: Upload mod files
       uses: actions/upload-artifact@v4
@@ -26,14 +30,6 @@ jobs:
         name: mod-files
         path: build/libs/*.jar
         if-no-files-found: error
-
-    - name: Publish to Modrinth
-      run: ./gradlew modrinth --stacktrace
-      env:
-        MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
-        MODRINTH_VERSION_TYPE: 'alpha'
-        MODRINTH_CHANGELOG_TEXT: 'Available at https://github.com/litetex-oss/mcm-cape-provider/blob/dev/CHANGELOG.md<br/><i>Please not that this is a SNAPSHOT which might be unstable</i>'
-      timeout-minutes: 10
     
     - name: Publish to OSSRH
       run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository --stacktrace
