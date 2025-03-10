@@ -132,7 +132,7 @@ public class PreviewMenuScreen extends MainMenuScreen
 		context.getMatrices().scale(size, size, -size);
 		context.getMatrices().multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180.0f));
 		
-		DiffuseLighting.method_34742();
+		DiffuseLighting.enableGuiShaderLighting();
 		
 		final VertexConsumerProvider.Immediate immediate =
 			MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
