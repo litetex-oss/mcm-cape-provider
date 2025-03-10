@@ -17,7 +17,7 @@ jobs:
         cache: 'gradle'
     
     - name: Build and publish
-      run: ./gradlew clean build modrinth --stacktrace
+      run: ./gradlew clean build modrinth --info --stacktrace
       env:
         MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
         MODRINTH_VERSION_TYPE: 'alpha'
@@ -32,7 +32,7 @@ jobs:
         if-no-files-found: error
     
     - name: Publish to OSSRH
-      run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository --stacktrace
+      run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository --info --stacktrace
       env:
         MAVEN_GPG_PRIVATE_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
         MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
