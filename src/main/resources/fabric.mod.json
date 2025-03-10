@@ -40,6 +40,14 @@
     "minecraft": "~${minecraft_version}",
     "modmenu": "~${modmenu_version}"
   },
+  "breaks": {
+    "capes": "*"
+  },
+  "conflicts": {
+    "minecraftcapes": "*",
+    "wynntils": "*",
+    "capemod": "*"
+  },
   "custom": {
     "modmenu": {
       "links": {
