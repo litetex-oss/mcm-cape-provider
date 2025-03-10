@@ -38,11 +38,11 @@ import net.minecraft.util.Identifier;
 
 
 @SuppressWarnings("checkstyle:MagicNumber")
-public class PlayerHandler
+public class PlayerCapeHandler
 {
-	private static final Logger LOG = LoggerFactory.getLogger(PlayerHandler.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PlayerCapeHandler.class);
 	
-	private static final Map<UUID, PlayerHandler> INSTANCES = Collections.synchronizedMap(new HashMap<>());
+	private static final Map<UUID, PlayerCapeHandler> INSTANCES = Collections.synchronizedMap(new HashMap<>());
 	
 	private static final ExecutorService EXECUTORS = Executors.newFixedThreadPool(
 		2,
@@ -68,7 +68,7 @@ public class PlayerHandler
 	private boolean hasElytraTexture = true;
 	private boolean hasAnimatedCape;
 	
-	public PlayerHandler(final GameProfile profile)
+	public PlayerCapeHandler(final GameProfile profile)
 	{
 		this.profile = profile;
 	}
@@ -225,15 +225,15 @@ public class PlayerHandler
 		return frames;
 	}
 	
-	public static PlayerHandler getProfile(final GameProfile profile)
+	public static PlayerCapeHandler getProfile(final GameProfile profile)
 	{
 		return INSTANCES.get(profile.getId());
 	}
 	
 	// Only use this when required to keep RAM consumption low!
-	public static PlayerHandler getOrCreateProfile(final GameProfile profile)
+	public static PlayerCapeHandler getOrCreateProfile(final GameProfile profile)
 	{
-		return INSTANCES.computeIfAbsent(profile.getId(), ignored -> new PlayerHandler(profile));
+		return INSTANCES.computeIfAbsent(profile.getId(), ignored -> new PlayerCapeHandler(profile));
 	}
 	
 	public static void onLoadTexture(final GameProfile profile)
@@ -282,11 +282,11 @@ public class PlayerHandler
 				}
 			}
 			
-			final PlayerHandler playerHandler = getOrCreateProfile(profile);
-			playerHandler.resetCape();
+			final PlayerCapeHandler handler = getOrCreateProfile(profile);
+			handler.resetCape();
 			
 			final Optional<CapeProvider> optFoundCapeProvider = capeProviders.stream()
-				.filter(playerHandler::trySetCape)
+				.filter(handler::trySetCape)
 				.findFirst();
 			
 			if(LOG.isDebugEnabled())

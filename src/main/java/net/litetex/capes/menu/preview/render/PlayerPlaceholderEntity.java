@@ -5,7 +5,7 @@ import java.util.Collection;
 import com.mojang.authlib.GameProfile;
 
 import net.litetex.capes.Capes;
-import net.litetex.capes.handler.PlayerHandler;
+import net.litetex.capes.handler.PlayerCapeHandler;
 import net.litetex.capes.provider.CapeProvider;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.DefaultSkinHelper;
@@ -62,19 +62,19 @@ public class PlayerPlaceholderEntity
 		if(!this.capeLoading)
 		{
 			this.capeLoading = true;
-			PlayerHandler.onLoadTexture(this.gameProfile, false, this.capeProviders, () -> this.capeLoaded = true);
+			PlayerCapeHandler.onLoadTexture(this.gameProfile, false, this.capeProviders, () -> this.capeLoaded = true);
 		}
 	}
 	
 	public Identifier getCapeTexture()
 	{
-		final PlayerHandler handler = PlayerHandler.getProfile(this.gameProfile);
+		final PlayerCapeHandler handler = PlayerCapeHandler.getProfile(this.gameProfile);
 		return handler != null && handler.hasCape() ? handler.getCape() : this.skin.capeTexture();
 	}
 	
 	public Identifier getElytraTexture()
 	{
-		final PlayerHandler handler = PlayerHandler.getProfile(this.gameProfile);
+		final PlayerCapeHandler handler = PlayerCapeHandler.getProfile(this.gameProfile);
 		final Identifier capeTexture = this.getCapeTexture();
 		return handler == null
 			|| (handler.hasElytraTexture()
