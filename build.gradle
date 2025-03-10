@@ -21,7 +21,7 @@ base {
 
 loom {
     accessWidenerPath = file("src/main/resources/cape-provider.accesswidener")
-    log4jConfigs.from(file("log4j2-dev.xml"))
+    log4jConfigs.from(file("src/dev/log4j2.xml"))
 }
 
 // https://github.com/gradle/gradle/issues/27035
