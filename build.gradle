@@ -128,4 +128,7 @@ modrinth {
     uploadFile = remapJar
     syncBodyFrom = rootProject.file("README.md").text
     changelog = System.getenv("MODRINTH_CHANGELOG_TEXT")
+    dependencies {
+        optional.project 'modmenu'
+    }
 }
