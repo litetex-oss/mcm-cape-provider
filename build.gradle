@@ -40,6 +40,18 @@ repositories {
         name = "DevAuth"
         url = "https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1"
     }
+    // https://support.modrinth.com/en/articles/8801191-modrinth-maven
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
 }
 
 dependencies {
@@ -53,6 +65,7 @@ dependencies {
 
     // Only needed during development
     modLocalRuntime "me.djtheredstoner:DevAuth-fabric:1.2.1"
+    modLocalRuntime "maven.modrinth:no-chat-reports:Fabric-1.21.4-v2.11.0"
     // Only needed for modmenu
     modLocalRuntime "net.fabricmc.fabric-api:fabric-api:0.117.0+1.21.4"
 }
