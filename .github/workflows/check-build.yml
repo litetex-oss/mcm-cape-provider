@@ -65,7 +65,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: mod-files-java-${{ matrix.java }}
-        path: build/libs/*.jar
+        path: build/{libs/*[!-(javadoc|sources)].jar,devlibs/*-sources.jar}
         if-no-files-found: error
 
   code-style:

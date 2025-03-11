@@ -132,7 +132,7 @@ jobs:
       uses: shogo82148/actions-upload-release-asset@v1
       with:
         upload_url: ${{ needs.prepare_release.outputs.upload_url }}
-        asset_path: build/libs/*.jar
+        asset_path: build/{libs/*[!-(javadoc|sources)].jar,devlibs/*-sources.jar}
     
     - name: Publish to OSSRH
       run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository --info --stacktrace
