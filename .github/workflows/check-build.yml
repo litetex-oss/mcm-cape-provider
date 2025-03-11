@@ -24,7 +24,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    timeout-minutes: 10
     strategy:
       matrix:
         java: [21]
@@ -71,7 +71,7 @@ jobs:
   code-style:
     runs-on: ubuntu-latest
     if: ${{ github.event_name != 'pull_request' || !(startsWith(github.head_ref, 'renovate/') || startsWith(github.head_ref, 'automated/')) }}
-
+    timeout-minutes: 10
     strategy:
       matrix:
         java: [21]
