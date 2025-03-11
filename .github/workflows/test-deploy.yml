@@ -28,7 +28,10 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: mod-files
-        path: build/{libs/*[!-(javadoc|sources)].jar,devlibs/*-sources.jar}
+        path: |
+          build/devlibs/*-sources.jar
+          build/libs/*.jar
+          !build/libs/*-[sources|javadoc].jar
         if-no-files-found: error
     
     - name: Publish to OSSRH
