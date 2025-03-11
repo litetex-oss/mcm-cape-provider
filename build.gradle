@@ -34,13 +34,27 @@ configurations.checkstyle {
 }
 
 repositories {
-    maven {
-        name = "Terraformers"
-        url = "https://maven.terraformersmc.com/"
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Terraformers"
+                url = "https://maven.terraformersmc.com/"
+            }
+        }
+        filter {
+            includeGroup 'com.terraformersmc'
+        }
     }
-    maven {
-        name = "DevAuth"
-        url = "https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1"
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "DevAuth"
+                url = "https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1"
+            }
+        }
+        filter {
+            includeGroup 'me.djtheredstoner'
+        }
     }
     // https://support.modrinth.com/en/articles/8801191-modrinth-maven
     exclusiveContent {
@@ -51,7 +65,7 @@ repositories {
             }
         }
         filter {
-            includeGroup "maven.modrinth"
+            includeGroup 'maven.modrinth'
         }
     }
 }
