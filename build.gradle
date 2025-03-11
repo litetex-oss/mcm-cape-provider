@@ -163,6 +163,7 @@ modrinth {
     // Default/empty value is release
     versionType = System.getenv("MODRINTH_VERSION_TYPE")
     uploadFile = remapJar
+    additionalFiles = [javadocJar, sourcesJar]
     syncBodyFrom = rootProject.file("README.md").text
     changelog = System.getenv("MODRINTH_CHANGELOG_TEXT")
     dependencies {
