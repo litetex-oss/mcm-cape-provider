@@ -87,8 +87,8 @@ processResources {
 
 checkstyle {
     configDirectory = file("$rootProject.projectDir/.config/checkstyle")
-    ignoreFailures false
-    showViolations true
+    ignoreFailures = false
+    showViolations = true
     toolVersion = checkstyleVersion
 }
 
