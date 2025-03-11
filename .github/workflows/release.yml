@@ -123,7 +123,7 @@ jobs:
         git pull
     
     - name: Build and publish
-      run: ./gradlew clean build modrinth --info
+      run: ./gradlew clean build modrinth --info --stacktrace
       env:
         MODRINTH_TOKEN:  ${{ secrets.MODRINTH_TOKEN }}
         MODRINTH_CHANGELOG_TEXT: 'Available at https://github.com/litetex-oss/mcm-cape-provider/blob/dev/CHANGELOG.md'
