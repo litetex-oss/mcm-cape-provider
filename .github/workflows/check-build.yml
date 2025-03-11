@@ -41,7 +41,7 @@ jobs:
         cache: 'gradle'
       
     - name: Build
-      run: ./gradlew build --info
+      run: ./gradlew build --info --stacktrace
       
     - name: Check for uncommited changes
       run: |
