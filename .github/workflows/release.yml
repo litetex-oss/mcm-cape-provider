@@ -9,7 +9,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  check_code: # Validates the code
+  check_code:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
