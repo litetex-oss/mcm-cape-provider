@@ -5,7 +5,7 @@
 
 You can also add a custom cape provider programmatically using [Java's Service Loading](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ServiceLoader.html).
 
-To achieve the same as in the example [from the Readme](../README.md) do the following:
+To achieve the same as in the example [from the Readme](./README.md) do the following:
 
 1. Create a new (fabric) mod
 2. Add the mod as a dependency:
