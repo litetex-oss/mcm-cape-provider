@@ -135,7 +135,8 @@ jobs:
         asset_path: |
           build/devlibs/*-sources.jar
           build/libs/*.jar
-          !build/libs/*-[sources|javadoc].jar
+          !build/libs/*-sources.jar
+          !build/libs/*-javadoc.jar
     
     - name: Publish to OSSRH
       run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository --info --stacktrace
