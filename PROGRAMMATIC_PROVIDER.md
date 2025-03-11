@@ -1,4 +1,4 @@
-### Creating a custom programmatic cape provider
+# Creating a custom programmatic cape provider
 
 > [!NOTE]
 > This is more complex and some Java coding experience is required.
