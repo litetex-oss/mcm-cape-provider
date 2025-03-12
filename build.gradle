@@ -206,23 +206,3 @@ nexusPublishing {
         }
     }
 }
-
-signing {
-    def signingKey = System.getenv("MAVEN_GPG_PRIVATE_KEY")
-    def signingPassword = System.getenv("MAVEN_GPG_PASSPHRASE")
-    useInMemoryPgpKeys(signingKey, signingPassword)
-    sign publishing.publications.mavenJava
-}
-
-// Docs: https://github.com/gradle-nexus/publish-plugin
-// Publish using publishToSonatype closeAndReleaseSonatypeStagingRepository
-nexusPublishing {
-    repositories {
-        sonatype {
-            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
-            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
-            username = System.getenv("S01_OSS_SONATYPE_MAVEN_USERNAME")
-            password = System.getenv("S01_OSS_SONATYPE_MAVEN_TOKEN")
-        }
-    }
-}
