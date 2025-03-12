@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "cape-provider",
+  "id": "${id}",
   "version": "${version}",
-  "name": "Cape Provider",
-  "description": "Use capes from various providers",
+  "name": "${name}",
+  "description": "${desc}",
   "authors": [
     "litetex"
   ],
@@ -16,11 +16,11 @@
     }
   ],
   "contact": {
-    "homepage": "https://github.com/litetex-oss/mcm-cape-provider",
-    "sources": "https://github.com/litetex-oss/mcm-cape-provider",
-    "issues": "https://github.com/litetex-oss/mcm-cape-provider/issues"
+    "homepage": "https://github.com/litetex-oss/mcm-${id}",
+    "sources": "https://github.com/litetex-oss/mcm-${id}",
+    "issues": "https://github.com/litetex-oss/mcm-${id}/issues"
   },
-  "license": "LGPL-2.1-or-later",
+  "license": "${license_spdx_id}",
   "icon": "assets/icon.png",
   "environment": "client",
   "entrypoints": {
@@ -51,8 +51,8 @@
   "custom": {
     "modmenu": {
       "links": {
-        "modmenu.github_releases": "https://github.com/litetex-oss/mcm-cape-provider/releases",
-        "modmenu.modrinth": "https://modrinth.com/mod/cape-provider"
+        "modmenu.github_releases": "https://github.com/litetex-oss/mcm-${id}/releases",
+        "modmenu.modrinth": "https://modrinth.com/mod/${id}"
       }
     }
   }

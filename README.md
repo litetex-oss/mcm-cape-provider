@@ -41,10 +41,26 @@ This demo showcases how to apply the capes inside [``custom-cape-demo``](https:/
 
 For more details have a look at [CustomProvider](https://github.com/litetex-oss/mcm-cape-provider/tree/dev/src/main/java/net/litetex/capes/provider/CustomProvider.java) and [CustomProviderConfig](https://github.com/litetex-oss/mcm-cape-provider/tree/dev/src/main/java/net/litetex/capes/config/CustomProviderConfig.java)
 
+You can also create a [programmatic cape provider](https://github.com/litetex-oss/mcm-cape-provider/tree/dev/PROGRAMMATIC_PROVIDER.md).
+
 <!-- modrinth_exclude.start -->
 
 ## Installation
 [Installation guide for the latest release](https://github.com/litetex-oss/mcm-cape-provider/releases/latest#Installation)
+
+### Usage in other mods
+
+Add the following to ``build.gradle``:
+```groovy
+dependencies {
+    modImplementation 'net.litetex.mcm:cape-provider:<version>'
+    // Further documentation: https://wiki.fabricmc.net/documentation:fabric_loom
+}
+```
+
+> [!NOTE]
+> No dedicated repository is required as the content are hosted on [Maven Central](https://maven.apache.org/repository/).<br/>
+> If this somehow shouldn't work you can also try [Modrinth Maven](https://support.modrinth.com/en/articles/8801191-modrinth-maven).
 
 ## Contributing
 See the [contributing guide](./CONTRIBUTING.md) for detailed instructions on how to get started with our project.

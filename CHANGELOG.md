@@ -1,3 +1,6 @@
+# 1.0.2
+* Distribute mod on Maven Central
+
 # 1.0.1
 * Improved compatibility information
 
