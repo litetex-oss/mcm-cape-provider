@@ -68,6 +68,8 @@ repositories {
             includeGroup 'maven.modrinth'
         }
     }
+    // Fallback (fixes Renovate)
+    mavenCentral()
 }
 
 dependencies {
