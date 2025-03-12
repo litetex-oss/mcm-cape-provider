@@ -15,7 +15,6 @@ To achieve the same as in the example [from the Readme](./README.md) do the foll
         modImplementation 'net.litetex.mcm:cape-provider:<version>'
     }
     ```
-    _NOTE: No dedicated repository is required as the content are hosted on [Maven Central](https://maven.apache.org/repository/).<br/>If this shouldn't work somehow you can also try [Modrinth Maven](https://support.modrinth.com/en/articles/8801191-modrinth-maven)._
 3. Create a custom provider:
     ``src/main/java/com/example/capes/provider/MyCustomCapeProvider.java``
     ```java
