@@ -89,7 +89,7 @@
       "datasources": [
         "maven"
       ],
-      "registryUrls": [
+      "additionalRegistryUrls": [
         "https://plugins.gradle.org/m2/"
       ]
     },
@@ -98,7 +98,7 @@
       "datasources": [
         "maven"
       ],
-      "registryUrls": [
+      "additionalRegistryUrls": [
         "https://repo.maven.apache.org/maven2"
       ]
     }
