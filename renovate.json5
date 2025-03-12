@@ -80,6 +80,18 @@
       "registryUrls": [
         "https://api.modrinth.com/maven"
       ]
+    },
+    {
+      "description": "Default to Maven Central",
+      "matchPackagePatterns": [
+        "*"
+      ],
+      "datasources": [
+        "maven"
+      ],
+      "registryUrls": [
+        "https://repo.maven.apache.org/maven2"
+      ]
     }
   ]
 }
