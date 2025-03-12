@@ -9,8 +9,9 @@ permissions:
   pull-requests: write
 
 jobs:
-  check_code: # Validates the code
+  check_code:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
     - uses: actions/checkout@v4
       
@@ -45,6 +46,7 @@ jobs:
   prepare_release:
     runs-on: ubuntu-latest
     needs: [check_code]
+    timeout-minutes: 10
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
@@ -98,11 +100,12 @@ jobs:
           ## Installation
           The mod can be downloaded from [Modrinth](https://modrinth.com/mod/${{ steps.metadata.outputs.archives_base_name }}).
 
-          Alternatively you can also download the mod from the release assets below.
+          Alternatively you can also download the mod from the release assets below or from [Maven Central](https://repo.maven.apache.org/maven2/net/litetex/mcm/).
 
   publish:
     runs-on: ubuntu-latest
     needs: [prepare_release]
+    timeout-minutes: 60
     steps:
     - uses: actions/checkout@v4
     
@@ -120,7 +123,7 @@ jobs:
         git pull
     
     - name: Build and publish
-      run: ./gradlew clean build modrinth --info
+      run: ./gradlew clean build modrinth --info --stacktrace
       env:
         MODRINTH_TOKEN:  ${{ secrets.MODRINTH_TOKEN }}
         MODRINTH_CHANGELOG_TEXT: 'Available at https://github.com/litetex-oss/mcm-cape-provider/blob/dev/CHANGELOG.md'
@@ -129,11 +132,24 @@ jobs:
       uses: shogo82148/actions-upload-release-asset@v1
       with:
         upload_url: ${{ needs.prepare_release.outputs.upload_url }}
-        asset_path: build/libs/*.jar
+        asset_path: |
+          build/devlibs/*-sources.jar
+          build/libs/*.jar
+          !build/libs/*-sources.jar
+          !build/libs/*-javadoc.jar
+    
+    - name: Publish to OSSRH
+      run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository --info --stacktrace
+      env:
+        MAVEN_GPG_PRIVATE_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+        MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+        S01_OSS_SONATYPE_MAVEN_USERNAME: ${{ secrets.S01_OSS_SONATYPE_MAVEN_USERNAME }}
+        S01_OSS_SONATYPE_MAVEN_TOKEN: ${{ secrets.S01_OSS_SONATYPE_MAVEN_TOKEN }}
 
   after_release:
     runs-on: ubuntu-latest
     needs: [publish]
+    timeout-minutes: 10
     steps:
     - uses: actions/checkout@v4
       

@@ -24,7 +24,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    timeout-minutes: 10
     strategy:
       matrix:
         java: [21]
@@ -41,7 +41,7 @@ jobs:
         cache: 'gradle'
       
     - name: Build
-      run: ./gradlew build --info
+      run: ./gradlew build --info --stacktrace
       
     - name: Check for uncommited changes
       run: |
@@ -65,13 +65,17 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: mod-files-java-${{ matrix.java }}
-        path: build/libs/*.jar
+        path: |
+          build/devlibs/*-sources.jar
+          build/libs/*.jar
+          !build/libs/*-sources.jar
+          !build/libs/*-javadoc.jar
         if-no-files-found: error
 
   code-style:
     runs-on: ubuntu-latest
     if: ${{ github.event_name != 'pull_request' || !(startsWith(github.head_ref, 'renovate/') || startsWith(github.head_ref, 'automated/')) }}
-
+    timeout-minutes: 10
     strategy:
       matrix:
         java: [21]
