@@ -53,7 +53,7 @@ You can also create a [programmatic cape provider](https://github.com/litetex-os
 Add the following to ``build.gradle``:
 ```groovy
 dependencies {
-    modImplementation 'net.litetex.mcm:cape-provider:<version>'
+    modImplementation 'net.litetex.mcm:mcm-cape-provider:<version>'
     // Further documentation: https://wiki.fabricmc.net/documentation:fabric_loom
 }
 ```
