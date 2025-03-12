@@ -82,10 +82,19 @@
       ]
     },
     {
-      "description": "Default to Maven Central",
-      "matchPackagePatterns": [
-        "*"
+      "description": "Handle Gradle-Plugins",
+      "matchDepTypes": [
+        "plugin"
       ],
+      "datasources": [
+        "maven"
+      ],
+      "registryUrls": [
+        "https://plugins.gradle.org/m2/"
+      ]
+    },
+    {
+      "description": "Default to Maven Central",
       "datasources": [
         "maven"
       ],
