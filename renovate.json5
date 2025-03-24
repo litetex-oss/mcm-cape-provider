@@ -44,6 +44,42 @@
         "maven"
       ],
       "allowedVersions": "/^1\\.[0-9]{1,2}(\\.[0-9]{1,2})?\\+build\\.[0-9]{1,2}$/"
+    },
+    {
+      "description": "Custom server for me.djtheredstoner",
+      "matchPackagePatterns": [
+        "^me.djtheredstoner"
+      ],
+      "datasources": [
+        "maven"
+      ],
+      "registryUrls": [
+        "https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1"
+      ]
+    },
+    {
+      "description": "Custom server for com.terraformersmc",
+      "matchPackagePatterns": [
+        "^com.terraformersmc"
+      ],
+      "datasources": [
+        "maven"
+      ],
+      "registryUrls": [
+        "https://maven.terraformersmc.com/"
+      ]
+    },
+    {
+      "description": "Custom server for maven.modrinth",
+      "matchPackagePatterns": [
+        "^maven.modrinth"
+      ],
+      "datasources": [
+        "maven"
+      ],
+      "registryUrls": [
+        "https://api.modrinth.com/maven"
+      ]
     }
   ]
 }
