@@ -34,7 +34,7 @@ jobs:
           !build/libs/*-sources.jar
           !build/libs/*-javadoc.jar
         if-no-files-found: error
-    
+
     - name: Publish to OSSRH
       run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository --info --stacktrace
       env:

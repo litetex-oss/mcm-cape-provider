@@ -125,10 +125,10 @@ public class DisplayPlayerEntityRenderer
 	private void setAngles(final float f, final float g)
 	{
 		this.model.body.yaw = 0.0f;
-		this.model.rightArm.pivotZ = 0.0f;
-		this.model.rightArm.pivotX = -5.0f;
-		this.model.leftArm.pivotZ = 0.0f;
-		this.model.leftArm.pivotX = 5.0f;
+		this.model.rightArm.originZ = 0.0f;
+		this.model.rightArm.originX = -5.0f;
+		this.model.leftArm.originZ = 0.0f;
+		this.model.leftArm.originX = 5.0f;
 		this.model.rightArm.pitch = MathHelper.cos(f * 0.6662f + 3.1415927f) * 2.0f * g * 0.5f;
 		this.model.leftArm.pitch = MathHelper.cos(f * 0.6662f) * 2.0f * g * 0.5f;
 		this.model.rightArm.roll = 0.0f;
@@ -142,14 +142,14 @@ public class DisplayPlayerEntityRenderer
 		this.model.rightArm.yaw = 0.0f;
 		this.model.leftArm.yaw = 0.0f;
 		this.model.body.pitch = 0.0f;
-		this.model.rightLeg.pivotZ = 0.1f;
-		this.model.leftLeg.pivotZ = 0.1f;
-		this.model.rightLeg.pivotY = 12.0f;
-		this.model.leftLeg.pivotY = 12.0f;
-		this.model.head.pivotY = 0.0f;
-		this.model.body.pivotY = 0.0f;
-		this.model.leftArm.pivotY = 2.0f;
-		this.model.rightArm.pivotY = 2.0f;
+		this.model.rightLeg.originZ = 0.1f;
+		this.model.leftLeg.originZ = 0.1f;
+		this.model.rightLeg.originY = 12.0f;
+		this.model.leftLeg.originY = 12.0f;
+		this.model.head.originY = 0.0f;
+		this.model.body.originY = 0.0f;
+		this.model.leftArm.originY = 2.0f;
+		this.model.rightArm.originY = 2.0f;
 	}
 	
 	private void setModelPose()

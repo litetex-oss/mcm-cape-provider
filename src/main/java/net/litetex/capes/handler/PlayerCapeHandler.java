@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -144,12 +145,12 @@ public class PlayerCapeHandler
 			this.hasAnimatedCape = resolvedTextureInfo.animated();
 			
 			// Do texturing work NOT on Render thread
-			final Map<String, NativeImage> texturesToRegister;
+			final Map<Identifier, NativeImage> texturesToRegister;
 			if(resolvedTextureInfo.animated())
 			{
 				texturesToRegister = this.toAnimatedCapeTextureFrames(cape).entrySet()
 					.stream()
-					.collect(Collectors.toMap(e -> this.uuid() + "/" + e.getKey(), Map.Entry::getValue));
+					.collect(Collectors.toMap(e -> identifier(this.uuid() + "/" + e.getKey()), Map.Entry::getValue));
 				
 				// Assume that elytra texture is available
 				this.hasElytraTexture = true;
@@ -159,12 +160,16 @@ public class PlayerCapeHandler
 			else
 			{
 				this.hasElytraTexture = Math.floorDiv(cape.getWidth(), cape.getHeight()) == 2;
-				texturesToRegister = Map.of(this.uuid().toString(), this.toCapeTexture(cape));
+				texturesToRegister = Map.of(identifier(this.uuid().toString()), this.toCapeTexture(cape));
 			}
 			
 			final TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
-			texturesToRegister.forEach((id, texture) ->
-				textureManager.registerTexture(identifier(id), new NativeImageBackedTexture(texture)));
+			CompletableFuture.runAsync(
+				() -> texturesToRegister.forEach((id, texture) ->
+					textureManager.registerTexture(
+						id,
+						new NativeImageBackedTexture(id::toString, texture))),
+				MinecraftClient.getInstance());
 			
 			this.hasCape = true;
 			return true;

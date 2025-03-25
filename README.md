@@ -59,7 +59,7 @@ dependencies {
 ```
 
 > [!NOTE]
-> No dedicated repository is required as the content are hosted on [Maven Central](https://maven.apache.org/repository/).<br/>
+> The contents are hosted on [Maven Central](https://repo.maven.apache.org/maven2/net/litetex/mcm/). You shouldn't have to change anything as this is the default maven repo.<br/>
 > If this somehow shouldn't work you can also try [Modrinth Maven](https://support.modrinth.com/en/articles/8801191-modrinth-maven).
 
 ## Contributing
