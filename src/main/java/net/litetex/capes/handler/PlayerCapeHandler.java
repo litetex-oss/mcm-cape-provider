@@ -321,9 +321,9 @@ public class PlayerCapeHandler
 		for(int i = 0; i < length; i++)
 		{
 			final char c = playerName.charAt(i);
-			if(!((c >= 'a' && c <= 'z')
-				|| (c >= 'A' && c <= 'Z')
-				|| (c >= '0' && c <= '9')
+			if(!(c >= 'a' && c <= 'z'
+				|| c >= 'A' && c <= 'Z'
+				|| c >= '0' && c <= '9'
 				|| c == '_'))
 			{
 				return false;
