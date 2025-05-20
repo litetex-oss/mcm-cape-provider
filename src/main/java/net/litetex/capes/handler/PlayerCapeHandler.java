@@ -38,7 +38,7 @@ import net.minecraft.client.texture.TextureManager;
 import net.minecraft.util.Identifier;
 
 
-@SuppressWarnings("checkstyle:MagicNumber")
+@SuppressWarnings({"checkstyle:MagicNumber", "PMD.GodClass"})
 public class PlayerCapeHandler
 {
 	private static final Logger LOG = LoggerFactory.getLogger(PlayerCapeHandler.class);
