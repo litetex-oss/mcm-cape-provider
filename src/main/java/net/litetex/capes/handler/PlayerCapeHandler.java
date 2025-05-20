@@ -262,52 +262,59 @@ public class PlayerCapeHandler
 			LOG.debug("onLoadTexture: {}/{} validate={}", profile.getName(), profile.getId(), validateProfile);
 		}
 		EXECUTORS.submit(() ->
+			onLoadTextureInternalAsync(profile, validateProfile, capeProviders, onAfterLoaded));
+	}
+	
+	private static void onLoadTextureInternalAsync(
+		final GameProfile profile,
+		final boolean validateProfile,
+		final Collection<CapeProvider> capeProviders,
+		final Runnable onAfterLoaded)
+	{
+		if(validateProfile && !capeProviders.isEmpty())
 		{
-			if(validateProfile && !capeProviders.isEmpty())
+			final MinecraftClient client = MinecraftClient.getInstance();
+			
+			// The current player is always valid
+			final boolean real = profile.getId().equals(client.getSession().getUuidOrNull())
+				// Shortcut: Check if the name is valid
+				|| isValidName(profile.getName())
+				// Check if this is a real player (not a fake one create by a server)
+				// Use secure = false to utilize cache
+				&& client.getSessionService().fetchProfile(profile.getId(), false) != null;
+			
+			LOG.debug(
+				"Determined that {}/{} is {}a real player",
+				profile.getName(),
+				profile.getId(),
+				real ? "" : "NOT ");
+			
+			if(!real)
 			{
-				final MinecraftClient client = MinecraftClient.getInstance();
-				
-				// The current player is always valid
-				final boolean real = profile.getId().equals(client.getSession().getUuidOrNull())
-					// Shortcut: Check if the name is valid
-					|| isValidName(profile.getName())
-					// Check if this is a real player (not a fake one create by a server)
-					// Use secure = false to utilize cache
-					&& client.getSessionService().fetchProfile(profile.getId(), false) != null;
-				
-				LOG.debug(
-					"Determined that {}/{} is {}a real player",
-					profile.getName(),
-					profile.getId(),
-					real ? "" : "NOT ");
-				
-				if(!real)
-				{
-					return;
-				}
+				return;
 			}
-			
-			final PlayerCapeHandler handler = getOrCreateProfile(profile);
-			handler.resetCape();
-			
-			final Optional<CapeProvider> optFoundCapeProvider = capeProviders.stream()
-				.filter(handler::trySetCape)
-				.findFirst();
-			
-			if(LOG.isDebugEnabled())
-			{
-				optFoundCapeProvider.ifPresentOrElse(
-					cp ->
-						LOG.debug("Loaded cape from {} for {}/{}", cp.id(), profile.getName(), profile.getId()),
-					() -> LOG.debug("Found no cape for {}/{}", profile.getName(), profile.getId())
-				);
-			}
-			
-			if(onAfterLoaded != null)
-			{
-				onAfterLoaded.run();
-			}
-		});
+		}
+		
+		final PlayerCapeHandler handler = getOrCreateProfile(profile);
+		handler.resetCape();
+		
+		final Optional<CapeProvider> optFoundCapeProvider = capeProviders.stream()
+			.filter(handler::trySetCape)
+			.findFirst();
+		
+		if(LOG.isDebugEnabled())
+		{
+			optFoundCapeProvider.ifPresentOrElse(
+				cp ->
+					LOG.debug("Loaded cape from {} for {}/{}", cp.id(), profile.getName(), profile.getId()),
+				() -> LOG.debug("Found no cape for {}/{}", profile.getName(), profile.getId())
+			);
+		}
+		
+		if(onAfterLoaded != null)
+		{
+			onAfterLoaded.run();
+		}
 	}
 	
 	private static boolean isValidName(final String playerName)
