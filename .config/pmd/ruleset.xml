@@ -27,9 +27,7 @@
 	<rule ref="category/java/bestpractices.xml/SimplifiableTestAssertion"/>
 	<rule ref="category/java/bestpractices.xml/SystemPrintln"/>
 	<rule ref="category/java/bestpractices.xml/UnusedAssignment"/>
-	<rule ref="category/java/bestpractices.xml/UnusedFormalParameter"/>
 	<rule ref="category/java/bestpractices.xml/UnusedPrivateField"/>
-	<rule ref="category/java/bestpractices.xml/UnusedPrivateMethod"/>
 	<rule ref="category/java/bestpractices.xml/UseCollectionIsEmpty"/>
 	<rule ref="category/java/bestpractices.xml/UseEnumCollections"/>
 	<rule ref="category/java/bestpractices.xml/UseStandardCharsets"/>
@@ -161,6 +159,7 @@
 	<rule ref="category/java/multithreading.xml">
 		<!-- Just bloats code; improved in JEP-491/Java 24+ -->
 		<exclude name="AvoidSynchronizedAtMethodLevel"/>
+		<exclude name="AvoidSynchronizedStatement"/>
 
 		<!-- NOPE -->
 		<exclude name="DoNotUseThreads"/>
