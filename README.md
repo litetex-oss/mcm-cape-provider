@@ -2,7 +2,6 @@
 
 [![Version](https://img.shields.io/modrinth/v/cape-provider)](https://modrinth.com/mod/cape-provider)
 [![Build](https://img.shields.io/github/actions/workflow/status/litetex-oss/mcm-cape-provider/check-build.yml?branch=dev)](https://github.com/litetex-oss/mcm-cape-provider/actions/workflows/check-build.yml?query=branch%3Adev)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=litetex-oss_mcm-cape-provider&metric=alert_status)](https://sonarcloud.io/dashboard?id=litetex-oss_mcm-cape-provider)
 
 # Cape Provider
 
