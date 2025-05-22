@@ -16,6 +16,7 @@ import net.litetex.capes.provider.CapeProvider;
 import net.litetex.capes.provider.MinecraftCapeProvider;
 import net.litetex.capes.provider.antifeature.AntiFeature;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -26,7 +27,6 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextIconButtonWidget;
 import net.minecraft.client.gui.widget.TextWidget;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -496,7 +496,7 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 		protected void renderWidget(final DrawContext context, final int mouseX, final int mouseY, final float delta)
 		{
 			context.drawTexture(
-				RenderLayer::getGuiTextured,
+				RenderPipelines.GUI_TEXTURED,
 				this.isMouseOver(mouseX, mouseY) ? this.hoverTexture : this.texture,
 				this.getX() + this.drawOffsetX,
 				this.getY() + this.drawOffsetY,
