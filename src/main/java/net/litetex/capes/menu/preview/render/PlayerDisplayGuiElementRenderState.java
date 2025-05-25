@@ -21,6 +21,7 @@ public record PlayerDisplayGuiElementRenderState(
 	@Nullable ScreenRect bounds
 ) implements SpecialGuiElementRenderState
 {
+	@SuppressWarnings("PMD.ExcessiveParameterList") // Derived from MC code
 	public PlayerDisplayGuiElementRenderState(
 		final PlayerDisplayGuiModels models,
 		final PlayerDisplayGuiPayload payload,
