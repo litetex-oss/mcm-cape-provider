@@ -356,6 +356,11 @@ public class PlayerCapeHandler
 		return this.hasCape;
 	}
 	
+	public boolean hasAnimatedCape()
+	{
+		return this.hasAnimatedCape;
+	}
+	
 	public boolean hasElytraTexture()
 	{
 		return this.hasElytraTexture;
