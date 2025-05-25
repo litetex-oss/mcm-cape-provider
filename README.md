@@ -38,6 +38,16 @@ This demo showcases how to apply the capes inside [``custom-cape-demo``](https:/
     ```
 3. Restart the game and activate the provider
 
+### Custom Provider Examples
+```jsonc
+    {
+      "id": "skinmc",
+      "name": "SkinMC",
+      // This custom provider adds support for skinmc capes: https://skinmc.net
+      "uriTemplate": "https://skinmc.net/api/v1/skinmcCape/$id"
+    }
+```
+
 For more details have a look at [CustomProvider](https://github.com/litetex-oss/mcm-cape-provider/tree/dev/src/main/java/net/litetex/capes/provider/CustomProvider.java) and [CustomProviderConfig](https://github.com/litetex-oss/mcm-cape-provider/tree/dev/src/main/java/net/litetex/capes/config/CustomProviderConfig.java)
 
 You can also create a [programmatic cape provider](https://github.com/litetex-oss/mcm-cape-provider/tree/dev/PROGRAMMATIC_PROVIDER.md).
