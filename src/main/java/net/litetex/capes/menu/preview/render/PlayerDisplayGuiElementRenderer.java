@@ -6,10 +6,14 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.render.SpecialGuiElementRenderer;
+import net.minecraft.client.model.Model;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.RotationAxis;
 
@@ -17,6 +21,8 @@ import net.minecraft.util.math.RotationAxis;
 @SuppressWarnings("checkstyle:MagicNumber")
 public class PlayerDisplayGuiElementRenderer extends SpecialGuiElementRenderer<PlayerDisplayGuiElementRenderState>
 {
+	private static final int LIGHT = 0xF000F0;
+	
 	public PlayerDisplayGuiElementRenderer(final VertexConsumerProvider.Immediate immediate)
 	{
 		super(immediate);
@@ -49,12 +55,64 @@ public class PlayerDisplayGuiElementRenderer extends SpecialGuiElementRenderer<P
 		);
 		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-state.yRotation()));
 		matrixStack.translate(0.0F, -1.6010001F, 0.0F);
-		final RenderLayer renderLayer =
-			state.playerModel().getLayer(state.texture());
-		state.playerModel()
-			.render(matrixStack, this.vertexConsumers.getBuffer(renderLayer), 15728880, OverlayTexture.DEFAULT_UV);
+		
+		this.renderParts(state.payload(), state.models(), matrixStack);
+		
 		this.vertexConsumers.draw();
 		matrix4fStack.popMatrix();
+	}
+	
+	protected void renderParts(
+		final PlayerDisplayGuiPayload payload,
+		final PlayerDisplayGuiModels models,
+		final MatrixStack matrixStack)
+	{
+		if(payload.bodyTexture() != null)
+		{
+			this.render(
+				models.player(),
+				matrixStack,
+				this.vertexConsumers.getBuffer(models.player().getLayer(payload.bodyTexture())));
+		}
+		
+		if(payload.elytraTexture() != null)
+		{
+			matrixStack.push();
+			matrixStack.translate(0.0f, 0.0f, 0.125f);
+			
+			this.render(
+				models.elytra(),
+				matrixStack,
+				ItemRenderer.getArmorGlintConsumer(
+					this.vertexConsumers,
+					RenderLayer.getArmorCutoutNoCull(payload.elytraTexture()),
+					false));
+			
+			matrixStack.pop();
+		}
+		else if(payload.capeTexture() != null)
+		{
+			matrixStack.push();
+			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(6.0f));
+			
+			this.render(
+				models.cape().getChild("body").getChild("cape"),
+				matrixStack,
+				this.vertexConsumers.getBuffer(RenderLayer.getArmorCutoutNoCull(payload.capeTexture()))
+			);
+			
+			matrixStack.pop();
+		}
+	}
+	
+	protected void render(final Model model, final MatrixStack stack, final VertexConsumer c)
+	{
+		model.render(stack, c, LIGHT, OverlayTexture.DEFAULT_UV);
+	}
+	
+	protected void render(final ModelPart modelPart, final MatrixStack stack, final VertexConsumer c)
+	{
+		modelPart.render(stack, c, LIGHT, OverlayTexture.DEFAULT_UV);
 	}
 	
 	@Override
