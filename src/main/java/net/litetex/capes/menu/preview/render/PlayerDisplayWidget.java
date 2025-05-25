@@ -1,5 +1,6 @@
 package net.litetex.capes.menu.preview.render;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import net.minecraft.client.gui.DrawContext;
@@ -14,6 +15,8 @@ import net.minecraft.client.render.entity.model.LoadedEntityModels;
 public class PlayerDisplayWidget extends PlayerSkinWidget
 {
 	private final Supplier<PlayerDisplayGuiPayload> payloadSupplier;
+	private final Consumer<PlayerDisplayGuiModels> preModelRenderAction;
+	
 	private final ElytraEntityModel elytraEntityModel;
 	private final ModelPart capeModel;
 	
@@ -21,10 +24,12 @@ public class PlayerDisplayWidget extends PlayerSkinWidget
 		final int width,
 		final int height,
 		final LoadedEntityModels entityModels,
-		final Supplier<PlayerDisplayGuiPayload> payloadSupplier)
+		final Supplier<PlayerDisplayGuiPayload> payloadSupplier,
+		final Consumer<PlayerDisplayGuiModels> preModelRenderAction)
 	{
 		super(width, height, entityModels, null);
 		this.payloadSupplier = payloadSupplier;
+		this.preModelRenderAction = preModelRenderAction;
 		
 		this.elytraEntityModel = new ElytraEntityModel(entityModels.getModelPart(EntityModelLayers.ELYTRA));
 		this.capeModel = entityModels.getModelPart(EntityModelLayers.PLAYER_CAPE);
@@ -34,13 +39,17 @@ public class PlayerDisplayWidget extends PlayerSkinWidget
 	protected void renderWidget(final DrawContext context, final int mouseX, final int mouseY, final float deltaTicks)
 	{
 		final PlayerDisplayGuiPayload payload = this.payloadSupplier.get();
+		
+		final PlayerDisplayGuiModels models = new PlayerDisplayGuiModels(
+			payload.slim() ? this.slimModel : this.wideModel,
+			this.elytraEntityModel,
+			this.capeModel
+		);
+		this.preModelRenderAction.accept(models);
+		
 		this.addToDrawContext(
 			context,
-			new PlayerDisplayGuiModels(
-				payload.slim() ? this.slimModel : this.wideModel,
-				this.elytraEntityModel,
-				this.capeModel
-			),
+			models,
 			payload,
 			0.97F * this.getHeight() / 2.125F,
 			this.xRotation,
