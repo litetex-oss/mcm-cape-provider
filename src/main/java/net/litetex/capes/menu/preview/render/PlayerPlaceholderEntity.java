@@ -14,6 +14,7 @@ import net.minecraft.util.Identifier;
 
 
 @SuppressWarnings("checkstyle:MagicNumber")
+@Deprecated // Requires a event based system!
 public class PlayerPlaceholderEntity
 {
 	final GameProfile gameProfile;
