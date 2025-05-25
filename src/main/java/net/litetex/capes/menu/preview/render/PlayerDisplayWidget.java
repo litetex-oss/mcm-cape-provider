@@ -61,6 +61,7 @@ public class PlayerDisplayWidget extends PlayerSkinWidget
 			this.getBottom());
 	}
 	
+	@SuppressWarnings("PMD.ExcessiveParameterList") // Derived from MC code
 	public void addToDrawContext(
 		final DrawContext context,
 		final PlayerDisplayGuiModels models,
