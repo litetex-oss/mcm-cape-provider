@@ -18,8 +18,11 @@ public class GuiRendererMixin
 {
 	@Redirect(
 		method = "<init>",
-		at = @At(value = "INVOKE", target = "Lcom/google/common/collect/ImmutableMap$Builder;buildOrThrow()"
-			+ "Lcom/google/common/collect/ImmutableMap;")
+		at = @At(
+			value = "INVOKE",
+			target = "Lcom/google/common/collect/ImmutableMap$Builder;buildOrThrow()"
+				+ "Lcom/google/common/collect/ImmutableMap;",
+			remap = false)
 	)
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	private ImmutableMap modifyInit(final ImmutableMap.Builder instance)
