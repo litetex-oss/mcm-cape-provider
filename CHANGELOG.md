@@ -1,3 +1,7 @@
+# 1.2.0
+* Updated to 1.21.6
+  * Reworked the preview rendering
+
 # 1.1.1
 * Optimized rendering in preview screen
 * Correctly declared fabric-api
