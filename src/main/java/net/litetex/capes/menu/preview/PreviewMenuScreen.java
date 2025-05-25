@@ -6,20 +6,15 @@ import java.util.List;
 import net.litetex.capes.Capes;
 import net.litetex.capes.CapesI18NKeys;
 import net.litetex.capes.menu.MainMenuScreen;
-import net.litetex.capes.menu.preview.render.DisplayPlayerEntityRenderer;
+import net.litetex.capes.menu.preview.render.PlayerDisplayWidget;
 import net.litetex.capes.menu.preview.render.PlayerPlaceholderEntity;
 import net.litetex.capes.provider.CapeProvider;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.render.DiffuseLighting;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.entity.equipment.EquipmentModelLoader;
+import net.minecraft.client.util.SkinTextures;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.RotationAxis;
 
 
 @SuppressWarnings("checkstyle:MagicNumber")
@@ -96,6 +91,21 @@ public class PreviewMenuScreen extends MainMenuScreen
 			.position((this.width / 4) - (buttonW / 2), 145)
 			.size(buttonW, 20)
 			.build());
+		
+		final PlayerDisplayWidget playerWidget = new PlayerDisplayWidget(
+			90,
+			125,
+			MinecraftClient.getInstance().getLoadedEntityModels(),
+			() -> new SkinTextures(
+				this.entity.getSkinTexture(),
+				null,
+				this.entity.getCapeTexture(),
+				this.entity.getElytraTexture(),
+				this.entity.isSlim() ? SkinTextures.Model.SLIM : SkinTextures.Model.WIDE,
+				true
+			));
+		playerWidget.setPosition(this.width / 2 - playerWidget.getWidth() / 2, 82);
+		this.addSelfManagedDrawableChild(playerWidget);
 	}
 	
 	private Text textForCurrentlyDisplayedCapeProvider()
@@ -112,52 +122,6 @@ public class PreviewMenuScreen extends MainMenuScreen
 		return capes.getCapeProviderForSelf()
 			.map(List::of)
 			.orElseGet(capes::activeCapeProviders);
-	}
-	
-	// See also InventoryScreen
-	@Override
-	public void renderBackground(final DrawContext context, final int mouseX, final int mouseY, final float delta)
-	{
-		super.renderBackground(context, mouseX, mouseY, delta);
-		
-		final int playerX = this.width / 2;
-		final int playerY = 204;
-		
-		final long currentTimeMs = System.currentTimeMillis();
-		
-		if(currentTimeMs > this.lastRenderTimeMs + (1000 / 60))
-		{
-			this.lastRenderTimeMs = currentTimeMs;
-			this.entity.updatePrevX();
-			this.entity.updateLimbs();
-		}
-		
-		this.drawPlayer(context, playerX, playerY, 64, this.entity);
-	}
-	
-	void drawPlayer(
-		final DrawContext context,
-		final int x,
-		final int y,
-		final int size,
-		final PlayerPlaceholderEntity entity)
-	{
-		context.getMatrices().push();
-		context.getMatrices().translate(x, y, 1000);
-		context.getMatrices().scale(size, size, -size);
-		context.getMatrices().multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180.0f));
-		
-		DiffuseLighting.enableGuiShaderLighting();
-		
-		final VertexConsumerProvider.Immediate immediate =
-			MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-		
-		this.displayPlayerEntityRenderer.render(entity, 1.0f, context.getMatrices(), immediate, 0xF000F0);
-		immediate.draw();
-		
-		DiffuseLighting.enableGuiDepthLighting();
-		
-		context.getMatrices().pop();
 	}
 	
 	@Override
