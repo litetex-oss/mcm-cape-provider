@@ -6,6 +6,7 @@ import java.util.List;
 import net.litetex.capes.Capes;
 import net.litetex.capes.CapesI18NKeys;
 import net.litetex.capes.menu.MainMenuScreen;
+import net.litetex.capes.menu.preview.render.PlayerDisplayGuiPayload;
 import net.litetex.capes.menu.preview.render.PlayerDisplayWidget;
 import net.litetex.capes.menu.preview.render.PlayerPlaceholderEntity;
 import net.litetex.capes.provider.CapeProvider;
@@ -13,7 +14,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.util.SkinTextures;
 import net.minecraft.text.Text;
 
 
@@ -96,14 +96,19 @@ public class PreviewMenuScreen extends MainMenuScreen
 			90,
 			125,
 			MinecraftClient.getInstance().getLoadedEntityModels(),
-			() -> new SkinTextures(
-				this.entity.getSkinTexture(),
-				null,
-				this.entity.getCapeTexture(),
-				this.entity.getElytraTexture(),
-				this.entity.isSlim() ? SkinTextures.Model.SLIM : SkinTextures.Model.WIDE,
-				true
-			));
+			() -> {
+				if(!this.entity.isCapeLoaded())
+				{
+					this.entity.loadCapeTextureIfRequired();
+				}
+				
+				return new PlayerDisplayGuiPayload(
+					this.entity.getSkinTexture(),
+					this.entity.getCapeTexture(),
+					this.entity.getElytraTexture(),
+					this.entity.isSlim()
+				);
+			});
 		playerWidget.setPosition(this.width / 2 - playerWidget.getWidth() / 2, 82);
 		this.addSelfManagedDrawableChild(playerWidget);
 	}
@@ -122,18 +127,5 @@ public class PreviewMenuScreen extends MainMenuScreen
 		return capes.getCapeProviderForSelf()
 			.map(List::of)
 			.orElseGet(capes::activeCapeProviders);
-	}
-	
-	@Override
-	public boolean mouseDragged(
-		final double mouseX,
-		final double mouseY,
-		final int button,
-		final double deltaX,
-		final double deltaY)
-	{
-		super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
-		this.entity.updateYawDueToMouseDrag((float)deltaX);
-		return true;
 	}
 }

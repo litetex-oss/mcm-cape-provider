@@ -58,6 +58,11 @@ public class PlayerPlaceholderEntity
 		this.limbAngle += this.limbDistance;
 	}
 	
+	public boolean isCapeLoaded()
+	{
+		return this.capeLoaded;
+	}
+	
 	public void loadCapeTextureIfRequired()
 	{
 		if(!this.capeLoading)

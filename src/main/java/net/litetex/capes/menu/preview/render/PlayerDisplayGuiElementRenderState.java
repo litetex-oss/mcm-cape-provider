@@ -4,13 +4,11 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.render.state.special.SpecialGuiElementRenderState;
-import net.minecraft.client.render.entity.model.PlayerEntityModel;
-import net.minecraft.util.Identifier;
 
 
 public record PlayerDisplayGuiElementRenderState(
-	PlayerEntityModel playerModel,
-	Identifier texture,
+	PlayerDisplayGuiModels models,
+	PlayerDisplayGuiPayload payload,
 	float xRotation,
 	float yRotation,
 	float yPivot,
@@ -24,31 +22,31 @@ public record PlayerDisplayGuiElementRenderState(
 ) implements SpecialGuiElementRenderState
 {
 	public PlayerDisplayGuiElementRenderState(
-		final PlayerEntityModel playerEntityModel,
-		final Identifier identifier,
-		final float f,
-		final float g,
-		final float h,
-		final int i,
-		final int j,
-		final int k,
-		final int l,
-		final float m,
+		final PlayerDisplayGuiModels models,
+		final PlayerDisplayGuiPayload payload,
+		final float xRotation,
+		final float yRotation,
+		final float yPivot,
+		final int x1,
+		final int y1,
+		final int x2,
+		final int y2,
+		final float scale,
 		@Nullable final ScreenRect screenRect
 	)
 	{
 		this(
-			playerEntityModel,
-			identifier,
-			f,
-			g,
-			h,
-			i,
-			j,
-			k,
-			l,
-			m,
+			models,
+			payload,
+			xRotation,
+			yRotation,
+			yPivot,
+			x1,
+			y1,
+			x2,
+			y2,
+			scale,
 			screenRect,
-			SpecialGuiElementRenderState.createBounds(i, j, k, l, screenRect));
+			SpecialGuiElementRenderState.createBounds(x1, y1, x2, y2, screenRect));
 	}
 }
