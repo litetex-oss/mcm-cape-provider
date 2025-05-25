@@ -202,6 +202,7 @@ modrinth {
     dependencies {
         optional.project 'fabric-api'
         optional.project 'modmenu'
+        incompatible.project 'capes'
     }
 }
 
