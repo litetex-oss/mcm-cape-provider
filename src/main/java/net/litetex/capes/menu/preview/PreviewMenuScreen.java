@@ -45,7 +45,7 @@ public class PreviewMenuScreen extends MainMenuScreen
 			MinecraftClient.getInstance().getLoadedEntityModels(),
 			this.viewModel::getPayload,
 			models -> playerLimbAnimator.animate(models.player(), 1));
-		this.playerWidget.yRotation = 185; // Default view = from behind
+		this.playerWidget.yRotation = 185; // Default view = from behind, facing the cape/elytra
 	}
 	
 	@SuppressWarnings("checkstyle:MagicNumber")
