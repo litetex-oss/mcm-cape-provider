@@ -1,6 +1,7 @@
 name: 🐞 Bug
 description: Create a bug report for something that is broken
 labels: [bug]
+type: bug
 body:
   - type: markdown
     attributes:
@@ -32,6 +33,33 @@ body:
     validations:
       required: true
 
+  - type: checkboxes
+    id: quick-troubleshooting
+    attributes:
+      label: "Quick Troubleshooting Guide"
+      description: |
+        Please check the relevant points.
+        You should note relevant results below.
+      options:
+        - label: "Are you using the correct version of Minecraft for this version of the mod?"
+        - label: "Did you install the mod correctly? Does it e.g. show up in the Mod Menu?"
+        - label: "Are there any other mods installed that might affect this mod? If yes please describe them below"
+        - label: "Does the mod work if you only install it (and mods that it depends on) and no other additional mods?"
+        - label: "Does the mod work in another world?"
+        - label: |
+            Are there any warnings related to the mod when launching the game? If yes please describe them below. 
+            (Log output can be enabled in the Minecraft Launcher under 
+            Settings (bottom left) > General > Minecraft: Java Edition settings → Check "Open output log when Minecraft: Java Edition starts")"
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description of the problem
+      description: |
+        Describe as exactly as possible what is not working.
+    validations:
+      required: true
+
   - type: textarea
     id: steps-to-reproduce
     attributes:
@@ -41,28 +69,16 @@ body:
 
         If you can't cause the bug to show up again reliably (and hence don't have a proper set of steps to give us), please still try to give as many details as possible on how you think you encountered the bug.
       placeholder: |
-        1. Use '...'
-        2. Do '...'
+        1. Create a new installation/profile of Minecraft version ...
+        2. Install the following mods: ...
+        3. Play in the following world: *Link to world download link here*
+        4. ... is not working
     validations:
       required: true
-
-  - type: textarea
-    id: expected-behavior
-    attributes:
-      label: Expected behavior
-      description: |
-        Tell us what you expect to happen.
-
-  - type: textarea
-    id: actual-behavior
-    attributes:
-      label: Actual behavior
-      description: |
-        Tell us what happens with the steps given above.
 
   - type: textarea
     id: additional-information
     attributes:
       label: Additional information
       description: |
-        Any other relevant information you'd like to include
+        Any other relevant information you'd like to include, e.g. a world download or a video showcasing what's happening

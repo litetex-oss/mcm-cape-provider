@@ -77,9 +77,9 @@ public class PlayerPlaceholderEntity
 		final PlayerCapeHandler handler = PlayerCapeHandler.getProfile(this.gameProfile);
 		final Identifier capeTexture = this.getCapeTexture();
 		return handler == null
-			|| (handler.hasElytraTexture()
+			|| handler.hasElytraTexture()
 			&& Capes.instance().config().isEnableElytraTexture()
-			&& capeTexture != null)
+			&& capeTexture != null
 			? capeTexture
 			: Capes.DEFAULT_ELYTRA_IDENTIFIER;
 	}

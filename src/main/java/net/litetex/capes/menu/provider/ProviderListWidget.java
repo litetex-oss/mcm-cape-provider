@@ -450,6 +450,7 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 		
 		private final Runnable onClick;
 		
+		@SuppressWarnings("PMD.ExcessiveParameterList")
 		public UpDownIconWidget(
 			final int width,
 			final int height,

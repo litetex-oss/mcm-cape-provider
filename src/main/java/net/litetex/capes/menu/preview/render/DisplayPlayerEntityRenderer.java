@@ -39,6 +39,47 @@ public class DisplayPlayerEntityRenderer
 				slim),
 			0.5f);
 		this.ctx = ctx;
+		
+		this.setModelPose();
+		this.setInitialAngles();
+	}
+	
+	private void setModelPose()
+	{
+		final GameOptions options = MinecraftClient.getInstance().options;
+		this.model.setVisible(true);
+		this.model.hat.visible = options.isPlayerModelPartEnabled(PlayerModelPart.HAT);
+		this.model.jacket.visible = options.isPlayerModelPartEnabled(PlayerModelPart.JACKET);
+		this.model.leftPants.visible = options.isPlayerModelPartEnabled(PlayerModelPart.LEFT_PANTS_LEG);
+		this.model.rightPants.visible = options.isPlayerModelPartEnabled(PlayerModelPart.RIGHT_PANTS_LEG);
+		this.model.leftSleeve.visible = options.isPlayerModelPartEnabled(PlayerModelPart.LEFT_SLEEVE);
+		this.model.rightSleeve.visible = options.isPlayerModelPartEnabled(PlayerModelPart.RIGHT_SLEEVE);
+	}
+	
+	private void setInitialAngles()
+	{
+		this.model.body.yaw = 0.0f;
+		this.model.rightArm.originZ = 0.0f;
+		this.model.rightArm.originX = -5.0f;
+		this.model.leftArm.originZ = 0.0f;
+		this.model.leftArm.originX = 5.0f;
+		this.model.rightArm.roll = 0.0f;
+		this.model.leftArm.roll = 0.0f;
+		this.model.rightLeg.yaw = 0.0f;
+		this.model.leftLeg.yaw = 0.0f;
+		this.model.rightLeg.roll = 0.0f;
+		this.model.leftLeg.roll = 0.0f;
+		this.model.rightArm.yaw = 0.0f;
+		this.model.leftArm.yaw = 0.0f;
+		this.model.body.pitch = 0.0f;
+		this.model.rightLeg.originZ = 0.1f;
+		this.model.leftLeg.originZ = 0.1f;
+		this.model.rightLeg.originY = 12.0f;
+		this.model.leftLeg.originY = 12.0f;
+		this.model.head.originY = 0.0f;
+		this.model.body.originY = 0.0f;
+		this.model.leftArm.originY = 2.0f;
+		this.model.rightArm.originY = 2.0f;
 	}
 	
 	public void render(
@@ -48,7 +89,6 @@ public class DisplayPlayerEntityRenderer
 		final VertexConsumerProvider vertexConsumerProvider,
 		final int light)
 	{
-		this.setModelPose();
 		matrixStack.push();
 		
 		matrixStack.scale(0.9375f, 0.9375f, 0.9375f);
@@ -124,45 +164,10 @@ public class DisplayPlayerEntityRenderer
 	
 	private void setAngles(final float f, final float g)
 	{
-		this.model.body.yaw = 0.0f;
-		this.model.rightArm.originZ = 0.0f;
-		this.model.rightArm.originX = -5.0f;
-		this.model.leftArm.originZ = 0.0f;
-		this.model.leftArm.originX = 5.0f;
 		this.model.rightArm.pitch = MathHelper.cos(f * 0.6662f + 3.1415927f) * 2.0f * g * 0.5f;
 		this.model.leftArm.pitch = MathHelper.cos(f * 0.6662f) * 2.0f * g * 0.5f;
-		this.model.rightArm.roll = 0.0f;
-		this.model.leftArm.roll = 0.0f;
 		this.model.rightLeg.pitch = MathHelper.cos(f * 0.6662f) * 1.4f * g;
 		this.model.leftLeg.pitch = MathHelper.cos(f * 0.6662f + 3.1415927f) * 1.4f * g;
-		this.model.rightLeg.yaw = 0.0f;
-		this.model.leftLeg.yaw = 0.0f;
-		this.model.rightLeg.roll = 0.0f;
-		this.model.leftLeg.roll = 0.0f;
-		this.model.rightArm.yaw = 0.0f;
-		this.model.leftArm.yaw = 0.0f;
-		this.model.body.pitch = 0.0f;
-		this.model.rightLeg.originZ = 0.1f;
-		this.model.leftLeg.originZ = 0.1f;
-		this.model.rightLeg.originY = 12.0f;
-		this.model.leftLeg.originY = 12.0f;
-		this.model.head.originY = 0.0f;
-		this.model.body.originY = 0.0f;
-		this.model.leftArm.originY = 2.0f;
-		this.model.rightArm.originY = 2.0f;
-	}
-	
-	private void setModelPose()
-	{
-		final GameOptions options = MinecraftClient.getInstance().options;
-		final PlayerEntityModel playerEntityModel = this.getModel();
-		playerEntityModel.setVisible(true);
-		playerEntityModel.hat.visible = options.isPlayerModelPartEnabled(PlayerModelPart.HAT);
-		playerEntityModel.jacket.visible = options.isPlayerModelPartEnabled(PlayerModelPart.JACKET);
-		playerEntityModel.leftPants.visible = options.isPlayerModelPartEnabled(PlayerModelPart.LEFT_PANTS_LEG);
-		playerEntityModel.rightPants.visible = options.isPlayerModelPartEnabled(PlayerModelPart.RIGHT_PANTS_LEG);
-		playerEntityModel.leftSleeve.visible = options.isPlayerModelPartEnabled(PlayerModelPart.LEFT_SLEEVE);
-		playerEntityModel.rightSleeve.visible = options.isPlayerModelPartEnabled(PlayerModelPart.RIGHT_SLEEVE);
 	}
 	
 	@Override
