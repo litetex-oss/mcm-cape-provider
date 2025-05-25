@@ -22,6 +22,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 
 
+@Deprecated
 @SuppressWarnings("checkstyle:MagicNumber")
 public class DisplayPlayerEntityRenderer
 	extends LivingEntityRenderer<LivingEntity, PlayerEntityRenderState, PlayerEntityModel>
