@@ -27,13 +27,28 @@ public class PreviewMenuScreen extends MainMenuScreen
 {
 	private final PlayerPlaceholderEntity entity;
 	private long lastRenderTimeMs;
+	private final DisplayPlayerEntityRenderer displayPlayerEntityRenderer;
 	
 	public PreviewMenuScreen(
 		final Screen parent,
 		final GameOptions gameOptions)
 	{
 		super(parent, gameOptions);
+		
 		this.entity = new PlayerPlaceholderEntity(this.capeProvidersForPreview());
+		
+		final EntityRendererFactory.Context ctx = new EntityRendererFactory.Context(
+			MinecraftClient.getInstance().getEntityRenderDispatcher(),
+			MinecraftClient.getInstance().getItemModelManager(),
+			MinecraftClient.getInstance().getMapRenderer(),
+			MinecraftClient.getInstance().getBlockRenderManager(),
+			MinecraftClient.getInstance().getResourceManager(),
+			MinecraftClient.getInstance().getLoadedEntityModels(),
+			new EquipmentModelLoader(),
+			MinecraftClient.getInstance().textRenderer
+		);
+		
+		this.displayPlayerEntityRenderer = new DisplayPlayerEntityRenderer(ctx, this.entity.isSlim());
 	}
 	
 	@SuppressWarnings("checkstyle:MagicNumber")
@@ -136,21 +151,8 @@ public class PreviewMenuScreen extends MainMenuScreen
 		
 		final VertexConsumerProvider.Immediate immediate =
 			MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-		final EntityRendererFactory.Context ctx = new EntityRendererFactory.Context(
-			MinecraftClient.getInstance().getEntityRenderDispatcher(),
-			MinecraftClient.getInstance().getItemModelManager(),
-			MinecraftClient.getInstance().getMapRenderer(),
-			MinecraftClient.getInstance().getBlockRenderManager(),
-			MinecraftClient.getInstance().getResourceManager(),
-			MinecraftClient.getInstance().getLoadedEntityModels(),
-			new EquipmentModelLoader(),
-			MinecraftClient.getInstance().textRenderer
-		);
 		
-		final DisplayPlayerEntityRenderer displayPlayerEntityRenderer =
-			new DisplayPlayerEntityRenderer(ctx, entity.isSlim());
-		
-		displayPlayerEntityRenderer.render(entity, 1.0f, context.getMatrices(), immediate, 0xF000F0);
+		this.displayPlayerEntityRenderer.render(entity, 1.0f, context.getMatrices(), immediate, 0xF000F0);
 		immediate.draw();
 		
 		DiffuseLighting.enableGuiDepthLighting();
