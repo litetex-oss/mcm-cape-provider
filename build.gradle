@@ -84,12 +84,13 @@ dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    // Required when translations and icons should be loaded correctly
+    modImplementation "net.fabricmc.fabric-api:fabric-api:0.124.2+1.21.5"
 
     modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
 
     // Only needed during development
     modLocalRuntime "com.terraformersmc:modmenu:${project.modmenu_version}"
-    modLocalRuntime "net.fabricmc.fabric-api:fabric-api:0.119.6+1.21.5"
     modLocalRuntime "me.djtheredstoner:DevAuth-fabric:1.2.1"
     modLocalRuntime "maven.modrinth:no-chat-reports:Fabric-1.21.5-v2.12.0"
 }
@@ -199,6 +200,7 @@ modrinth {
     syncBodyFrom = rootProject.file("README.md").text
     changelog = System.getenv("MODRINTH_CHANGELOG_TEXT")
     dependencies {
+        optional.project 'fabric-api'
         optional.project 'modmenu'
     }
 }

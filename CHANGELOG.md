@@ -1,5 +1,6 @@
 # 1.1.1
 * Optimized rendering in preview screen
+* Correctly declared fabric-api
 
 # 1.1.0
 * Updated to 1.21.5
