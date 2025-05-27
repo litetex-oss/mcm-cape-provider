@@ -14,7 +14,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 
 
 @Mixin(GuiRenderer.class)
-public class GuiRendererMixin
+public abstract class GuiRendererMixin
 {
 	@Redirect(
 		method = "<init>",
