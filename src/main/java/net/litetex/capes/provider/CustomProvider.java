@@ -45,6 +45,12 @@ public class CustomProvider implements CapeProvider
 	}
 	
 	@Override
+	public boolean isDefaultAnimatedTexture()
+	{
+		return this.config.animated();
+	}
+	
+	@Override
 	public boolean hasChangeCapeUrl()
 	{
 		return this.config.changeCapeUrl() != null;

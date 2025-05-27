@@ -8,6 +8,7 @@ public record CustomProviderConfig(
 	String id,
 	String name,
 	String uriTemplate,
+	boolean animated,
 	String changeCapeUrl,
 	String homepage,
 	List<String> antiFeatures
