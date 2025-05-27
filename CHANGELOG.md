@@ -1,6 +1,7 @@
 # 1.2.0
 * Updated to 1.21.6
-  * Reworked the preview rendering
+  * Reworked/Fixed preview rendering
+* Custom providers (loaded from the config-file) can now provide animated textures
 
 # 1.1.1
 * Optimized rendering in preview screen

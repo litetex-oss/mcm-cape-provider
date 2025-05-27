@@ -1,5 +1,8 @@
 package net.litetex.capes.menu.preview.render;
 
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
 import org.joml.Matrix4fStack;
 
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -15,6 +18,7 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 
 
@@ -75,31 +79,49 @@ public class PlayerDisplayGuiElementRenderer extends SpecialGuiElementRenderer<P
 				this.vertexConsumers.getBuffer(models.player().getLayer(payload.bodyTexture())));
 		}
 		
-		if(payload.elytraTexture() != null)
+		if(payload.elytraTextureSupplier() != null)
 		{
-			matrixStack.push();
-			matrixStack.translate(0.0f, 0.0f, 0.125f);
-			
-			this.render(
-				models.elytra(),
-				matrixStack,
-				ItemRenderer.getArmorGlintConsumer(
-					this.vertexConsumers,
-					RenderLayer.getArmorCutoutNoCull(payload.elytraTexture()),
-					false));
-			
-			matrixStack.pop();
+			this.extractFromSupplierAndRender(
+				payload.elytraTextureSupplier(), matrixStack, id ->
+				{
+					matrixStack.translate(0.0f, 0.0f, 0.125f);
+					
+					this.render(
+						models.elytra(),
+						matrixStack,
+						ItemRenderer.getArmorGlintConsumer(
+							this.vertexConsumers,
+							RenderLayer.getArmorCutoutNoCull(id),
+							false));
+				});
 		}
-		else if(payload.capeTexture() != null)
+		else if(payload.capeTextureSupplier() != null)
+		{
+			this.extractFromSupplierAndRender(
+				payload.capeTextureSupplier(), matrixStack, id ->
+				{
+					matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(6.0f));
+					
+					this.render(
+						models.cape().getChild("body").getChild("cape"),
+						matrixStack,
+						this.vertexConsumers.getBuffer(RenderLayer.getArmorCutoutNoCull(id))
+					);
+				});
+		}
+	}
+	
+	protected void extractFromSupplierAndRender(
+		final Supplier<Identifier> supplier,
+		final MatrixStack matrixStack,
+		final Consumer<Identifier> renderer)
+	{
+		final Identifier id = supplier.get();
+		if(id != null)
 		{
 			matrixStack.push();
-			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(6.0f));
 			
-			this.render(
-				models.cape().getChild("body").getChild("cape"),
-				matrixStack,
-				this.vertexConsumers.getBuffer(RenderLayer.getArmorCutoutNoCull(payload.capeTexture()))
-			);
+			renderer.accept(id);
 			
 			matrixStack.pop();
 		}
