@@ -25,18 +25,12 @@ public interface CapeProvider
 		final HttpRequest.Builder requestBuilder,
 		final GameProfile profile) throws IOException, InterruptedException
 	{
-		try(final HttpClient client = clientBuilder.build())
-		{
-			final HttpResponse<byte[]> response =
-				client.send(requestBuilder.GET().build(), HttpResponse.BodyHandlers.ofByteArray());
-			
-			if(response.statusCode() / 100 != 2)
-			{
-				return null;
-			}
-			
-			return new ResolvedTextureInfo.ByteArrayTextureInfo(response.body(), false);
-		}
+		return resolveTextureDefault(clientBuilder, requestBuilder, this.isDefaultAnimatedTexture());
+	}
+	
+	default boolean isDefaultAnimatedTexture()
+	{
+		return false;
 	}
 	
 	default boolean hasChangeCapeUrl()
@@ -57,5 +51,24 @@ public interface CapeProvider
 	default List<AntiFeature> antiFeatures()
 	{
 		return List.of();
+	}
+	
+	static ResolvedTextureInfo.ByteArrayTextureInfo resolveTextureDefault(
+		final HttpClient.Builder clientBuilder,
+		final HttpRequest.Builder requestBuilder,
+		final boolean animated) throws IOException, InterruptedException
+	{
+		try(final HttpClient client = clientBuilder.build())
+		{
+			final HttpResponse<byte[]> response =
+				client.send(requestBuilder.GET().build(), HttpResponse.BodyHandlers.ofByteArray());
+			
+			if(response.statusCode() / 100 != 2)
+			{
+				return null;
+			}
+			
+			return new ResolvedTextureInfo.ByteArrayTextureInfo(response.body(), animated);
+		}
 	}
 }

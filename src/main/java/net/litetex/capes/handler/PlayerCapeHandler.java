@@ -64,7 +64,7 @@ public class PlayerCapeHandler
 	private final GameProfile profile;
 	private int lastFrame;
 	private int maxFrames;
-	private long lastFrameTime;
+	private long nextFrameTime;
 	private boolean hasCape;
 	private boolean hasElytraTexture = true;
 	private boolean hasAnimatedCape;
@@ -82,11 +82,11 @@ public class PlayerCapeHandler
 		}
 		
 		final long time = System.currentTimeMillis();
-		if(time > this.lastFrameTime + 100L)
+		if(time > this.nextFrameTime)
 		{
 			final int thisFrame = (this.lastFrame + 1) % this.maxFrames;
 			this.lastFrame = thisFrame;
-			this.lastFrameTime = time;
+			this.nextFrameTime = time + 100L;
 			return identifier(this.uuid() + "/" + thisFrame);
 		}
 		return identifier(this.uuid() + "/" + this.lastFrame);
@@ -151,6 +151,11 @@ public class PlayerCapeHandler
 				texturesToRegister = this.toAnimatedCapeTextureFrames(cape).entrySet()
 					.stream()
 					.collect(Collectors.toMap(e -> identifier(this.uuid() + "/" + e.getKey()), Map.Entry::getValue));
+				
+				if(texturesToRegister.isEmpty())
+				{
+					throw new IllegalStateException("Received animated texture with no frames");
+				}
 				
 				// Assume that elytra texture is available
 				this.hasElytraTexture = true;

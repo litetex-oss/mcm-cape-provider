@@ -111,15 +111,16 @@ public class PreviewMenuScreen extends MainMenuScreen
 	
 	static class ViewModel
 	{
+		private static final Supplier<Identifier> DEFAULT_ELYTRA_SUPPLIER = () -> Capes.DEFAULT_ELYTRA_IDENTIFIER;
+		
 		private final GameProfile gameProfile;
 		private SkinTextures skin;
 		private boolean slim;
 		
 		private List<CapeProvider> capeProviders;
 		
-		private Identifier capeTexture;
-		private Supplier<Identifier> animatedCapeTextureResolver;
-		private Identifier elytraTexture = Capes.DEFAULT_ELYTRA_IDENTIFIER;
+		private Supplier<Identifier> capeTextureSupplier;
+		private Supplier<Identifier> elytraTextureSupplier = DEFAULT_ELYTRA_SUPPLIER;
 		
 		private boolean showBody = true;
 		private boolean showElytra;
@@ -154,9 +155,8 @@ public class PreviewMenuScreen extends MainMenuScreen
 		
 		private void updateCapeAndElytraTexture()
 		{
-			this.capeTexture = null;
-			this.animatedCapeTextureResolver = null;
-			this.elytraTexture = null;
+			this.capeTextureSupplier = null;
+			this.elytraTextureSupplier = null;
 			this.rebuildPayload();
 			
 			PlayerCapeHandler.onLoadTexture(
@@ -165,21 +165,23 @@ public class PreviewMenuScreen extends MainMenuScreen
 					
 					if(handler != null && handler.hasAnimatedCape())
 					{
-						this.animatedCapeTextureResolver = handler::getCape;
+						this.capeTextureSupplier = handler::getCape;
 					}
 					else
 					{
-						this.capeTexture = handler != null && handler.hasCape()
+						// Request only once
+						final Identifier capeTexture = handler != null && handler.hasCape()
 							? handler.getCape()
 							: this.skin.capeTexture();
+						this.capeTextureSupplier = () -> capeTexture;
 					}
 					
-					this.elytraTexture = handler == null
+					this.elytraTextureSupplier = handler == null
 						|| handler.hasElytraTexture()
-						&& this.capeTexture != null
+						&& this.capeTextureSupplier != null
 						&& Capes.instance().config().isEnableElytraTexture()
-						? this.capeTexture
-						: Capes.DEFAULT_ELYTRA_IDENTIFIER;
+						? this.capeTextureSupplier
+						: DEFAULT_ELYTRA_SUPPLIER;
 					
 					this.rebuildPayload();
 				});
@@ -207,8 +209,8 @@ public class PreviewMenuScreen extends MainMenuScreen
 		{
 			this.payload = new PlayerDisplayGuiPayload(
 				this.showBody ? this.skin.texture() : null,
-				this.animatedCapeTextureResolver != null ? this.animatedCapeTextureResolver.get() : this.capeTexture,
-				this.showElytra ? this.elytraTexture : null,
+				this.capeTextureSupplier,
+				this.showElytra ? this.elytraTextureSupplier : null,
 				this.slim
 			);
 		}
