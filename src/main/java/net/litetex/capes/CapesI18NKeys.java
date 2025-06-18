@@ -15,6 +15,8 @@ public final class CapesI18NKeys
 	
 	public static final String OTHER = PREFIX + "other";
 	public static final String ELYTRA_TEXTURE = PREFIX + "elytra_texture";
+	public static final String ANIMATED_TEXTURES = PREFIX + "animated_textures";
+	public static final String FROZEN = PREFIX + "frozen";
 	
 	private static final String ANTI_FEATURE_PREFIX = PREFIX + "anti_feature.";
 	public static final String ANTI_FEATURE_BAD_CONNECTION = ANTI_FEATURE_PREFIX + "bad_connection";

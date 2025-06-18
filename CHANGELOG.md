@@ -1,5 +1,9 @@
-# 1.2.1
+# 1.3.0
 * Try to utilize Fabric's Rendering API - if present - to prevent conflicts with other mods
+* Make it possible to control animated textures
+  * ON (default)
+  * Frozen = Textures are not animated
+  * OFF = Animated textures are ignored
 
 # 1.2.0
 * Updated to 1.21.6

@@ -21,6 +21,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -29,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import com.mojang.authlib.GameProfile;
 
 import net.litetex.capes.Capes;
+import net.litetex.capes.config.AnimatedTexturesHandling;
 import net.litetex.capes.provider.CapeProvider;
 import net.litetex.capes.provider.ResolvedTextureInfo;
 import net.minecraft.client.MinecraftClient;
@@ -142,15 +144,34 @@ public class PlayerCapeHandler
 			}
 			
 			final NativeImage cape = NativeImage.read(resolvedTextureInfo.imageBytes());
-			this.hasAnimatedCape = resolvedTextureInfo.animated();
+			final boolean isAnimatedTexture = resolvedTextureInfo.animated();
+			
+			final AnimatedTexturesHandling animatedTexturesHandling = this.animatedTexturesHandling();
+			if(isAnimatedTexture && animatedTexturesHandling == AnimatedTexturesHandling.OFF)
+			{
+				return false;
+			}
+			
+			this.hasAnimatedCape = isAnimatedTexture && animatedTexturesHandling == AnimatedTexturesHandling.ON;
 			
 			// Do texturing work NOT on Render thread
 			final Map<Identifier, NativeImage> texturesToRegister;
-			if(resolvedTextureInfo.animated())
+			if(isAnimatedTexture)
 			{
-				texturesToRegister = this.toAnimatedCapeTextureFrames(cape).entrySet()
-					.stream()
-					.collect(Collectors.toMap(e -> identifier(this.uuid() + "/" + e.getKey()), Map.Entry::getValue));
+				Stream<Map.Entry<Integer, NativeImage>> animatedTextureStream =
+					this.toAnimatedCapeTextureFrames(cape).entrySet().stream();
+				
+				final boolean freezeAnimatedTextures = !this.hasAnimatedCape;
+				if(freezeAnimatedTextures)
+				{
+					animatedTextureStream = animatedTextureStream.limit(1);
+				}
+				
+				texturesToRegister = animatedTextureStream
+					.collect(Collectors.toMap(
+						e -> identifier(
+							this.uuid() + (!freezeAnimatedTextures ? "/" + e.getKey() : "")),
+						Map.Entry::getValue));
 				
 				if(texturesToRegister.isEmpty())
 				{
@@ -233,6 +254,11 @@ public class PlayerCapeHandler
 			frames.put(currentFrame, frame);
 		}
 		return frames;
+	}
+	
+	private AnimatedTexturesHandling animatedTexturesHandling()
+	{
+		return Capes.instance().config().getAnimatedTexturesHandling();
 	}
 	
 	public static PlayerCapeHandler getProfile(final GameProfile profile)
