@@ -1,3 +1,6 @@
+# 1.2.1
+* Try to utilize Fabric's Rendering API - if present - to prevent conflicts with other mods
+
 # 1.2.0
 * Updated to 1.21.6
   * Reworked/Fixed preview rendering

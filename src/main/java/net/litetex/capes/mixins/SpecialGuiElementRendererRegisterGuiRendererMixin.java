@@ -13,8 +13,10 @@ import net.minecraft.client.gui.render.GuiRenderer;
 import net.minecraft.client.render.VertexConsumerProvider;
 
 
+// This is only a fallback when Fabric's Rendering API somehow is not present
+// Usually this class is not loaded to prevent Mixin conflicts
 @Mixin(GuiRenderer.class)
-public abstract class GuiRendererMixin
+public abstract class SpecialGuiElementRendererRegisterGuiRendererMixin
 {
 	@Redirect(
 		method = "<init>",
@@ -27,9 +29,12 @@ public abstract class GuiRendererMixin
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	private ImmutableMap modifyInit(final ImmutableMap.Builder instance)
 	{
-		// Add custom renderer
-		final PlayerDisplayGuiElementRenderer renderer = new PlayerDisplayGuiElementRenderer(this.vertexConsumers);
-		instance.put(renderer.getElementClass(), renderer);
+		if(PlayerDisplayGuiElementRenderer.REGISTERED.compareAndSet(false, true))
+		{
+			// Add custom renderer
+			final PlayerDisplayGuiElementRenderer renderer = new PlayerDisplayGuiElementRenderer(this.vertexConsumers);
+			instance.put(renderer.getElementClass(), renderer);
+		}
 		
 		return instance.buildOrThrow();
 	}

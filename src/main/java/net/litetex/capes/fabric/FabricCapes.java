@@ -27,6 +27,8 @@ public class FabricCapes implements ClientModInitializer
 	@Override
 	public void onInitializeClient()
 	{
+		CompatibilityInitializers.init();
+		
 		final Config config = this.loadConfig();
 		Capes.setInstance(new Capes(
 			config,
