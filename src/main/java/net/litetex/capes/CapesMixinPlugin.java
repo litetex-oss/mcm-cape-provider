@@ -9,7 +9,7 @@ import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
-import net.litetex.capes.fabric.FabricDetector;
+import net.litetex.capes.fabric.FabricModDetector;
 
 
 public class CapesMixinPlugin implements IMixinConfigPlugin
@@ -18,7 +18,7 @@ public class CapesMixinPlugin implements IMixinConfigPlugin
 	
 	static final Map<String, BooleanSupplier> CONDITIONS = Map.of(
 		MIXIN_PACKAGE + "SpecialGuiElementRendererRegisterGuiRendererMixin",
-		() -> !FabricDetector.isRenderingApiPresent()
+		() -> !FabricModDetector.isFabricRenderingApiPresent()
 	);
 	
 	@Override

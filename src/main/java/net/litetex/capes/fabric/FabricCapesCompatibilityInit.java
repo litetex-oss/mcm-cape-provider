@@ -6,13 +6,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public final class CompatibilityInitializers
+public final class FabricCapesCompatibilityInit
 {
-	private static final Logger LOG = LoggerFactory.getLogger(CompatibilityInitializers.class);
+	private static final Logger LOG = LoggerFactory.getLogger(FabricCapesCompatibilityInit.class);
 	
 	public static void init()
 	{
-		if(FabricDetector.isRenderingApiPresent())
+		if(FabricModDetector.isFabricRenderingApiPresent())
 		{
 			run("FabricRenderingApiInitializer");
 		}
@@ -36,7 +36,7 @@ public final class CompatibilityInitializers
 		}
 	}
 	
-	private CompatibilityInitializers()
+	private FabricCapesCompatibilityInit()
 	{
 	}
 }
