@@ -114,7 +114,7 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 				.filter(Capes.EXCLUDE_DEFAULT_MINECRAFT_CP)
 				.map(CapeProvider::id)
 				.toList());
-		capes.saveConfig();
+		capes.saveConfigAndMarkRefresh();
 	}
 	
 	private void onPositionChanged(final ProviderListEntry entry, final boolean up)

@@ -1,9 +1,15 @@
-# 1.3.0
+# 2.0.0
 * Try to utilize Fabric's Rendering API - if present - to prevent conflicts with other mods
 * Make it possible to control animated textures
   * ON (default)
   * Frozen = Textures are not animated
   * OFF = Animated textures are ignored
+* Refresh the capes of all players after changing the configuration
+* Provide an option to only load your cape (and ignore other players)
+* New debug options
+   * block certain capes by provider
+   * amount of Cape-Loader Threads (default: 2)
+* Various minor improvements and optimizations
 
 # 1.2.0
 * Updated to 1.21.6

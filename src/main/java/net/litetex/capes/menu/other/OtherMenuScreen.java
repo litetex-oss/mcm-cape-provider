@@ -4,7 +4,7 @@ import java.util.List;
 
 import net.litetex.capes.Capes;
 import net.litetex.capes.CapesI18NKeys;
-import net.litetex.capes.config.AnimatedTexturesHandling;
+import net.litetex.capes.config.AnimatedCapesHandling;
 import net.litetex.capes.menu.MainMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -29,26 +29,33 @@ public class OtherMenuScreen extends MainMenuScreen
 		final Capes capes = Capes.instance();
 		
 		this.body.addAll(List.of(
-			CyclingButtonWidget.<AnimatedTexturesHandling>builder(handling ->
+			CyclingButtonWidget.onOffBuilder(capes.config().isOnlyLoadForSelf())
+				.build(
+					Text.translatable(CapesI18NKeys.ONLY_LOAD_YOUR_CAPE),
+					(btn, enabled) -> {
+						this.config().setOnlyLoadForSelf(enabled);
+						capes.saveConfigAndMarkRefresh();
+					}),
+			CyclingButtonWidget.<AnimatedCapesHandling>builder(handling ->
 					switch(handling)
 					{
 						case ON -> ScreenTexts.ON;
 						case FROZEN -> Text.translatable(CapesI18NKeys.FROZEN);
 						case OFF -> ScreenTexts.OFF;
 					})
-				.initially(capes.config().getAnimatedTexturesHandling())
-				.values(AnimatedTexturesHandling.values())
+				.initially(this.config().getAnimatedCapesHandling())
+				.values(AnimatedCapesHandling.values())
 				.build(
 					Text.translatable(CapesI18NKeys.ANIMATED_TEXTURES),
 					(btn, value) -> {
-						capes.config().setAnimatedTexturesHandling(value);
-						capes.saveConfig();
+						this.config().setAnimatedCapesHandling(value);
+						capes.saveConfigAndMarkRefresh();
 					}),
 			CyclingButtonWidget.onOffBuilder(capes.config().isEnableElytraTexture())
 				.build(
 					Text.translatable(CapesI18NKeys.ELYTRA_TEXTURE),
 					(btn, enabled) -> {
-						capes.config().setEnableElytraTexture(enabled);
+						this.config().setEnableElytraTexture(enabled);
 						capes.saveConfig();
 					})
 		));
@@ -56,8 +63,8 @@ public class OtherMenuScreen extends MainMenuScreen
 		this.body.addWidgetEntry(
 			ButtonWidget.builder(
 				Text.translatable("controls.reset"), btn -> {
-					capes.config().reset();
-					capes.saveConfig();
+					this.config().reset();
+					capes.saveConfigAndMarkRefresh();
 					
 					// Recreate screen
 					this.client.setScreen(new OtherMenuScreen(this.parent, this.gameOptions));

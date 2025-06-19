@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import net.litetex.capes.Capes;
 import net.litetex.capes.CapesI18NKeys;
+import net.litetex.capes.config.Config;
 import net.litetex.capes.menu.other.OtherMenuScreen;
 import net.litetex.capes.menu.preview.PreviewMenuScreen;
 import net.litetex.capes.menu.provider.ProviderMenuScreen;
@@ -111,5 +113,22 @@ public abstract class MainMenuScreen extends GameOptionsScreen implements Correc
 	protected void addOptions()
 	{
 		// Nothing
+	}
+	
+	protected Capes capes()
+	{
+		return Capes.instance();
+	}
+	
+	protected Config config()
+	{
+		return this.capes().config();
+	}
+	
+	@Override
+	public void close()
+	{
+		super.close();
+		this.capes().refreshIfMarked();
 	}
 }

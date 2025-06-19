@@ -8,7 +8,9 @@ import com.mojang.authlib.GameProfile;
 
 import net.litetex.capes.Capes;
 import net.litetex.capes.CapesI18NKeys;
+import net.litetex.capes.handler.IdentifierProvider;
 import net.litetex.capes.handler.PlayerCapeHandler;
+import net.litetex.capes.handler.PlayerCapeHandlerManager;
 import net.litetex.capes.menu.MainMenuScreen;
 import net.litetex.capes.menu.preview.render.PlayerDisplayGuiPayload;
 import net.litetex.capes.menu.preview.render.PlayerDisplayWidget;
@@ -159,32 +161,43 @@ public class PreviewMenuScreen extends MainMenuScreen
 			this.elytraTextureSupplier = null;
 			this.rebuildPayload();
 			
-			PlayerCapeHandler.onLoadTexture(
+			final PlayerCapeHandlerManager playerCapeHandlerManager = Capes.instance().playerCapeHandlerManager();
+			playerCapeHandlerManager.onLoadTexture(
 				this.gameProfile, false, this.capeProviders, () -> {
-					final PlayerCapeHandler handler = PlayerCapeHandler.getProfile(this.gameProfile);
+					final PlayerCapeHandler handler = playerCapeHandlerManager.getProfile(this.gameProfile);
 					
-					if(handler != null && handler.hasAnimatedCape())
-					{
-						this.capeTextureSupplier = handler::getCape;
-					}
-					else
-					{
-						// Request only once
-						final Identifier capeTexture = handler != null && handler.hasCape()
-							? handler.getCape()
-							: this.skin.capeTexture();
-						this.capeTextureSupplier = () -> capeTexture;
-					}
+					final Supplier<Identifier> determinedCapeTextureSupplier =
+						this.determineCapeIdentifierSupplier(handler);
+					this.capeTextureSupplier = determinedCapeTextureSupplier;
 					
 					this.elytraTextureSupplier = handler == null
 						|| handler.hasElytraTexture()
-						&& this.capeTextureSupplier != null
 						&& Capes.instance().config().isEnableElytraTexture()
-						? this.capeTextureSupplier
+						? determinedCapeTextureSupplier
 						: DEFAULT_ELYTRA_SUPPLIER;
 					
 					this.rebuildPayload();
 				});
+		}
+		
+		private Supplier<Identifier> determineCapeIdentifierSupplier(final PlayerCapeHandler handler)
+		{
+			if(handler != null)
+			{
+				final IdentifierProvider identifierProvider = handler.capeIdentifierProvider().orElse(null);
+				if(identifierProvider != null)
+				{
+					if(identifierProvider.dynamicIdentifier())
+					{
+						return identifierProvider::identifier;
+					}
+					
+					// Fetch only once
+					final Identifier identifier = identifierProvider.identifier();
+					return () -> identifier;
+				}
+			}
+			return this.skin::capeTexture;
 		}
 		
 		public void providerChanged()

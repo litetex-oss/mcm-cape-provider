@@ -1,6 +1,6 @@
 package net.litetex.capes.config;
 
-public enum AnimatedTexturesHandling
+public enum AnimatedCapesHandling
 {
 	ON,
 	FROZEN,
