@@ -2,7 +2,7 @@
 * New options
   * Control over animated textures
     * ON (default)
-    * Frozen = Textures are not animated
+    * Frozen = only the first frame of the animation is displayed
     * OFF = Animated textures are ignored
   * Only load your cape (and ignore other players)
 * New debug options
