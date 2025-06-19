@@ -8,27 +8,27 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mojang.authlib.GameProfile;
 
 import net.litetex.capes.Capes;
+import net.litetex.capes.config.AnimatedCapesHandling;
 import net.litetex.capes.provider.CapeProvider;
 import net.litetex.capes.provider.ResolvedTextureInfo;
 import net.minecraft.client.MinecraftClient;
@@ -43,59 +43,35 @@ public class PlayerCapeHandler
 {
 	private static final Logger LOG = LoggerFactory.getLogger(PlayerCapeHandler.class);
 	
-	private static final Map<UUID, PlayerCapeHandler> INSTANCES = Collections.synchronizedMap(new HashMap<>());
-	
-	private static final ExecutorService EXECUTORS = Executors.newFixedThreadPool(
-		2,
-		new ThreadFactory()
-		{
-			private static final AtomicInteger COUNTER = new AtomicInteger(0);
-			
-			@Override
-			public Thread newThread(@NotNull final Runnable r)
-			{
-				final Thread thread = new Thread(r);
-				thread.setName("Cape-" + COUNTER.getAndIncrement());
-				thread.setDaemon(true);
-				return thread;
-			}
-		});
-	
+	private final Capes capes;
 	private final GameProfile profile;
-	private int lastFrame;
-	private int maxFrames;
-	private long nextFrameTime;
-	private boolean hasCape;
+	private Optional<IdentifierProvider> optIdentifierProvider;
 	private boolean hasElytraTexture = true;
-	private boolean hasAnimatedCape;
 	
-	public PlayerCapeHandler(final GameProfile profile)
+	public PlayerCapeHandler(final Capes capes, final GameProfile profile)
 	{
+		this.capes = capes;
 		this.profile = profile;
+	}
+	
+	public Optional<IdentifierProvider> capeIdentifierProvider()
+	{
+		return this.optIdentifierProvider;
 	}
 	
 	public Identifier getCape()
 	{
-		if(!this.hasAnimatedCape)
+		final IdentifierProvider identifierProvider = this.optIdentifierProvider.orElse(null);
+		if(identifierProvider != null)
 		{
-			return identifier(this.uuid().toString());
+			return identifierProvider.identifier();
 		}
-		
-		final long time = System.currentTimeMillis();
-		if(time > this.nextFrameTime)
-		{
-			final int thisFrame = (this.lastFrame + 1) % this.maxFrames;
-			this.lastFrame = thisFrame;
-			this.nextFrameTime = time + 100L;
-			return identifier(this.uuid() + "/" + thisFrame);
-		}
-		return identifier(this.uuid() + "/" + this.lastFrame);
+		return null;
 	}
 	
 	public void resetCape()
 	{
-		this.hasCape = false;
-		this.hasAnimatedCape = false;
+		this.optIdentifierProvider = Optional.empty();
 		this.hasElytraTexture = true;
 	}
 	
@@ -109,26 +85,7 @@ public class PlayerCapeHandler
 		
 		try
 		{
-			final HttpClient.Builder clientBuilder = HttpClient.newBuilder()
-				.connectTimeout(Duration.ofSeconds(10));
-			final Proxy proxy = MinecraftClient.getInstance().getNetworkProxy();
-			if(proxy != null)
-			{
-				clientBuilder.proxy(new ProxySelector()
-				{
-					@Override
-					public List<Proxy> select(final URI uri)
-					{
-						return List.of(proxy);
-					}
-					
-					@Override
-					public void connectFailed(final URI uri, final SocketAddress sa, final IOException ioe)
-					{
-						// Ignore
-					}
-				});
-			}
+			final HttpClient.Builder clientBuilder = this.createBuilder();
 			
 			final HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(URI.create(url))
 				.timeout(Duration.ofSeconds(10))
@@ -141,43 +98,23 @@ public class PlayerCapeHandler
 				return false;
 			}
 			
+			if(this.isCapeBlocked(capeProvider, resolvedTextureInfo.imageBytes()))
+			{
+				return false;
+			}
+			
 			final NativeImage cape = NativeImage.read(resolvedTextureInfo.imageBytes());
-			this.hasAnimatedCape = resolvedTextureInfo.animated();
+			final boolean isAnimatedTexture = resolvedTextureInfo.animated();
 			
-			// Do texturing work NOT on Render thread
-			final Map<Identifier, NativeImage> texturesToRegister;
-			if(resolvedTextureInfo.animated())
+			if(isAnimatedTexture && this.animatedCapesHandling() == AnimatedCapesHandling.OFF)
 			{
-				texturesToRegister = this.toAnimatedCapeTextureFrames(cape).entrySet()
-					.stream()
-					.collect(Collectors.toMap(e -> identifier(this.uuid() + "/" + e.getKey()), Map.Entry::getValue));
-				
-				if(texturesToRegister.isEmpty())
-				{
-					throw new IllegalStateException("Received animated texture with no frames");
-				}
-				
-				// Assume that elytra texture is available
-				this.hasElytraTexture = true;
-				
-				this.maxFrames = texturesToRegister.size();
-			}
-			else
-			{
-				this.hasElytraTexture = Math.floorDiv(cape.getWidth(), cape.getHeight()) == 2;
-				texturesToRegister = Map.of(identifier(this.uuid().toString()), this.toCapeTexture(cape));
+				return false;
 			}
 			
-			final TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
-			CompletableFuture.runAsync(
-				() -> texturesToRegister.forEach((id, texture) ->
-					textureManager.registerTexture(
-						id,
-						new NativeImageBackedTexture(id::toString, texture))),
-				MinecraftClient.getInstance());
+			this.optIdentifierProvider = this.registerTexturesAndGetProvider(
+				this.determineTexturesToRegister(isAnimatedTexture, cape, url));
 			
-			this.hasCape = true;
-			return true;
+			return this.optIdentifierProvider.isPresent();
 		}
 		catch(final InterruptedException iex)
 		{
@@ -191,6 +128,83 @@ public class PlayerCapeHandler
 		
 		this.resetCape();
 		return false;
+	}
+	
+	private HttpClient.Builder createBuilder()
+	{
+		final HttpClient.Builder clientBuilder = HttpClient.newBuilder()
+			.connectTimeout(Duration.ofSeconds(10));
+		final Proxy proxy = MinecraftClient.getInstance().getNetworkProxy();
+		if(proxy != null)
+		{
+			clientBuilder.proxy(new ProxySelector()
+			{
+				@Override
+				public List<Proxy> select(final URI uri)
+				{
+					return List.of(proxy);
+				}
+				
+				@Override
+				public void connectFailed(final URI uri, final SocketAddress sa, final IOException ioe)
+				{
+					// Ignore
+				}
+			});
+		}
+		return clientBuilder;
+	}
+	
+	private boolean isCapeBlocked(final CapeProvider provider, final byte[] imageBytes)
+	{
+		final Set<Integer> blockedCapeHashes = this.capes.blockedProviderCapeHashes().get(provider);
+		if(blockedCapeHashes == null)
+		{
+			return false;
+		}
+		
+		return blockedCapeHashes.contains(Arrays.hashCode(imageBytes));
+	}
+	
+	private Map<Identifier, NativeImage> determineTexturesToRegister(
+		final boolean isAnimatedTexture,
+		final NativeImage cape,
+		final String url)
+	{
+		if(!isAnimatedTexture)
+		{
+			this.hasElytraTexture = Math.floorDiv(cape.getWidth(), cape.getHeight()) == 2;
+			return Map.of(identifier(this.uuid().toString()), this.toCapeTexture(cape));
+		}
+		
+		Stream<Map.Entry<Integer, NativeImage>> animatedTextureStream =
+			this.toAnimatedCapeTextureFrames(cape).entrySet().stream();
+		
+		final boolean freezeAnimatation = this.animatedCapesHandling() == AnimatedCapesHandling.FROZEN;
+		if(freezeAnimatation)
+		{
+			animatedTextureStream = animatedTextureStream.limit(1);
+		}
+		
+		final Map<Identifier, NativeImage> texturesToRegister = animatedTextureStream
+			.collect(Collectors.toMap(
+				e -> identifier(
+					this.uuid() + (!freezeAnimatation ? "/" + e.getKey() : "")),
+				Map.Entry::getValue,
+				(l, r) -> r,
+				LinkedHashMap::new));
+		
+		if(texturesToRegister.isEmpty())
+		{
+			LOG.warn(
+				"Received animated texture with no frames[url='{}',profileId='{}']",
+				url,
+				this.profile.getId());
+		}
+		
+		// Assume that elytra texture is available
+		this.hasElytraTexture = true;
+		return texturesToRegister;
 	}
 	
 	private NativeImage toCapeTexture(final NativeImage img)
@@ -235,116 +249,34 @@ public class PlayerCapeHandler
 		return frames;
 	}
 	
-	public static PlayerCapeHandler getProfile(final GameProfile profile)
+	private Optional<IdentifierProvider> registerTexturesAndGetProvider(
+		final Map<Identifier, NativeImage> texturesToRegister)
 	{
-		return INSTANCES.get(profile.getId());
-	}
-	
-	// Only use this when required to keep RAM consumption low!
-	public static PlayerCapeHandler getOrCreateProfile(final GameProfile profile)
-	{
-		return INSTANCES.computeIfAbsent(profile.getId(), ignored -> new PlayerCapeHandler(profile));
-	}
-	
-	public static void onLoadTexture(final GameProfile profile)
-	{
-		final Capes capes = Capes.instance();
-		onLoadTexture(
-			profile,
-			capes.validateProfile(),
-			capes.activeCapeProviders(),
-			null);
-	}
-	
-	public static void onLoadTexture(
-		final GameProfile profile,
-		final boolean validateProfile,
-		final Collection<CapeProvider> capeProviders,
-		final Runnable onAfterLoaded)
-	{
-		if(LOG.isDebugEnabled())
+		if(texturesToRegister.isEmpty())
 		{
-			LOG.debug("onLoadTexture: {}/{} validate={}", profile.getName(), profile.getId(), validateProfile);
-		}
-		EXECUTORS.submit(() ->
-			onLoadTextureInternalAsync(profile, validateProfile, capeProviders, onAfterLoaded));
-	}
-	
-	private static void onLoadTextureInternalAsync(
-		final GameProfile profile,
-		final boolean validateProfile,
-		final Collection<CapeProvider> capeProviders,
-		final Runnable onAfterLoaded)
-	{
-		if(validateProfile && !capeProviders.isEmpty())
-		{
-			final MinecraftClient client = MinecraftClient.getInstance();
-			
-			// The current player is always valid
-			final boolean real = profile.getId().equals(client.getSession().getUuidOrNull())
-				// Shortcut: Check if the name is valid
-				|| isValidName(profile.getName())
-				// Check if this is a real player (not a fake one create by a server)
-				// Use secure = false to utilize cache
-				&& client.getSessionService().fetchProfile(profile.getId(), false) != null;
-			
-			LOG.debug(
-				"Determined that {}/{} is {}a real player",
-				profile.getName(),
-				profile.getId(),
-				real ? "" : "NOT ");
-			
-			if(!real)
-			{
-				return;
-			}
+			return Optional.empty();
 		}
 		
-		final PlayerCapeHandler handler = getOrCreateProfile(profile);
-		handler.resetCape();
+		final TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
+		// Do texturing work NOT on Render thread
+		CompletableFuture.runAsync(
+			() -> texturesToRegister.forEach((id, texture) ->
+				textureManager.registerTexture(
+					id,
+					new NativeImageBackedTexture(id::toString, texture))),
+			MinecraftClient.getInstance());
 		
-		final Optional<CapeProvider> optFoundCapeProvider = capeProviders.stream()
-			.filter(handler::trySetCape)
-			.findFirst();
-		
-		if(LOG.isDebugEnabled())
-		{
-			optFoundCapeProvider.ifPresentOrElse(
-				cp ->
-					LOG.debug("Loaded cape from {} for {}/{}", cp.id(), profile.getName(), profile.getId()),
-				() -> LOG.debug("Found no cape for {}/{}", profile.getName(), profile.getId())
-			);
-		}
-		
-		if(onAfterLoaded != null)
-		{
-			onAfterLoaded.run();
-		}
+		return Optional.of(texturesToRegister.size() == 1
+			? new DefaultIdentifierProvider(texturesToRegister.keySet().iterator().next())
+			: new AnimatedIdentifierProvider(texturesToRegister.keySet()));
 	}
 	
-	private static boolean isValidName(final String playerName)
+	private AnimatedCapesHandling animatedCapesHandling()
 	{
-		final int length = playerName.length();
-		if(length < 3 || length > 16)
-		{
-			return false;
-		}
-		
-		for(int i = 0; i < length; i++)
-		{
-			final char c = playerName.charAt(i);
-			if(!(c >= 'a' && c <= 'z'
-				|| c >= 'A' && c <= 'Z'
-				|| c >= '0' && c <= '9'
-				|| c == '_'))
-			{
-				return false;
-			}
-		}
-		return true;
+		return this.capes.config().getAnimatedCapesHandling();
 	}
 	
-	public static Identifier identifier(final String id)
+	static Identifier identifier(final String id)
 	{
 		return Identifier.of(Capes.MOD_ID, id);
 	}
@@ -356,20 +288,54 @@ public class PlayerCapeHandler
 		return this.profile.getId();
 	}
 	
-	public boolean hasCape()
-	{
-		return this.hasCape;
-	}
-	
-	public boolean hasAnimatedCape()
-	{
-		return this.hasAnimatedCape;
-	}
-	
 	public boolean hasElytraTexture()
 	{
 		return this.hasElytraTexture;
 	}
 	
 	// endregion
+	
+	
+	record DefaultIdentifierProvider(Identifier identifier) implements IdentifierProvider
+	{
+		@Override
+		public boolean dynamicIdentifier()
+		{
+			return false;
+		}
+	}
+	
+	
+	static class AnimatedIdentifierProvider implements IdentifierProvider
+	{
+		private final List<Identifier> identifiers;
+		private int lastFrameIndex;
+		private long nextFrameTime;
+		
+		public AnimatedIdentifierProvider(final Collection<Identifier> identifiers)
+		{
+			this.identifiers = new ArrayList<>(identifiers);
+		}
+		
+		@Override
+		public Identifier identifier()
+		{
+			final long time = System.currentTimeMillis();
+			if(time > this.nextFrameTime)
+			{
+				final int thisFrameIndex = (this.lastFrameIndex + 1) % this.identifiers.size();
+				this.lastFrameIndex = thisFrameIndex;
+				this.nextFrameTime = time + 100L;
+				
+				return this.identifiers.get(thisFrameIndex);
+			}
+			return this.identifiers.get(this.lastFrameIndex);
+		}
+		
+		@Override
+		public boolean dynamicIdentifier()
+		{
+			return true;
+		}
+	}
 }

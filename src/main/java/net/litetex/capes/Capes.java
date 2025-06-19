@@ -5,12 +5,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import net.litetex.capes.config.Config;
+import net.litetex.capes.handler.PlayerCapeHandlerManager;
+import net.litetex.capes.handler.TextureLoadThrottler;
 import net.litetex.capes.provider.CapeProvider;
 import net.litetex.capes.provider.MinecraftCapeProvider;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.util.Identifier;
 
 
@@ -42,6 +48,11 @@ public class Capes
 	
 	private final boolean validateProfile;
 	private final Duration loadThrottleSuppressDuration;
+	private final Map<CapeProvider, Set<Integer>> blockedProviderCapeHashes;
+	
+	private final PlayerCapeHandlerManager playerCapeHandlerManager;
+	private final TextureLoadThrottler textureLoadThrottler;
+	private boolean shouldRefresh;
 	
 	public Capes(
 		final Config config,
@@ -56,11 +67,48 @@ public class Capes
 		this.loadThrottleSuppressDuration = Optional.ofNullable(this.config().getLoadThrottleSuppressSec())
 			.map(Duration::ofSeconds)
 			.orElse(Duration.ofMinutes(3));
+		this.blockedProviderCapeHashes = Optional.ofNullable(this.config().getBlockedProviderCapeHashes())
+			.map(map -> map.entrySet()
+				.stream()
+				.filter(e -> allProviders.containsKey(e.getKey()))
+				.collect(Collectors.toMap(e -> allProviders.get(e.getKey()), Map.Entry::getValue)))
+			.orElseGet(Map::of);
+		
+		this.playerCapeHandlerManager = new PlayerCapeHandlerManager(this);
+		this.textureLoadThrottler = new TextureLoadThrottler(this.playerCapeHandlerManager);
 	}
 	
 	public void saveConfig()
 	{
 		this.saveConfigFunc.accept(this.config);
+	}
+	
+	public void saveConfigAndMarkRefresh()
+	{
+		this.saveConfig();
+		this.shouldRefresh = true;
+	}
+	
+	public void refreshIfMarked()
+	{
+		if(this.shouldRefresh)
+		{
+			this.refresh();
+			this.shouldRefresh = false;
+		}
+	}
+	
+	protected void refresh()
+	{
+		this.textureLoadThrottler.clearCache();
+		this.playerCapeHandlerManager.clearCache();
+		
+		final ClientPlayNetworkHandler networkHandler = MinecraftClient.getInstance().getNetworkHandler();
+		if(networkHandler != null)
+		{
+			networkHandler.getPlayerList().forEach(e ->
+				this.textureLoadThrottler.loadIfRequired(e.getProfile()));
+		}
 	}
 	
 	public Config config()
@@ -96,5 +144,20 @@ public class Capes
 	public Duration loadThrottleSuppressDuration()
 	{
 		return this.loadThrottleSuppressDuration;
+	}
+	
+	public Map<CapeProvider, Set<Integer>> blockedProviderCapeHashes()
+	{
+		return this.blockedProviderCapeHashes;
+	}
+	
+	public TextureLoadThrottler textureLoadThrottler()
+	{
+		return this.textureLoadThrottler;
+	}
+	
+	public PlayerCapeHandlerManager playerCapeHandlerManager()
+	{
+		return this.playerCapeHandlerManager;
 	}
 }

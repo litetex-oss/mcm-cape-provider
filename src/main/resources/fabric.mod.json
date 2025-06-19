@@ -28,7 +28,7 @@
       "net.litetex.capes.fabric.FabricCapes"
     ],
     "modmenu": [
-      "net.litetex.capes.fabric.compatibility.ModMenuCompatibility"
+      "net.litetex.capes.fabric.compat.ModMenuCompatibility"
     ]
   },
   "mixins": [

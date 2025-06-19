@@ -3,6 +3,7 @@ package net.litetex.capes.config;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -15,21 +16,29 @@ public class Config
 	private String currentPreviewProviderId;
 	// NOTE: Default/Minecraft is always active
 	private Set<String> activeProviderIds;
+	private boolean onlyLoadForSelf;
 	private boolean enableElytraTexture;
+	private AnimatedCapesHandling animatedCapesHandling = AnimatedCapesHandling.ON;
 	private List<CustomProviderConfig> customProviders = List.of();
 	
 	// Advanced/Debug options
 	private Boolean validateProfile;
 	private Integer loadThrottleSuppressSec;
+	private Map<String, Set<Integer>> blockedProviderCapeHashes;
+	private Integer loadThreads;
 	
 	public void reset()
 	{
 		this.setCurrentPreviewProviderId(null);
 		this.setActiveProviderIds(List.of(MinecraftCapesCapeProvider.ID, OptiFineCapeProvider.ID));
+		this.setOnlyLoadForSelf(false);
 		this.setEnableElytraTexture(true);
+		this.setAnimatedCapesHandling(AnimatedCapesHandling.ON);
 		
 		this.setValidateProfile(null);
 		this.setLoadThrottleSuppressSec(null);
+		this.setBlockedProviderCapeHashes(null);
+		this.setLoadThreads(null);
 	}
 	
 	public static Config createDefault()
@@ -61,6 +70,16 @@ public class Config
 		this.activeProviderIds = new LinkedHashSet<>(Objects.requireNonNull(activeProviderIds));
 	}
 	
+	public boolean isOnlyLoadForSelf()
+	{
+		return this.onlyLoadForSelf;
+	}
+	
+	public void setOnlyLoadForSelf(final boolean onlyLoadForSelf)
+	{
+		this.onlyLoadForSelf = onlyLoadForSelf;
+	}
+	
 	public boolean isEnableElytraTexture()
 	{
 		return this.enableElytraTexture;
@@ -69,6 +88,16 @@ public class Config
 	public void setEnableElytraTexture(final boolean enableElytraTexture)
 	{
 		this.enableElytraTexture = enableElytraTexture;
+	}
+	
+	public AnimatedCapesHandling getAnimatedCapesHandling()
+	{
+		return this.animatedCapesHandling;
+	}
+	
+	public void setAnimatedCapesHandling(final AnimatedCapesHandling animatedCapesHandling)
+	{
+		this.animatedCapesHandling = animatedCapesHandling;
 	}
 	
 	public List<CustomProviderConfig> getCustomProviders()
@@ -99,6 +128,26 @@ public class Config
 	public void setLoadThrottleSuppressSec(final Integer loadThrottleSuppressSec)
 	{
 		this.loadThrottleSuppressSec = loadThrottleSuppressSec;
+	}
+	
+	public Map<String, Set<Integer>> getBlockedProviderCapeHashes()
+	{
+		return this.blockedProviderCapeHashes;
+	}
+	
+	public void setBlockedProviderCapeHashes(final Map<String, Set<Integer>> blockedProviderCapeHashes)
+	{
+		this.blockedProviderCapeHashes = blockedProviderCapeHashes;
+	}
+	
+	public Integer getLoadThreads()
+	{
+		return this.loadThreads;
+	}
+	
+	public void setLoadThreads(final Integer loadThreads)
+	{
+		this.loadThreads = loadThreads;
 	}
 	
 	// endregion
