@@ -17,6 +17,7 @@ Improved/Reworked version of the ["Capes" mod](https://github.com/CaelTheColher/
 * Improved and easier cape provider integration
 * Allows ordering providers
 * Support for custom providers
+* More options to fine tune how capes are applied
 * Written only in Java (no Kotlin needed)
 * Various fixes and improvements
 
