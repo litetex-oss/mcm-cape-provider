@@ -50,4 +50,6 @@ jobs:
         curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
         changelog: |
           Available at https://github.com/litetex-oss/mcm-cape-provider/blob/dev/CHANGELOG.md
+          Please note that this is a SNAPSHOT which might be unstable
+        fail-mode: 'warn'
         version-type: 'alpha'
