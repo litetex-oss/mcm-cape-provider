@@ -1,3 +1,6 @@
+# 2.0.1
+* Use built-in warning icon instead of bringing a custom one #66
+
 # 2.0.0
 * New options
   * Control over animated textures
