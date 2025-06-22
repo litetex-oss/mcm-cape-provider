@@ -22,7 +22,7 @@ jobs:
       env:
         MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
         MODRINTH_VERSION_TYPE: 'alpha'
-        MODRINTH_CHANGELOG_TEXT: 'Available at https://github.com/litetex-oss/mcm-cape-provider/blob/dev/CHANGELOG.md<br/><i>Please not that this is a SNAPSHOT which might be unstable</i>'
+        MODRINTH_CHANGELOG_TEXT: 'Available at https://github.com/litetex-oss/mcm-cape-provider/blob/dev/CHANGELOG.md<br/><i>Please note that this is a SNAPSHOT which might be unstable</i>'
 
     - name: Upload mod files
       uses: actions/upload-artifact@v4

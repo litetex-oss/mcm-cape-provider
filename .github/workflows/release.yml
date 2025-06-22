@@ -98,9 +98,10 @@ jobs:
           See [Changelog#v${{ steps.version.outputs.release }}](https://github.com/litetex-oss/${{ github.event.repository.name }}/blob/dev/CHANGELOG.md#${{ steps.version.outputs.releasenumber }}) for more information.
 
           ## Installation
-          The mod can be downloaded from [Modrinth](https://modrinth.com/mod/${{ steps.metadata.outputs.archives_base_name }}).
-
-          Alternatively you can also download the mod from the release assets below or from [Maven Central](https://repo.maven.apache.org/maven2/net/litetex/mcm/).
+          The mod can be downloaded from
+          * [Modrinth](https://modrinth.com/mod/${{ steps.metadata.outputs.archives_base_name }})
+          * the GitHub release assets below
+          * [Maven Central](https://repo.maven.apache.org/maven2/net/litetex/mcm/)
 
   publish:
     runs-on: ubuntu-latest
