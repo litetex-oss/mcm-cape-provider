@@ -1,5 +1,7 @@
 # 2.0.1
 * Use built-in warning icon instead of bringing a custom one #66
+* Also publish to CurseForge #62
+  * Available (once CurseForge reviewed it) at https://www.curseforge.com/minecraft/mc-mods/cape-provider
 
 # 2.0.0
 * New options

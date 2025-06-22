@@ -100,6 +100,7 @@ jobs:
           ## Installation
           The mod can be downloaded from
           * [Modrinth](https://modrinth.com/mod/${{ steps.metadata.outputs.archives_base_name }})
+          * [CurseForge](https://www.curseforge.com/minecraft/mc-mods/${{ steps.metadata.outputs.archives_base_name }})
           * the GitHub release assets below
           * [Maven Central](https://repo.maven.apache.org/maven2/net/litetex/mcm/)
 
@@ -138,6 +139,7 @@ jobs:
           build/libs/*.jar
           !build/libs/*-sources.jar
           !build/libs/*-javadoc.jar
+
     - name: Publish to OSSRH
       run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository --info --stacktrace
       env:
@@ -145,6 +147,15 @@ jobs:
         MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
         SONATYPE_MAVEN_CENTRAL_PORTAL_USERNAME: ${{ secrets.SONATYPE_MAVEN_CENTRAL_PORTAL_USERNAME }}
         SONATYPE_MAVEN_CENTRAL_PORTAL_TOKEN: ${{ secrets.SONATYPE_MAVEN_CENTRAL_PORTAL_TOKEN }}
+
+    - name: Publish to CurseForge
+      uses: Kira-NT/mc-publish@995edadc13559a8b28d0b7e6571229f067ec7659 # v3
+      with:
+        curseforge-id: 1291862
+        curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+        changelog: |
+          Available at https://github.com/litetex-oss/mcm-cape-provider/blob/dev/CHANGELOG.md
+        fail-mode: 'warn'
 
   after_release:
     runs-on: ubuntu-latest
