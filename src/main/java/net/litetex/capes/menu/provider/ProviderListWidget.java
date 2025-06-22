@@ -18,6 +18,7 @@ import net.litetex.capes.provider.antifeature.AntiFeature;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
@@ -25,8 +26,9 @@ import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.gui.widget.TextIconButtonWidget;
 import net.minecraft.client.gui.widget.TextWidget;
+import net.minecraft.client.gui.widget.TexturedButtonWidget;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -166,8 +168,11 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 			Identifier.of("textures/gui/sprites/transferable_list/move_down_highlighted.png");
 		private static final Identifier MOVE_DOWN_TEXTURE =
 			Identifier.of("textures/gui/sprites/transferable_list/move_down.png");
-		private static final Identifier WARNING_TEXTURE =
-			Identifier.of(Capes.MOD_ID, "icon/warning");
+		private static final ButtonTextures WARNING_BUTTON_TEXTURES = new ButtonTextures(
+			Identifier.ofVanilla("social_interactions/report_button"),
+			Identifier.ofVanilla("social_interactions/report_button_disabled"),
+			Identifier.ofVanilla("social_interactions/report_button_highlighted")
+		);
 		
 		private final CapeProvider capeProvider;
 		
@@ -178,7 +183,7 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 		
 		private final TickBoxWidget chbxActive;
 		private final TextWidget txtName;
-		private final TextIconButtonWidget icoWarn;
+		private final TexturedButtonWidget icoWarn;
 		private final ButtonWidget btnEditCape;
 		private final UpDownIconWidget icoMoveUp;
 		private final UpDownIconWidget icoMoveDown;
@@ -224,12 +229,13 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 			
 			final List<AntiFeature> antiFeatures = capeProvider.antiFeatures();
 			this.icoWarn = !antiFeatures.isEmpty()
-				? TextIconButtonWidget.builder(
-					Text.empty(), btn -> {
-					}, true)
-				.dimension(ITEM_HEIGHT - 4, ITEM_HEIGHT - 4)
-				.texture(WARNING_TEXTURE, 12, 12)
-				.build()
+				? new TexturedButtonWidget(
+				ITEM_HEIGHT - 4,
+				ITEM_HEIGHT - 4,
+				WARNING_BUTTON_TEXTURES,
+				btn -> {
+				},
+				ScreenTexts.EMPTY)
 				: null;
 			if(this.icoWarn != null)
 			{

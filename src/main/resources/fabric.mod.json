@@ -53,7 +53,8 @@
     "modmenu": {
       "links": {
         "modmenu.github_releases": "https://github.com/litetex-oss/mcm-${id}/releases",
-        "modmenu.modrinth": "https://modrinth.com/mod/${id}"
+        "modmenu.modrinth": "https://modrinth.com/mod/${id}",
+        "modmenu.curseforge": "https://www.curseforge.com/minecraft/mc-mods/${id}"
       }
     }
   }
