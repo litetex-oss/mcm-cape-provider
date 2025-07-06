@@ -1,0 +1,63 @@
+# 2.1.0
+* Fixed mod configuration button not being displayed correctly in Skin Customization Screen when resizing #79
+* Fully utilize fabric-api. fabric-api is now required #78
+* Now targeting 1.21.7
+
+# 2.0.1
+* Use built-in warning icon instead of bringing a custom one #66
+* Also publish to CurseForge #62
+  * Available (once CurseForge reviewed it) at https://www.curseforge.com/minecraft/mc-mods/cape-provider
+
+# 2.0.0
+* New options
+  * Control over animated textures
+    * ON (default)
+    * Frozen = only the first frame of the animation is displayed
+    * OFF = Animated textures are ignored
+  * Only load your cape (and ignore other players)
+* New debug options
+   * block certain capes by provider
+   * amount of Cape-Loader Threads (default: 2)
+* Now refreshes the capes of all players when the configuration is changed
+* Utilizes Fabric's Rendering API - if present - to prevent conflicts with other mods
+* Various minor improvements and optimizations
+
+# 1.2.0
+* Updated to 1.21.6
+  * Reworked/Fixed preview rendering
+* Custom providers (loaded from the config-file) can now provide animated textures
+
+# 1.1.1
+* Optimized rendering in preview screen
+* Correctly declared fabric-api
+
+# 1.1.0
+* Updated to 1.21.5
+
+# 1.0.2
+* Distribute mod on Maven Central
+
+# 1.0.1
+* Improved compatibility information
+
+# 1.0.0
+Improvements and changes in comparison to Capes mod:
+* Improved provider configuration screen
+  * Can now be ordered
+  * Added links for homepage / to cape editor
+* Fixed preview rendering
+* Built-in providers:
+  * MinecraftCapes (active by default)
+  * OptiFine (active by default)
+  * Wynntils
+    * Fixed capes not being loaded
+  * Cosmetica
+  * LabyMod
+    * Prevented default cape from always being displayed
+* Added Anti-Feature notices
+* Added support for custom providers to the config
+* Added reset function
+* Improved provider responsiveness
+  * Implemented basic caching
+  * Implemented check if player is real (and not simulated by the server)
+* Various other improvements
