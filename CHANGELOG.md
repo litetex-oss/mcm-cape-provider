@@ -1,3 +1,7 @@
+# 2.0.2
+* Fixed mod configuration button not being displayed correctly in Skin Customization Screen when resizing #79
+* Now targeting 1.21.7
+
 # 2.0.1
 * Use built-in warning icon instead of bringing a custom one #66
 * Also publish to CurseForge #62

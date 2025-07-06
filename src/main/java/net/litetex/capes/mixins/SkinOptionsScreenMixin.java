@@ -21,6 +21,9 @@ public abstract class SkinOptionsScreenMixin extends GameOptionsScreen implement
 	@Unique
 	private static final Identifier CAPE_OPTIONS_ICON_TEXTURE = Identifier.of(Capes.MOD_ID, "icon/cape_options");
 	
+	@Unique
+	private TextIconButtonWidget btnCapeMenu;
+	
 	protected SkinOptionsScreenMixin(
 		final Screen parent,
 		final GameOptions gameOptions,
@@ -37,15 +40,34 @@ public abstract class SkinOptionsScreenMixin extends GameOptionsScreen implement
 		
 		// It's important that this is added after all other elements have been added
 		// Else it's rendered behind other elements
-		this.addDrawableChild(TextIconButtonWidget.builder(
-					Text.empty(),
-					ignored -> this.client.setScreen(new PreviewMenuScreen(
-						this,
-						this.gameOptions)),
-					true)
-				.dimension(20, 20)
-				.texture(CAPE_OPTIONS_ICON_TEXTURE, 16, 16)
-				.build())
-			.setPosition(this.body.getRowLeft() - 25, this.body.getY() + 4);
+		this.btnCapeMenu = this.addDrawableChild(TextIconButtonWidget.builder(
+				Text.empty(),
+				ignored -> this.client.setScreen(new PreviewMenuScreen(
+					this,
+					this.gameOptions)),
+				true)
+			.dimension(20, 20)
+			.texture(CAPE_OPTIONS_ICON_TEXTURE, 16, 16)
+			.build());
+		
+		this.updateRelativePositions();
+	}
+	
+	@Unique
+	@SuppressWarnings("checkstyle:MagicNumber")
+	private void updateRelativePositions()
+	{
+		this.btnCapeMenu.setPosition(this.body.getRowLeft() - 25, this.body.getY() + 4);
+	}
+	
+	@Override
+	protected void refreshWidgetPositions()
+	{
+		super.refreshWidgetPositions();
+		
+		if(this.btnCapeMenu != null) // Init check
+		{
+			this.updateRelativePositions();
+		}
 	}
 }
