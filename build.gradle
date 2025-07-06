@@ -201,7 +201,7 @@ modrinth {
     syncBodyFrom = rootProject.file("README.md").text
     changelog = System.getenv("MODRINTH_CHANGELOG_TEXT")
     dependencies {
-        optional.project 'fabric-api'
+        required.project 'fabric-api'
         optional.project 'modmenu'
         incompatible.project 'capes'
     }

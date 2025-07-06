@@ -3,8 +3,8 @@ package net.litetex.capes.menu.other;
 import java.util.List;
 
 import net.litetex.capes.Capes;
-import net.litetex.capes.CapesI18NKeys;
 import net.litetex.capes.config.AnimatedCapesHandling;
+import net.litetex.capes.i18n.CapesI18NKeys;
 import net.litetex.capes.menu.MainMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;

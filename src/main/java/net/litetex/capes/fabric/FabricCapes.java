@@ -12,9 +12,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.rendering.v1.SpecialGuiElementRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.litetex.capes.Capes;
 import net.litetex.capes.config.Config;
+import net.litetex.capes.menu.preview.render.PlayerDisplayGuiElementRenderer;
 import net.litetex.capes.provider.CapeProviders;
 
 
@@ -27,7 +29,7 @@ public class FabricCapes implements ClientModInitializer
 	@Override
 	public void onInitializeClient()
 	{
-		FabricCapesCompatibilityInit.init();
+		SpecialGuiElementRegistry.register(ctx -> new PlayerDisplayGuiElementRenderer(ctx.vertexConsumers()));
 		
 		final Config config = this.loadConfig();
 		Capes.setInstance(new Capes(
