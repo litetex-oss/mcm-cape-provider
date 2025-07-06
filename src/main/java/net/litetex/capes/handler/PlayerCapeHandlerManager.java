@@ -20,6 +20,7 @@ import com.mojang.authlib.GameProfile;
 import net.litetex.capes.Capes;
 import net.litetex.capes.provider.CapeProvider;
 import net.litetex.capes.util.GameProfileUtil;
+import net.minecraft.util.logging.UncaughtExceptionHandler;
 
 
 @SuppressWarnings({"checkstyle:MagicNumber", "PMD.GodClass"})
@@ -51,6 +52,7 @@ public class PlayerCapeHandlerManager
 					final Thread thread = new Thread(r);
 					thread.setName("Cape-" + COUNTER.getAndIncrement());
 					thread.setDaemon(true);
+					thread.setUncaughtExceptionHandler(new UncaughtExceptionHandler(LOG));
 					return thread;
 				}
 			});
@@ -91,8 +93,16 @@ public class PlayerCapeHandlerManager
 		{
 			LOG.debug("onLoadTexture: {}/{} validate={}", profile.getName(), profile.getId(), validateProfile);
 		}
-		this.loadExecutors.submit(() ->
-			this.onLoadTextureInternalAsync(profile, validateProfile, capeProviders, onAfterLoaded));
+		this.loadExecutors.submit(() -> {
+			try
+			{
+				this.onLoadTextureInternalAsync(profile, validateProfile, capeProviders, onAfterLoaded);
+			}
+			catch(final Exception ex)
+			{
+				LOG.warn("Failed to async load texture for {}/{}", profile.getName(), profile.getId(), ex);
+			}
+		});
 	}
 	
 	private void onLoadTextureInternalAsync(
