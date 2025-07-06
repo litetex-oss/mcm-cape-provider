@@ -93,7 +93,7 @@ dependencies {
     modLocalRuntime "com.terraformersmc:modmenu:${project.modmenu_version}"
     modLocalRuntime "net.fabricmc.fabric-api:fabric-api:0.128.2+1.21.7"
     modLocalRuntime "me.djtheredstoner:DevAuth-fabric:1.2.1"
-//    modLocalRuntime "maven.modrinth:no-chat-reports:Fabric-1.21.4-v2.11.0"
+    modLocalRuntime "maven.modrinth:no-chat-reports:Fabric-1.21.7-v2.14.0"
 }
 
 processResources {
