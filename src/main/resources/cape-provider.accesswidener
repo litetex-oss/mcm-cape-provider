@@ -1,0 +1,10 @@
+accessWidener v2 named
+accessible field net/minecraft/client/gui/widget/EntryListWidget headerHeight I
+accessible field net/minecraft/client/gui/widget/PlayerSkinWidget wideModel Lnet/minecraft/client/render/entity/model/PlayerEntityModel;
+accessible field net/minecraft/client/gui/widget/PlayerSkinWidget slimModel Lnet/minecraft/client/render/entity/model/PlayerEntityModel;
+accessible field net/minecraft/client/gui/widget/PlayerSkinWidget skinSupplier Ljava/util/function/Supplier;
+accessible field net/minecraft/client/gui/widget/PlayerSkinWidget xRotation F
+accessible field net/minecraft/client/gui/widget/PlayerSkinWidget yRotation F
+accessible field net/minecraft/client/gui/DrawContext state Lnet/minecraft/client/gui/render/state/GuiRenderState;
+accessible field net/minecraft/client/gui/DrawContext scissorStack Lnet/minecraft/client/gui/DrawContext$ScissorStack;
+accessible class net/minecraft/client/gui/DrawContext$ScissorStack
