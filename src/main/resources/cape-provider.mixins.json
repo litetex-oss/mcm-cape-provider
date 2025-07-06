@@ -3,14 +3,12 @@
   "minVersion": "0.8",
   "package": "net.litetex.capes.mixins",
   "compatibilityLevel": "JAVA_21",
-  "plugin": "net.litetex.capes.CapesMixinPlugin",
   "mixins": [
   ],
   "client": [
     "CapeFeatureRendererMixin",
     "PlayerListEntryMixin",
-    "SkinOptionsScreenMixin",
-    "SpecialGuiElementRendererRegisterGuiRendererMixin"
+    "SkinOptionsScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -7,10 +7,10 @@ import java.util.function.Supplier;
 import com.mojang.authlib.GameProfile;
 
 import net.litetex.capes.Capes;
-import net.litetex.capes.CapesI18NKeys;
 import net.litetex.capes.handler.IdentifierProvider;
 import net.litetex.capes.handler.PlayerCapeHandler;
 import net.litetex.capes.handler.PlayerCapeHandlerManager;
+import net.litetex.capes.i18n.CapesI18NKeys;
 import net.litetex.capes.menu.MainMenuScreen;
 import net.litetex.capes.menu.preview.render.PlayerDisplayGuiPayload;
 import net.litetex.capes.menu.preview.render.PlayerDisplayWidget;

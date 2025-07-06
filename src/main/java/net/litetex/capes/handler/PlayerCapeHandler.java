@@ -260,11 +260,15 @@ public class PlayerCapeHandler
 		final TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
 		// Do texturing work NOT on Render thread
 		CompletableFuture.runAsync(
-			() -> texturesToRegister.forEach((id, texture) ->
-				textureManager.registerTexture(
-					id,
-					new NativeImageBackedTexture(id::toString, texture))),
-			MinecraftClient.getInstance());
+				() -> texturesToRegister.forEach((id, texture) ->
+					textureManager.registerTexture(
+						id,
+						new NativeImageBackedTexture(id::toString, texture))),
+				MinecraftClient.getInstance())
+			.exceptionally(ex -> {
+				LOG.warn("Failed to register textures", ex);
+				return null;
+			});
 		
 		return Optional.of(texturesToRegister.size() == 1
 			? new DefaultIdentifierProvider(texturesToRegister.keySet().iterator().next())

@@ -1,4 +1,7 @@
-package net.litetex.capes;
+package net.litetex.capes.i18n;
+
+import net.litetex.capes.Capes;
+
 
 public final class CapesI18NKeys
 {

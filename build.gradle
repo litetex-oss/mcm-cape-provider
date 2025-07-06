@@ -9,9 +9,9 @@ plugins {
 }
 
 ext {
-    checkstyleVersion = '10.25.1'
+    checkstyleVersion = '10.26.1'
 
-    pmdVersion = '7.14.0'
+    pmdVersion = '7.15.0'
 
     // Derive version from yarn
     minecraft_version = project.yarn_mappings.split("\\+")[0]
@@ -85,15 +85,15 @@ dependencies {
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     // Required when translations and icons should be loaded correctly
-    modImplementation "net.fabricmc.fabric-api:fabric-api:0.127.1+1.21.6"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:0.128.2+1.21.7"
 
     modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
 
     // Only needed during development
     modLocalRuntime "com.terraformersmc:modmenu:${project.modmenu_version}"
-    modLocalRuntime "net.fabricmc.fabric-api:fabric-api:0.127.1+1.21.6"
+    modLocalRuntime "net.fabricmc.fabric-api:fabric-api:0.128.2+1.21.7"
     modLocalRuntime "me.djtheredstoner:DevAuth-fabric:1.2.1"
-//    modLocalRuntime "maven.modrinth:no-chat-reports:Fabric-1.21.4-v2.11.0"
+    modLocalRuntime "maven.modrinth:no-chat-reports:Fabric-1.21.7-v2.14.0"
 }
 
 processResources {
@@ -201,7 +201,7 @@ modrinth {
     syncBodyFrom = rootProject.file("README.md").text
     changelog = System.getenv("MODRINTH_CHANGELOG_TEXT")
     dependencies {
-        optional.project 'fabric-api'
+        required.project 'fabric-api'
         optional.project 'modmenu'
         incompatible.project 'capes'
     }

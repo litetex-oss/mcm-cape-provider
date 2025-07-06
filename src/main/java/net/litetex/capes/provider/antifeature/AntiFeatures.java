@@ -2,7 +2,7 @@ package net.litetex.capes.provider.antifeature;
 
 import java.util.Map;
 
-import net.litetex.capes.CapesI18NKeys;
+import net.litetex.capes.i18n.CapesI18NKeys;
 
 
 public final class AntiFeatures

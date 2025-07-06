@@ -6,8 +6,8 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import net.litetex.capes.Capes;
-import net.litetex.capes.CapesI18NKeys;
 import net.litetex.capes.config.Config;
+import net.litetex.capes.i18n.CapesI18NKeys;
 import net.litetex.capes.menu.other.OtherMenuScreen;
 import net.litetex.capes.menu.preview.PreviewMenuScreen;
 import net.litetex.capes.menu.provider.ProviderMenuScreen;
