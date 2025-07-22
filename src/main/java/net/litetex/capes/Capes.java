@@ -8,15 +8,20 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import com.mojang.authlib.GameProfile;
+
 import net.litetex.capes.config.Config;
+import net.litetex.capes.handler.PlayerCapeHandler;
 import net.litetex.capes.handler.PlayerCapeHandlerManager;
 import net.litetex.capes.handler.TextureLoadThrottler;
 import net.litetex.capes.provider.CapeProvider;
 import net.litetex.capes.provider.MinecraftCapeProvider;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.util.SkinTextures;
 import net.minecraft.util.Identifier;
 
 
@@ -159,5 +164,34 @@ public class Capes
 	public PlayerCapeHandlerManager playerCapeHandlerManager()
 	{
 		return this.playerCapeHandlerManager;
+	}
+	
+	public boolean overwriteSkinTextures(
+		final GameProfile profile,
+		final Supplier<SkinTextures> oldTexureSupplier,
+		final Consumer<SkinTextures> applyOverwrittenTextures)
+	{
+		final PlayerCapeHandler handler = this.playerCapeHandlerManager().getProfile(profile);
+		if(handler != null)
+		{
+			final Identifier capeTexture = handler.getCape();
+			if(capeTexture != null)
+			{
+				final SkinTextures oldTextures = oldTexureSupplier.get();
+				final Identifier elytraTexture = handler.hasElytraTexture()
+					&& this.config().isEnableElytraTexture()
+					? capeTexture
+					: Capes.DEFAULT_ELYTRA_IDENTIFIER;
+				applyOverwrittenTextures.accept(new SkinTextures(
+					oldTextures.texture(),
+					oldTextures.textureUrl(),
+					capeTexture,
+					elytraTexture,
+					oldTextures.model(),
+					oldTextures.secure()));
+				return true;
+			}
+		}
+		return false;
 	}
 }

@@ -88,6 +88,7 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:0.129.0+1.21.8"
 
     modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
+    modCompileOnly "maven.modrinth:skinshuffle:${project.skinshuffle_version}"
 
     // Only needed during development
     modLocalRuntime "com.terraformersmc:modmenu:${project.modmenu_version}"

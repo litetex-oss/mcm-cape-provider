@@ -1,3 +1,7 @@
+# 2.2.0
+* Improved compatibility with ``SkinShuffle``
+* Now targeting 1.21.8
+
 # 2.1.0
 * Fixed mod configuration button not being displayed correctly in Skin Customization Screen when resizing #79
 * Fully utilize fabric-api. fabric-api is now required #78

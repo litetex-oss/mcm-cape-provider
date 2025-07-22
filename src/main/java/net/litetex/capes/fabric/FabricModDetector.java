@@ -5,9 +5,9 @@ import net.fabricmc.loader.api.FabricLoader;
 
 public final class FabricModDetector
 {
-	public static boolean isFabricRenderingApiPresent()
+	public static boolean isSkinShufflePresent()
 	{
-		return FabricLoader.getInstance().isModLoaded("fabric-renderer-api-v1");
+		return FabricLoader.getInstance().isModLoaded("skinshuffle");
 	}
 	
 	private FabricModDetector()
