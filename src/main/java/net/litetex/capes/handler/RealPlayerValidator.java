@@ -18,10 +18,12 @@ public class RealPlayerValidator
 	private static final Logger LOG = LoggerFactory.getLogger(RealPlayerValidator.class);
 	
 	private final Map<UUID, Boolean> cache;
+	private final boolean useOnlineValidation;
 	
-	public RealPlayerValidator(final int playerCacheSize)
+	public RealPlayerValidator(final int playerCacheSize, final boolean useOnlineValidation)
 	{
 		this.cache = Collections.synchronizedMap(new MaxSizedHashMap<>(playerCacheSize));
+		this.useOnlineValidation = useOnlineValidation;
 	}
 	
 	public boolean isReal(final GameProfile profile)
@@ -61,7 +63,7 @@ public class RealPlayerValidator
 		{
 			return ValidityState.INVALID_NAME;
 		}
-		if(!this.isValidSessionProfile(client, profile.getId()))
+		if(this.useOnlineValidation && !this.isValidSessionProfile(client, profile.getId()))
 		{
 			return ValidityState.ONLINE_VALIDATION_FAIL;
 		}

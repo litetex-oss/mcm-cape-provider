@@ -27,6 +27,7 @@ public class Config
 	private Map<String, Set<Integer>> blockedProviderCapeHashes;
 	private Integer loadThreads;
 	private Integer playerCacheSize = 1000;
+	private boolean useOnlineRealPlayerValidation;
 	
 	public void reset()
 	{
@@ -41,6 +42,7 @@ public class Config
 		this.setBlockedProviderCapeHashes(null);
 		this.setLoadThreads(null);
 		this.setPlayerCacheSize(1000);
+		this.setUseOnlineRealPlayerValidation(false);
 	}
 	
 	public static Config createDefault()
@@ -160,6 +162,16 @@ public class Config
 	public void setPlayerCacheSize(final Integer playerCacheSize)
 	{
 		this.playerCacheSize = playerCacheSize;
+	}
+	
+	public boolean isUseOnlineRealPlayerValidation()
+	{
+		return this.useOnlineRealPlayerValidation;
+	}
+	
+	public void setUseOnlineRealPlayerValidation(final boolean useOnlineRealPlayerValidation)
+	{
+		this.useOnlineRealPlayerValidation = useOnlineRealPlayerValidation;
 	}
 	
 	// endregion

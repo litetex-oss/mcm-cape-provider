@@ -58,7 +58,9 @@ public class PlayerCapeHandlerManager
 			});
 		
 		this.instances = Collections.synchronizedMap(new MaxSizedHashMap<>(capes.playerCacheSize()));
-		this.realPlayerValidator = new RealPlayerValidator(capes.playerCacheSize());
+		this.realPlayerValidator = new RealPlayerValidator(
+			capes.playerCacheSize(),
+			capes.config().isUseOnlineRealPlayerValidation());
 	}
 	
 	public PlayerCapeHandler getProfile(final GameProfile profile)
