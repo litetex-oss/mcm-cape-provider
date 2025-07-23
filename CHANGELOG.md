@@ -1,5 +1,6 @@
 # 2.2.0
-* Improve real player detection
+* Improved real player detection
+* Limited amount of tracked players to prevent OutOfMemoryErrors
 * Improved compatibility with ``SkinShuffle``
 * Now targeting 1.21.8
 

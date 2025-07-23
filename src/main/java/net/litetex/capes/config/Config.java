@@ -26,6 +26,7 @@ public class Config
 	private Integer loadThrottleSuppressSec;
 	private Map<String, Set<Integer>> blockedProviderCapeHashes;
 	private Integer loadThreads;
+	private Integer playerCacheSize = 1000;
 	
 	public void reset()
 	{
@@ -39,6 +40,7 @@ public class Config
 		this.setLoadThrottleSuppressSec(null);
 		this.setBlockedProviderCapeHashes(null);
 		this.setLoadThreads(null);
+		this.setPlayerCacheSize(1000);
 	}
 	
 	public static Config createDefault()
@@ -148,6 +150,16 @@ public class Config
 	public void setLoadThreads(final Integer loadThreads)
 	{
 		this.loadThreads = loadThreads;
+	}
+	
+	public Integer getPlayerCacheSize()
+	{
+		return this.playerCacheSize;
+	}
+	
+	public void setPlayerCacheSize(final Integer playerCacheSize)
+	{
+		this.playerCacheSize = playerCacheSize;
 	}
 	
 	// endregion

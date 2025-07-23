@@ -1,15 +1,15 @@
 package net.litetex.capes.handler;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
-import java.util.WeakHashMap;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mojang.authlib.GameProfile;
 
+import net.litetex.capes.util.collections.MaxSizedHashMap;
 import net.minecraft.client.MinecraftClient;
 
 
@@ -17,7 +17,12 @@ public class RealPlayerValidator
 {
 	private static final Logger LOG = LoggerFactory.getLogger(RealPlayerValidator.class);
 	
-	private final Map<UUID, Boolean> cache = new ConcurrentHashMap<>(new WeakHashMap<>());
+	private final Map<UUID, Boolean> cache;
+	
+	public RealPlayerValidator(final int playerCacheSize)
+	{
+		this.cache = Collections.synchronizedMap(new MaxSizedHashMap<>(playerCacheSize));
+	}
 	
 	public boolean isReal(final GameProfile profile)
 	{

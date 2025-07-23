@@ -2,7 +2,6 @@ package net.litetex.capes.handler;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,6 +19,7 @@ import com.mojang.authlib.GameProfile;
 import net.litetex.capes.Capes;
 import net.litetex.capes.provider.CapeProvider;
 import net.litetex.capes.util.GameProfileUtil;
+import net.litetex.capes.util.collections.MaxSizedHashMap;
 import net.minecraft.util.logging.UncaughtExceptionHandler;
 
 
@@ -30,8 +30,8 @@ public class PlayerCapeHandlerManager
 	
 	private final ExecutorService loadExecutors;
 	
-	private final Map<UUID, PlayerCapeHandler> instances = Collections.synchronizedMap(new HashMap<>());
-	private final RealPlayerValidator realPlayerValidator = new RealPlayerValidator();
+	private final Map<UUID, PlayerCapeHandler> instances;
+	private final RealPlayerValidator realPlayerValidator;
 	
 	private final Capes capes;
 	
@@ -56,6 +56,9 @@ public class PlayerCapeHandlerManager
 					return thread;
 				}
 			});
+		
+		this.instances = Collections.synchronizedMap(new MaxSizedHashMap<>(capes.playerCacheSize()));
+		this.realPlayerValidator = new RealPlayerValidator(capes.playerCacheSize());
 	}
 	
 	public PlayerCapeHandler getProfile(final GameProfile profile)

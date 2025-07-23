@@ -16,7 +16,7 @@ import com.mojang.authlib.GameProfile;
 import net.litetex.capes.config.Config;
 import net.litetex.capes.handler.PlayerCapeHandler;
 import net.litetex.capes.handler.PlayerCapeHandlerManager;
-import net.litetex.capes.handler.TextureLoadThrottler;
+import net.litetex.capes.handler.ProfileTextureLoadThrottler;
 import net.litetex.capes.provider.CapeProvider;
 import net.litetex.capes.provider.MinecraftCapeProvider;
 import net.minecraft.client.MinecraftClient;
@@ -54,11 +54,13 @@ public class Capes
 	private final boolean validateProfile;
 	private final Duration loadThrottleSuppressDuration;
 	private final Map<CapeProvider, Set<Integer>> blockedProviderCapeHashes;
+	private final int playerCacheSize;
 	
 	private final PlayerCapeHandlerManager playerCapeHandlerManager;
-	private final TextureLoadThrottler textureLoadThrottler;
+	private final ProfileTextureLoadThrottler profileTextureLoadThrottler;
 	private boolean shouldRefresh;
 	
+	@SuppressWarnings("checkstyle:MagicNumber")
 	public Capes(
 		final Config config,
 		final Consumer<Config> saveConfigFunc,
@@ -78,9 +80,15 @@ public class Capes
 				.filter(e -> allProviders.containsKey(e.getKey()))
 				.collect(Collectors.toMap(e -> allProviders.get(e.getKey()), Map.Entry::getValue)))
 			.orElseGet(Map::of);
+		final Integer configPlayerCacheSize = this.config.getPlayerCacheSize();
+		this.playerCacheSize = configPlayerCacheSize != null
+			? Math.clamp(configPlayerCacheSize, 1, 100_000)
+			: 1000;
 		
 		this.playerCapeHandlerManager = new PlayerCapeHandlerManager(this);
-		this.textureLoadThrottler = new TextureLoadThrottler(this.playerCapeHandlerManager);
+		this.profileTextureLoadThrottler = new ProfileTextureLoadThrottler(
+			this.playerCapeHandlerManager,
+			this.playerCacheSize());
 	}
 	
 	public void saveConfig()
@@ -105,14 +113,14 @@ public class Capes
 	
 	protected void refresh()
 	{
-		this.textureLoadThrottler.clearCache();
+		this.profileTextureLoadThrottler.clearCache();
 		this.playerCapeHandlerManager.clearCache();
 		
 		final ClientPlayNetworkHandler networkHandler = MinecraftClient.getInstance().getNetworkHandler();
 		if(networkHandler != null)
 		{
 			networkHandler.getPlayerList().forEach(e ->
-				this.textureLoadThrottler.loadIfRequired(e.getProfile()));
+				this.profileTextureLoadThrottler.loadIfRequired(e.getProfile()));
 		}
 	}
 	
@@ -156,9 +164,14 @@ public class Capes
 		return this.blockedProviderCapeHashes;
 	}
 	
-	public TextureLoadThrottler textureLoadThrottler()
+	public int playerCacheSize()
 	{
-		return this.textureLoadThrottler;
+		return this.playerCacheSize;
+	}
+	
+	public ProfileTextureLoadThrottler textureLoadThrottler()
+	{
+		return this.profileTextureLoadThrottler;
 	}
 	
 	public PlayerCapeHandlerManager playerCapeHandlerManager()
