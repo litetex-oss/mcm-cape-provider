@@ -2,7 +2,7 @@
 * Improved real player detection
   * Capes are now only loaded for players with a valid UUID
 * Improved load balancing with cape providers
-  *  Providers are now rate limited
+  * Providers are now rate limited
     * the default is 20 req/s
     * can be overwriten per provider using ``rateLimitedReqPerSec``
   * If there are too many pending cape load tasks the oldest ones will now be automatically discarded
