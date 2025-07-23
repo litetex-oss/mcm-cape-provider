@@ -1,4 +1,5 @@
 # 2.2.0
+* Improve real player detection
 * Improved compatibility with ``SkinShuffle``
 * Now targeting 1.21.8
 
