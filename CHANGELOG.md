@@ -1,7 +1,13 @@
 # 2.2.0
 * Improved real player detection
-* Limited amount of tracked players to prevent OutOfMemoryErrors
-* Improved compatibility with ``SkinShuffle``
+  * Capes are now only loaded for players with a valid UUID
+* Improved load balancing with cape providers
+  *  Providers are now rate limited
+    * the default is 20 req/s
+    * can be overwriten per provider using ``rateLimitedReqPerSec``
+  * If there are too many pending cape load tasks the oldest ones will now be automatically discarded
+* Limited amount of tracked players to prevent running out of memory
+* Now compatibile with ``SkinShuffle``
 * Now targeting 1.21.8
 
 # 2.1.0

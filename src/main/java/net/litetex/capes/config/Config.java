@@ -26,8 +26,8 @@ public class Config
 	private Integer loadThrottleSuppressSec;
 	private Map<String, Set<Integer>> blockedProviderCapeHashes;
 	private Integer loadThreads;
-	private Integer playerCacheSize = 1000;
-	private boolean useOnlineRealPlayerValidation;
+	private Integer playerCacheSize;
+	private Boolean useRealPlayerOnlineValidation;
 	
 	public void reset()
 	{
@@ -41,8 +41,8 @@ public class Config
 		this.setLoadThrottleSuppressSec(null);
 		this.setBlockedProviderCapeHashes(null);
 		this.setLoadThreads(null);
-		this.setPlayerCacheSize(1000);
-		this.setUseOnlineRealPlayerValidation(false);
+		this.setPlayerCacheSize(null);
+		this.setUseRealPlayerOnlineValidation(null);
 	}
 	
 	public static Config createDefault()
@@ -164,14 +164,14 @@ public class Config
 		this.playerCacheSize = playerCacheSize;
 	}
 	
-	public boolean isUseOnlineRealPlayerValidation()
+	public Boolean getUseRealPlayerOnlineValidation()
 	{
-		return this.useOnlineRealPlayerValidation;
+		return this.useRealPlayerOnlineValidation;
 	}
 	
-	public void setUseOnlineRealPlayerValidation(final boolean useOnlineRealPlayerValidation)
+	public void setUseRealPlayerOnlineValidation(final Boolean useRealPlayerOnlineValidation)
 	{
-		this.useOnlineRealPlayerValidation = useOnlineRealPlayerValidation;
+		this.useRealPlayerOnlineValidation = useRealPlayerOnlineValidation;
 	}
 	
 	// endregion

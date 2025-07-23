@@ -11,7 +11,8 @@ public record CustomProviderConfig(
 	boolean animated,
 	String changeCapeUrl,
 	String homepage,
-	List<String> antiFeatures
+	List<String> antiFeatures,
+	Double rateLimitedReqPerSec
 )
 {
 	public CustomProviderConfig

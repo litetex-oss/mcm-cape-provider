@@ -97,4 +97,11 @@ public class WynntilsProvider implements CapeProvider
 	{
 		return "https://wynntils.com";
 	}
+	
+	@Override
+	public double rateLimitedReqPerSec()
+	{
+		// Wynntils has a very underperforming backend
+		return 4;
+	}
 }

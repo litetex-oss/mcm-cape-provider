@@ -11,6 +11,9 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mojang.authlib.GameProfile;
 
 import net.litetex.capes.config.Config;
@@ -27,6 +30,8 @@ import net.minecraft.util.Identifier;
 
 public class Capes
 {
+	private static final Logger LOG = LoggerFactory.getLogger(Capes.class);
+	
 	public static final String MOD_ID = "cape-provider";
 	
 	public static final Identifier DEFAULT_ELYTRA_IDENTIFIER =
@@ -55,6 +60,7 @@ public class Capes
 	private final Duration loadThrottleSuppressDuration;
 	private final Map<CapeProvider, Set<Integer>> blockedProviderCapeHashes;
 	private final int playerCacheSize;
+	private final boolean useRealPlayerOnlineValidation;
 	
 	private final PlayerCapeHandlerManager playerCapeHandlerManager;
 	private final ProfileTextureLoadThrottler profileTextureLoadThrottler;
@@ -70,20 +76,32 @@ public class Capes
 		this.saveConfigFunc = saveConfigFunc;
 		this.allProviders = allProviders;
 		
-		this.validateProfile = !Boolean.FALSE.equals(this.config().isValidateProfile()); // Default -> true
+		// Calculate advanced/debug values
+		
+		this.validateProfile = !Boolean.FALSE.equals(this.config().isValidateProfile());
+		LOG.debug("validateProfile: {}", this.validateProfile);
+		
 		this.loadThrottleSuppressDuration = Optional.ofNullable(this.config().getLoadThrottleSuppressSec())
 			.map(Duration::ofSeconds)
 			.orElse(Duration.ofMinutes(3));
+		LOG.debug("loadThrottleSuppressDuration: {}", this.loadThrottleSuppressDuration);
+		
 		this.blockedProviderCapeHashes = Optional.ofNullable(this.config().getBlockedProviderCapeHashes())
 			.map(map -> map.entrySet()
 				.stream()
 				.filter(e -> allProviders.containsKey(e.getKey()))
 				.collect(Collectors.toMap(e -> allProviders.get(e.getKey()), Map.Entry::getValue)))
 			.orElseGet(Map::of);
+		LOG.debug("blockedProviderCapeHashes: {}x", this.blockedProviderCapeHashes.size());
+		
 		final Integer configPlayerCacheSize = this.config.getPlayerCacheSize();
 		this.playerCacheSize = configPlayerCacheSize != null
 			? Math.clamp(configPlayerCacheSize, 1, 100_000)
 			: 1000;
+		LOG.debug("playerCacheSize: {}", this.playerCacheSize);
+		
+		this.useRealPlayerOnlineValidation = Boolean.TRUE.equals(config.getUseRealPlayerOnlineValidation());
+		LOG.debug("useRealPlayerOnlineValidation: {}", this.useRealPlayerOnlineValidation);
 		
 		this.playerCapeHandlerManager = new PlayerCapeHandlerManager(this);
 		this.profileTextureLoadThrottler = new ProfileTextureLoadThrottler(
@@ -167,6 +185,11 @@ public class Capes
 	public int playerCacheSize()
 	{
 		return this.playerCacheSize;
+	}
+	
+	public boolean useRealPlayerOnlineValidation()
+	{
+		return this.useRealPlayerOnlineValidation;
 	}
 	
 	public ProfileTextureLoadThrottler textureLoadThrottler()
