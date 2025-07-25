@@ -52,6 +52,10 @@ jobs:
           if [[ "$(git status --porcelain)" == "" ]]; then
             echo "No files to commit"
             echo "abort=1" >> $GITHUB_OUTPUT
+
+            echo "Deleting origin branch that contained the updates - if present"
+            git push -f origin --delete ${{ env.UPDATE_BRANCH }} || true
+            
             exit 0
           fi
 
