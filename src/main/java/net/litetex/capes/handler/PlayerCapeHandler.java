@@ -45,7 +45,7 @@ public class PlayerCapeHandler
 	
 	private final Capes capes;
 	private final GameProfile profile;
-	private Optional<IdentifierProvider> optIdentifierProvider;
+	private Optional<IdentifierProvider> optIdentifierProvider = Optional.empty();
 	private boolean hasElytraTexture = true;
 	
 	public PlayerCapeHandler(final Capes capes, final GameProfile profile)

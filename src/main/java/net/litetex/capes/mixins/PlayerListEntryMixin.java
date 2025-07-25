@@ -12,11 +12,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import com.mojang.authlib.GameProfile;
 
 import net.litetex.capes.Capes;
-import net.litetex.capes.handler.PlayerCapeHandler;
 import net.litetex.capes.util.GameProfileUtil;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.util.SkinTextures;
-import net.minecraft.util.Identifier;
 
 
 @Mixin(PlayerListEntry.class)
@@ -36,26 +34,7 @@ public abstract class PlayerListEntryMixin
 	@Inject(method = "getSkinTextures", at = @At("TAIL"), cancellable = true)
 	private void getCapeTexture(final CallbackInfoReturnable<SkinTextures> cir)
 	{
-		final PlayerCapeHandler handler = Capes.instance().playerCapeHandlerManager().getProfile(this.profile);
-		if(handler != null)
-		{
-			final Identifier capeTexture = handler.getCape();
-			if(capeTexture != null)
-			{
-				final SkinTextures oldTextures = cir.getReturnValue();
-				final Identifier elytraTexture = handler.hasElytraTexture()
-					&& Capes.instance().config().isEnableElytraTexture()
-					? capeTexture
-					: Capes.DEFAULT_ELYTRA_IDENTIFIER;
-				cir.setReturnValue(new SkinTextures(
-					oldTextures.texture(),
-					oldTextures.textureUrl(),
-					capeTexture,
-					elytraTexture,
-					oldTextures.model(),
-					oldTextures.secure()));
-			}
-		}
+		Capes.instance().overwriteSkinTextures(this.profile, cir::getReturnValue, cir::setReturnValue);
 	}
 	
 	@Shadow

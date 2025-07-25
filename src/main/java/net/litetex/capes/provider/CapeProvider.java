@@ -14,6 +14,8 @@ import net.minecraft.client.MinecraftClient;
 
 public interface CapeProvider
 {
+	double DEFAULT_RATE_LIMIT_REQ_PER_SEC = 20;
+	
 	String id();
 	
 	String name();
@@ -51,6 +53,11 @@ public interface CapeProvider
 	default List<AntiFeature> antiFeatures()
 	{
 		return List.of();
+	}
+	
+	default double rateLimitedReqPerSec()
+	{
+		return DEFAULT_RATE_LIMIT_REQ_PER_SEC;
 	}
 	
 	static ResolvedTextureInfo.ByteArrayTextureInfo resolveTextureDefault(

@@ -2,13 +2,15 @@ package net.litetex.capes.handler;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +21,10 @@ import com.mojang.authlib.GameProfile;
 
 import net.litetex.capes.Capes;
 import net.litetex.capes.provider.CapeProvider;
+import net.litetex.capes.provider.ratelimit.CapeProviderRateLimits;
 import net.litetex.capes.util.GameProfileUtil;
+import net.litetex.capes.util.collections.DiscardingQueue;
+import net.litetex.capes.util.collections.MaxSizedHashMap;
 import net.minecraft.util.logging.UncaughtExceptionHandler;
 
 
@@ -30,32 +35,53 @@ public class PlayerCapeHandlerManager
 	
 	private final ExecutorService loadExecutors;
 	
-	private final Map<UUID, PlayerCapeHandler> instances = Collections.synchronizedMap(new HashMap<>());
-	private final RealPlayerValidator realPlayerValidator = new RealPlayerValidator();
+	private final Map<UUID, PlayerCapeHandler> instances;
+	private final RealPlayerValidator realPlayerValidator;
+	private final Map<Future<?>, UUID> submittedTasks = Collections.synchronizedMap(new WeakHashMap<>());
+	private final CapeProviderRateLimits capeProviderRateLimits = new CapeProviderRateLimits();
 	
 	private final Capes capes;
+	private final boolean debugEnabled;
 	
 	public PlayerCapeHandlerManager(final Capes capes)
 	{
 		this.capes = capes;
-		this.loadExecutors = Executors.newFixedThreadPool(
-			Optional.ofNullable(capes.config().getLoadThreads())
-				.filter(x -> x > 0 && x < 1_000)
-				.orElse(2),
-			new ThreadFactory()
-			{
-				private static final AtomicInteger COUNTER = new AtomicInteger(0);
-				
-				@Override
-				public Thread newThread(@NotNull final Runnable r)
+		this.debugEnabled = LOG.isDebugEnabled();
+		
+		final int nThreads = Optional.ofNullable(capes.config().getLoadThreads())
+			.filter(x -> x > 0 && x < 1_000)
+			.orElse(2);
+		final int loadExecutorWorkQueueSize = Math.max(capes.playerCacheSize() / 10, 10);
+		LOG.debug("LoadExecutor threads={} workQueue size={}", nThreads, loadExecutorWorkQueueSize);
+		this.loadExecutors =
+			new ThreadPoolExecutor(
+				nThreads,
+				nThreads,
+				0L,
+				TimeUnit.MILLISECONDS,
+				new DiscardingQueue<>(
+					loadExecutorWorkQueueSize, r -> {
+					LOG.warn("Overloaded - Discarded loading task for {}", this.submittedTasks.get(r));
+				}),
+				new ThreadFactory()
 				{
-					final Thread thread = new Thread(r);
-					thread.setName("Cape-" + COUNTER.getAndIncrement());
-					thread.setDaemon(true);
-					thread.setUncaughtExceptionHandler(new UncaughtExceptionHandler(LOG));
-					return thread;
-				}
-			});
+					private static final AtomicInteger COUNTER = new AtomicInteger(0);
+					
+					@Override
+					public Thread newThread(@NotNull final Runnable r)
+					{
+						final Thread thread = new Thread(r);
+						thread.setName("Cape-" + COUNTER.getAndIncrement());
+						thread.setDaemon(true);
+						thread.setUncaughtExceptionHandler(new UncaughtExceptionHandler(LOG));
+						return thread;
+					}
+				});
+		
+		this.instances = Collections.synchronizedMap(new MaxSizedHashMap<>(capes.playerCacheSize()));
+		this.realPlayerValidator = new RealPlayerValidator(
+			capes.playerCacheSize(),
+			capes.useRealPlayerOnlineValidation());
 	}
 	
 	public PlayerCapeHandler getProfile(final GameProfile profile)
@@ -89,11 +115,12 @@ public class PlayerCapeHandlerManager
 		final Collection<CapeProvider> capeProviders,
 		final Runnable onAfterLoaded)
 	{
-		if(LOG.isDebugEnabled())
+		if(this.debugEnabled)
 		{
 			LOG.debug("onLoadTexture: {}/{} validate={}", profile.getName(), profile.getId(), validateProfile);
 		}
-		this.loadExecutors.submit(() -> {
+		
+		final Runnable runnable = () -> {
 			try
 			{
 				this.onLoadTextureInternalAsync(profile, validateProfile, capeProviders, onAfterLoaded);
@@ -102,7 +129,8 @@ public class PlayerCapeHandlerManager
 			{
 				LOG.warn("Failed to async load texture for {}/{}", profile.getName(), profile.getId(), ex);
 			}
-		});
+		};
+		this.submittedTasks.put(this.loadExecutors.submit(runnable), profile.getId());
 	}
 	
 	private void onLoadTextureInternalAsync(
@@ -121,7 +149,10 @@ public class PlayerCapeHandlerManager
 		handler.resetCape();
 		
 		final Optional<CapeProvider> optFoundCapeProvider = capeProviders.stream()
-			.filter(handler::trySetCape)
+			.filter(cp -> {
+				this.capeProviderRateLimits.waitForRateLimit(cp);
+				return handler.trySetCape(cp);
+			})
 			.findFirst();
 		
 		if(LOG.isDebugEnabled())

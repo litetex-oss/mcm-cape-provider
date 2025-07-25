@@ -82,4 +82,12 @@ public class CustomProvider implements CapeProvider
 				.orElseGet(() -> new DefaultAntiFeature(Text.literal(s))))
 			.toList();
 	}
+	
+	@Override
+	public double rateLimitedReqPerSec()
+	{
+		return this.config.rateLimitedReqPerSec() != null
+			? this.config.rateLimitedReqPerSec()
+			: DEFAULT_RATE_LIMIT_REQ_PER_SEC;
+	}
 }
