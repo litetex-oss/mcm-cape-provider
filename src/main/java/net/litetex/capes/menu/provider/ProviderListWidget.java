@@ -13,7 +13,7 @@ import org.lwjgl.glfw.GLFW;
 import net.litetex.capes.Capes;
 import net.litetex.capes.menu.TickBoxWidget;
 import net.litetex.capes.provider.CapeProvider;
-import net.litetex.capes.provider.MinecraftCapeProvider;
+import net.litetex.capes.provider.DefaultMinecraftCapeProvider;
 import net.litetex.capes.provider.antifeature.AntiFeature;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
@@ -72,12 +72,10 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 					}))
 					.map(cp -> this.createEntry(
 						cp,
-						activeProviderIds.contains(cp.id()),
-						false)),
+						activeProviderIds.contains(cp.id()))),
 				Stream.of(this.createEntry(
-					MinecraftCapeProvider.INSTANCE,
-					true,
-					true
+					DefaultMinecraftCapeProvider.INSTANCE,
+					capes.isUseDefaultProvider()
 				))
 			).toList()
 		);
@@ -93,13 +91,11 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 	
 	private ProviderListEntry createEntry(
 		final CapeProvider capeProvider,
-		final boolean active,
-		final boolean readOnly)
+		final boolean active)
 	{
 		return new ProviderListEntry(
 			capeProvider,
 			active,
-			readOnly,
 			this.parent,
 			(self, a) -> this.save(),
 			this::onPositionChanged);
@@ -109,13 +105,18 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 	{
 		final Capes capes = Capes.instance();
 		
-		capes.config().setActiveProviderIds(
-			this.children().stream()
-				.filter(ProviderListEntry::isActive)
-				.map(ProviderListEntry::capeProvider)
-				.filter(Capes.EXCLUDE_DEFAULT_MINECRAFT_CP)
-				.map(CapeProvider::id)
-				.toList());
+		final List<CapeProvider> capeProviders = this.children().stream()
+			.filter(ProviderListEntry::isActive)
+			.map(ProviderListEntry::capeProvider)
+			.toList();
+		final List<String> idsWithoutDefault = capeProviders.stream()
+			.filter(Capes.EXCLUDE_DEFAULT_MINECRAFT_CP)
+			.map(CapeProvider::id)
+			.toList();
+		
+		capes.config().setActiveProviderIds(idsWithoutDefault);
+		capes.config().setUseDefaultProvider(idsWithoutDefault.size() != capeProviders.size());
+		
 		capes.saveConfigAndMarkRefresh();
 	}
 	
@@ -191,7 +192,6 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 		public ProviderListEntry(
 			final CapeProvider capeProvider,
 			final boolean activated,
-			final boolean readOnly,
 			final Screen parentScreen,
 			final BiConsumer<ProviderListEntry, Boolean> onActiveChanged,
 			final BiConsumer<ProviderListEntry, Boolean> onPositionChange)
@@ -203,7 +203,7 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 			this.chbxActive = new TickBoxWidget(
 				13,
 				activated,
-				readOnly,
+				false,
 				(w, ticked) -> onActiveChanged.accept(this, ticked));
 			
 			final String homepageUrl = capeProvider.homepageUrl();

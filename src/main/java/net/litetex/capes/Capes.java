@@ -21,7 +21,7 @@ import net.litetex.capes.handler.PlayerCapeHandler;
 import net.litetex.capes.handler.PlayerCapeHandlerManager;
 import net.litetex.capes.handler.ProfileTextureLoadThrottler;
 import net.litetex.capes.provider.CapeProvider;
-import net.litetex.capes.provider.MinecraftCapeProvider;
+import net.litetex.capes.provider.DefaultMinecraftCapeProvider;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.util.SkinTextures;
@@ -38,7 +38,7 @@ public class Capes
 		Identifier.of("textures/entity/equipment/wings/elytra.png");
 	
 	public static final Predicate<CapeProvider> EXCLUDE_DEFAULT_MINECRAFT_CP =
-		cp -> MinecraftCapeProvider.INSTANCE != cp;
+		cp -> DefaultMinecraftCapeProvider.INSTANCE != cp;
 	
 	private static Capes instance;
 	
@@ -167,6 +167,11 @@ public class Capes
 			.toList();
 	}
 	
+	public boolean isUseDefaultProvider()
+	{
+		return this.config().isUseDefaultProvider();
+	}
+	
 	public boolean validateProfile()
 	{
 		return this.validateProfile;
@@ -227,6 +232,18 @@ public class Capes
 					oldTextures.secure()));
 				return true;
 			}
+		}
+		if(!this.isUseDefaultProvider())
+		{
+			final SkinTextures oldTextures = oldTexureSupplier.get();
+			applyOverwrittenTextures.accept(new SkinTextures(
+				oldTextures.texture(),
+				oldTextures.textureUrl(),
+				null,
+				null,
+				oldTextures.model(),
+				oldTextures.secure()));
+			return true;
 		}
 		return false;
 	}

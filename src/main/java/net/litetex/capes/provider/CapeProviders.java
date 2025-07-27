@@ -27,7 +27,7 @@ public final class CapeProviders
 						.map(CustomProvider::new)
 						: Stream.empty(),
 					// Always load default provider
-					Stream.of(MinecraftCapeProvider.INSTANCE))
+					Stream.of(DefaultMinecraftCapeProvider.INSTANCE))
 			)
 			// Use LinkedHashMap to keep order
 			.collect(Collectors.toMap(CapeProvider::id, Function.identity(), (e1, e2) -> e2, LinkedHashMap::new));

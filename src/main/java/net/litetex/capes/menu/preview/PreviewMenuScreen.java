@@ -2,6 +2,7 @@ package net.litetex.capes.menu.preview;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.mojang.authlib.GameProfile;
@@ -197,7 +198,15 @@ public class PreviewMenuScreen extends MainMenuScreen
 					return () -> identifier;
 				}
 			}
-			return this.skin::capeTexture;
+			
+			final Capes capes = Capes.instance();
+			final Optional<CapeProvider> provider = capes.getCapeProviderForSelf();
+			// Is all active providers and useDefaultProvider?
+			return provider.isEmpty() && capes.isUseDefaultProvider()
+				// Default provider is present?
+				|| provider.filter(Capes.EXCLUDE_DEFAULT_MINECRAFT_CP).isEmpty()
+				? this.skin::capeTexture
+				: () -> null;
 		}
 		
 		public void providerChanged()

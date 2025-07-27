@@ -1,4 +1,5 @@
-# 2.2.1
+# 2.3.0
+* Make it possible to disable the default/Minecraft provider #64
 * Improved mod compatibility
 
 # 2.2.0

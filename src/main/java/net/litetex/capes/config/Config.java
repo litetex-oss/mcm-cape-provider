@@ -16,6 +16,7 @@ public class Config
 	private String currentPreviewProviderId;
 	// NOTE: Default/Minecraft is always active
 	private Set<String> activeProviderIds;
+	private boolean useDefaultProvider = true;
 	private boolean onlyLoadForSelf;
 	private boolean enableElytraTexture;
 	private AnimatedCapesHandling animatedCapesHandling = AnimatedCapesHandling.ON;
@@ -33,6 +34,7 @@ public class Config
 	{
 		this.setCurrentPreviewProviderId(null);
 		this.setActiveProviderIds(List.of(MinecraftCapesCapeProvider.ID, OptiFineCapeProvider.ID));
+		this.setUseDefaultProvider(true);
 		this.setOnlyLoadForSelf(false);
 		this.setEnableElytraTexture(true);
 		this.setAnimatedCapesHandling(AnimatedCapesHandling.ON);
@@ -72,6 +74,16 @@ public class Config
 	public void setActiveProviderIds(final Collection<String> activeProviderIds)
 	{
 		this.activeProviderIds = new LinkedHashSet<>(Objects.requireNonNull(activeProviderIds));
+	}
+	
+	public boolean isUseDefaultProvider()
+	{
+		return this.useDefaultProvider;
+	}
+	
+	public void setUseDefaultProvider(final boolean useDefaultProvider)
+	{
+		this.useDefaultProvider = useDefaultProvider;
 	}
 	
 	public boolean isOnlyLoadForSelf()
