@@ -10,7 +10,7 @@
     "CapeFeatureRendererMixin",
     "PlayerListEntryMixin",
     "SkinOptionsScreenMixin",
-    "SkinShuffleCapesCompatMixin"
+    "compat.skinshuffle.CapesCompatMixin"
   ],
   "injectors": {
     "defaultRequire": 1

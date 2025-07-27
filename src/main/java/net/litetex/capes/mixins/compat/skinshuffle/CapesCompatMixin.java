@@ -1,4 +1,4 @@
-package net.litetex.capes.mixins;
+package net.litetex.capes.mixins.compat.skinshuffle;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -14,9 +14,9 @@ import net.minecraft.client.util.SkinTextures;
 
 // Hijack the mixin for the Capes mod and modify it as needed
 @Mixin(value = CapesCompat.class, remap = false)
-public class SkinShuffleCapesCompatMixin
+public abstract class CapesCompatMixin
 {
-	@Inject(method = "loadTextures", at = @At("HEAD"), cancellable = true, remap = false)
+	@Inject(method = "loadTextures", at = @At("HEAD"), cancellable = true, remap = false, require = 0)
 	private static void loadTextures(
 		final GameProfile profile,
 		final SkinTextures oldTextures,
@@ -28,7 +28,7 @@ public class SkinShuffleCapesCompatMixin
 		}
 	}
 	
-	@Inject(method = "getID", at = @At("HEAD"), cancellable = true, remap = false)
+	@Inject(method = "getID", at = @At("HEAD"), cancellable = true, remap = false, require = 0)
 	private void getID(final CallbackInfoReturnable<String> cir)
 	{
 		cir.setReturnValue(Capes.MOD_ID);
