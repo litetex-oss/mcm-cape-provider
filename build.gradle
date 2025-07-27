@@ -90,6 +90,7 @@ dependencies {
     modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
     modCompileOnly "maven.modrinth:skinshuffle:${project.skinshuffle_version}"
     modCompileOnly "maven.modrinth:cicada:${project.cicada_version}"
+    modCompileOnly "maven.modrinth:minecraftcapes:${project.minecraftcapes_version}"
 
     // Only needed during development
     modLocalRuntime "com.terraformersmc:modmenu:${project.modmenu_version}"
