@@ -10,6 +10,8 @@
     "CapeFeatureRendererMixin",
     "PlayerListEntryMixin",
     "SkinOptionsScreenMixin",
+    "compat.cicada.CapeHandlerMixin",
+    "compat.cicada.ConversationManagerMixin",
     "compat.skinshuffle.CapesCompatMixin"
   ],
   "injectors": {

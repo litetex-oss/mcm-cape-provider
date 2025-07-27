@@ -1,3 +1,6 @@
+# 2.2.1
+* Improved mod compatibility
+
 # 2.2.0
 * Improved real player detection
   * Capes are now only loaded for players with a valid UUID
