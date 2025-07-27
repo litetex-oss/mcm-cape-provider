@@ -80,6 +80,16 @@
       "registryUrls": [
         "https://api.modrinth.com/maven"
       ]
+    },
+    {
+      "description": "minecraftcapes",
+      "matchPackagePatterns": [
+        "^maven.modrinth:minecraftcapes"
+      ],
+      "datasources": [
+        "maven"
+      ],
+      "allowedVersions": "/^fabric/"
     }
   ]
 }

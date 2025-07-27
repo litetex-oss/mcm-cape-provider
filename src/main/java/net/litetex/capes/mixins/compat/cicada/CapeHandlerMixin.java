@@ -1,13 +1,12 @@
 package net.litetex.capes.mixins.compat.cicada;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.mojang.authlib.GameProfile;
-
-import nl.enjarai.cicada.util.CapeHandler;
 
 
 // Always a great idea to
@@ -15,7 +14,8 @@ import nl.enjarai.cicada.util.CapeHandler;
 // 2. Have your server get DDOSed by it
 // 3. Display some shitty cape that says people should update instead of simply BLOCKING THE REQUESTS
 // https://github.com/enjarai/cicada-lib/issues/12
-@Mixin(value = CapeHandler.class, remap = false)
+@Pseudo
+@Mixin(targets = "nl/enjarai/cicada/util/CapeHandler", remap = false)
 public abstract class CapeHandlerMixin
 {
 	@Inject(method = "onLoadTexture", at = @At("HEAD"), cancellable = true, remap = false, require = 0)
