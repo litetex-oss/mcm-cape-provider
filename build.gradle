@@ -5,13 +5,13 @@ plugins {
     id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
     id 'checkstyle'
     id 'pmd'
-    id 'com.modrinth.minotaur' version '2.8.7'
+    id 'com.modrinth.minotaur' version '2.8.8'
 }
 
 ext {
     checkstyleVersion = '10.26.1'
 
-    pmdVersion = '7.15.0'
+    pmdVersion = '7.16.0'
 
     // Derive version from yarn
     minecraft_version = project.yarn_mappings.split("\\+")[0]
