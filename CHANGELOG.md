@@ -1,5 +1,5 @@
 # 3.0.0
-* Other mods can now define cape providers in their metadata
+* Other mods can now define cape providers in their metadata #94
   * This way other developers don't have to manually implement/copy-paste code for adding custom capes (e.g. for supporters) which should result in less conflicts
   * Cape providers loaded from other mod's metadata are automatically loaded and activated by default
     * This can be changed in the settings under ``Other > Providers from mods``
