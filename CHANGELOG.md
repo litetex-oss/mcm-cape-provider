@@ -1,3 +1,36 @@
+# 3.0.0
+* Other mods can now define cape providers in their metadata #94
+  * This way other developers don't have to manually implement/copy-paste code for adding custom capes (e.g. for supporters) which should result in less conflicts
+  * Cape providers loaded from other mod's metadata are automatically loaded and activated by default
+    * This can be changed in the settings under ``Other > Providers from mods``
+  * Usage example:
+    * Simple implementation:<br/>
+      ``fabric.mod.json``
+      ```json5
+      {
+        ...
+        "custom": {
+          "cape": "https://raw.githubusercontent.com/litetex-oss/mcm-cape-provider/refs/heads/dev/custom-cape-demo/uuid.png"
+        }
+      }
+      ```
+    * More detailed variant:<br/>
+      ``fabric.mod.json``
+      ```json5
+      {
+        "custom": {
+          "cape": {
+            // Gives everyone a christmas cape
+            // You can also use variables here, like $uuid. See above for more details
+            // Alternative: "uriTemplate"
+            "url": "https://raw.githubusercontent.com/litetex-oss/mcm-cape-provider/refs/heads/dev/custom-cape-demo/uuid.png",
+            "changeCapeUrl": "https://...",
+            "rateLimitedReqPerSec": 2
+          }
+        }
+      }
+      ```
+
 # 2.3.0
 * Make it possible to disable the default/Minecraft provider #64
 * Improved mod compatibility
