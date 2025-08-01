@@ -25,7 +25,8 @@ base {
 }
 
 loom {
-    accessWidenerPath = file("src/main/resources/template-placeholder.accesswidener")
+    accessWidenerPath = file("src/main/resources/cape-provider.accesswidener")
+    log4jConfigs.from(file("src/dev/log4j2.xml"))
 }
 
 // https://github.com/gradle/gradle/issues/27035
@@ -33,6 +34,45 @@ configurations.checkstyle {
     resolutionStrategy.capabilitiesResolution.withCapability("com.google.collections:google-collections") {
         select("com.google.guava:guava:0")
     }
+}
+
+repositories {
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Terraformers"
+                url = "https://maven.terraformersmc.com/"
+            }
+        }
+        filter {
+            includeGroup 'com.terraformersmc'
+        }
+    }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "DevAuth"
+                url = "https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1"
+            }
+        }
+        filter {
+            includeGroup 'me.djtheredstoner'
+        }
+    }
+    // https://support.modrinth.com/en/articles/8801191-modrinth-maven
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup 'maven.modrinth'
+        }
+    }
+    // Fallback (fixes Renovate)
+    mavenCentral()
 }
 
 dependencies {
@@ -44,6 +84,19 @@ dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    // Required when translations and icons should be loaded correctly
+    modImplementation "net.fabricmc.fabric-api:fabric-api:0.130.0+1.21.8"
+
+    modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
+    modCompileOnly "maven.modrinth:skinshuffle:${project.skinshuffle_version}"
+    modCompileOnly "maven.modrinth:cicada:${project.cicada_version}"
+    modCompileOnly "maven.modrinth:minecraftcapes:${project.minecraftcapes_version}"
+
+    // Only needed during development
+    modLocalRuntime "com.terraformersmc:modmenu:${project.modmenu_version}"
+    modLocalRuntime "net.fabricmc.fabric-api:fabric-api:0.130.0+1.21.8"
+    modLocalRuntime "me.djtheredstoner:DevAuth-fabric:1.2.1"
+    modLocalRuntime "maven.modrinth:no-chat-reports:Fabric-1.21.7-v2.14.0"
 }
 
 processResources {
@@ -54,7 +107,8 @@ processResources {
                 "desc": project.mod_desc,
                 "license_spdx_id": project.mod_license_spdx_id,
                 "minecraft_version": minecraft_version,
-                "loader_version": project.loader_version
+                "loader_version": project.loader_version,
+                "modmenu_version": project.modmenu_version
     }
 }
 
@@ -136,14 +190,6 @@ publishing {
             }
         }
     }
-
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-    repositories {
-        // Add repositories to publish to here.
-        // Notice: This block does NOT have the same function as the block in the top level.
-        // The repositories here will be used for publishing your artifact, not for
-        // retrieving dependencies.
-    }
 }
 
 tasks.modrinth.dependsOn(tasks.modrinthSyncBody)
@@ -157,6 +203,11 @@ modrinth {
     additionalFiles = [sourcesJar]
     syncBodyFrom = rootProject.file("README.md").text
     changelog = System.getenv("MODRINTH_CHANGELOG_TEXT")
+    dependencies {
+        required.project 'fabric-api'
+        optional.project 'modmenu'
+        incompatible.project 'capes'
+    }
 }
 
 signing {
