@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 import net.litetex.capes.provider.ModMetadataProvider;
 
 
-@SuppressWarnings("checkstyle:InterfaceIsType")
+@SuppressWarnings({"checkstyle:InterfaceIsType", "PMD.ConstantsInInterface"})
 public interface ModMetadataProviderSupplier extends Supplier<Stream<ModMetadataProvider>>
 {
 	String CAPE = "cape";
