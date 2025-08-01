@@ -2,7 +2,7 @@ package net.litetex.capes;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.LinkedHashMap;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -139,16 +139,15 @@ public class Capes
 			final Instant now = Instant.now();
 			final Instant removeOutdated = now.minus(Duration.ofDays(7));
 			final Map<String, Instant> knownProviderIdsFirstTimeMissing =
-				Objects.requireNonNullElseGet(
-					this.config().getKnownModProviderIdsFirstTimeMissing()
-						.entrySet()
-						.stream()
-						// Remove outdated
-						.filter(e -> nullPlaceholder.equals(e.getValue()) || e.getValue().isAfter(removeOutdated))
-						.collect(Collectors.toMap(
-							Map.Entry::getKey,
-							e -> nullPlaceholder.equals(e.getValue()) ? now : e.getValue())),
-					LinkedHashMap::new);
+				Optional.ofNullable(this.config().getKnownModProviderIdsFirstTimeMissing())
+					.map(Map::entrySet)
+					.stream()
+					.flatMap(Collection::stream)
+					// Remove outdated
+					.filter(e -> nullPlaceholder.equals(e.getValue()) || e.getValue().isAfter(removeOutdated))
+					.collect(Collectors.toMap(
+						Map.Entry::getKey,
+						e -> nullPlaceholder.equals(e.getValue()) ? now : e.getValue()));
 			
 			final Set<String> activeProviderIds = Objects.requireNonNullElseGet(
 				this.config().getActiveProviderIds(),
