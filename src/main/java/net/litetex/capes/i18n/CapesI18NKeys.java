@@ -21,6 +21,10 @@ public final class CapesI18NKeys
 	public static final String ELYTRA_TEXTURE = PREFIX + "elytra_texture";
 	public static final String FROZEN = PREFIX + "frozen";
 	public static final String ONLY_LOAD_YOUR_CAPE = PREFIX + "only_load_your_cape";
+	public static final String PROVIDERS_FROM_MODS = PREFIX + "providers_from_mods";
+	public static final String LOAD = PREFIX + "load";
+	public static final String LOAD_PROVIDERS = PREFIX + "load_providers";
+	public static final String ACTIVATE_PROVIDERS_BY_DEFAULT = PREFIX + "activate_providers_by_default";
 	
 	private static final String ANTI_FEATURE_PREFIX = PREFIX + "anti_feature.";
 	public static final String ANTI_FEATURE_BAD_CONNECTION = ANTI_FEATURE_PREFIX + "bad_connection";

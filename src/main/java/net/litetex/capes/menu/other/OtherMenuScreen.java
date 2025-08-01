@@ -4,9 +4,11 @@ import java.util.List;
 
 import net.litetex.capes.Capes;
 import net.litetex.capes.config.AnimatedCapesHandling;
+import net.litetex.capes.config.ModProviderHandling;
 import net.litetex.capes.i18n.CapesI18NKeys;
 import net.litetex.capes.menu.MainMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.option.GameOptions;
@@ -56,6 +58,29 @@ public class OtherMenuScreen extends MainMenuScreen
 					Text.translatable(CapesI18NKeys.ELYTRA_TEXTURE),
 					(btn, enabled) -> {
 						this.config().setEnableElytraTexture(enabled);
+						capes.saveConfig();
+					}),
+			CyclingButtonWidget.<ModProviderHandling>builder(handling ->
+					switch(handling)
+					{
+						case ON -> ScreenTexts.ON;
+						case ONLY_LOAD -> Text.translatable(CapesI18NKeys.LOAD);
+						case OFF -> ScreenTexts.OFF;
+					})
+				.initially(this.config().getModProviderHandling())
+				.values(ModProviderHandling.values())
+				.tooltip(value -> Tooltip.of(
+					Text.translatable(CapesI18NKeys.LOAD_PROVIDERS)
+						.append(": ")
+						.append(ScreenTexts.onOrOff(value.load()))
+						.append("\n")
+						.append(Text.translatable(CapesI18NKeys.ACTIVATE_PROVIDERS_BY_DEFAULT))
+						.append(": ")
+						.append(ScreenTexts.onOrOff(value.activateByDefault()))))
+				.build(
+					Text.translatable(CapesI18NKeys.PROVIDERS_FROM_MODS),
+					(btn, value) -> {
+						this.config().setModProviderHandling(value);
 						capes.saveConfig();
 					})
 		));
