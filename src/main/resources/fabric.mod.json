@@ -53,7 +53,6 @@
     "cicada": "*"
   },
   "custom": {
-    "cape": "https://raw.githubusercontent.com/litetex-oss/mcm-cape-provider/refs/heads/dev/custom-cape-demo/uuid.png",
     "modmenu": {
       "links": {
         "modmenu.github_releases": "https://github.com/litetex-oss/mcm-${id}/releases",
