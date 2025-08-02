@@ -1,5 +1,6 @@
 package net.litetex.capes.config;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -16,10 +17,13 @@ public class Config
 	private String currentPreviewProviderId;
 	// NOTE: Default/Minecraft is always active
 	private Set<String> activeProviderIds;
+	private boolean useDefaultProvider = true;
 	private boolean onlyLoadForSelf;
 	private boolean enableElytraTexture;
 	private AnimatedCapesHandling animatedCapesHandling = AnimatedCapesHandling.ON;
 	private List<CustomProviderConfig> customProviders = List.of();
+	private ModProviderHandling modProviderHandling = ModProviderHandling.ON;
+	private Map<String, Instant> knownModProviderIdsFirstTimeMissing;
 	
 	// Advanced/Debug options
 	private Boolean validateProfile;
@@ -33,9 +37,12 @@ public class Config
 	{
 		this.setCurrentPreviewProviderId(null);
 		this.setActiveProviderIds(List.of(MinecraftCapesCapeProvider.ID, OptiFineCapeProvider.ID));
+		this.setUseDefaultProvider(true);
 		this.setOnlyLoadForSelf(false);
 		this.setEnableElytraTexture(true);
 		this.setAnimatedCapesHandling(AnimatedCapesHandling.ON);
+		this.setModProviderHandling(ModProviderHandling.ON);
+		this.setKnownModProviderIdsFirstTimeMissing(null);
 		
 		this.setValidateProfile(null);
 		this.setLoadThrottleSuppressSec(null);
@@ -72,6 +79,16 @@ public class Config
 	public void setActiveProviderIds(final Collection<String> activeProviderIds)
 	{
 		this.activeProviderIds = new LinkedHashSet<>(Objects.requireNonNull(activeProviderIds));
+	}
+	
+	public boolean isUseDefaultProvider()
+	{
+		return this.useDefaultProvider;
+	}
+	
+	public void setUseDefaultProvider(final boolean useDefaultProvider)
+	{
+		this.useDefaultProvider = useDefaultProvider;
 	}
 	
 	public boolean isOnlyLoadForSelf()
@@ -112,6 +129,26 @@ public class Config
 	public void setCustomProviders(final List<CustomProviderConfig> customProviders)
 	{
 		this.customProviders = customProviders;
+	}
+	
+	public ModProviderHandling getModProviderHandling()
+	{
+		return this.modProviderHandling;
+	}
+	
+	public void setModProviderHandling(final ModProviderHandling modProviderHandling)
+	{
+		this.modProviderHandling = modProviderHandling;
+	}
+	
+	public Map<String, Instant> getKnownModProviderIdsFirstTimeMissing()
+	{
+		return this.knownModProviderIdsFirstTimeMissing;
+	}
+	
+	public void setKnownModProviderIdsFirstTimeMissing(final Map<String, Instant> knownModProviderIdsFirstTimeMissing)
+	{
+		this.knownModProviderIdsFirstTimeMissing = knownModProviderIdsFirstTimeMissing;
 	}
 	
 	public Boolean isValidateProfile()

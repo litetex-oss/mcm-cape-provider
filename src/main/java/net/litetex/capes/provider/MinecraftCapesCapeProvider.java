@@ -9,6 +9,7 @@ import java.util.Map;
 import com.google.gson.Gson;
 import com.mojang.authlib.GameProfile;
 
+import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 
 
@@ -40,6 +41,9 @@ public class MinecraftCapesCapeProvider implements CapeProvider
 		final HttpRequest.Builder requestBuilder,
 		final GameProfile profile) throws IOException, InterruptedException
 	{
+		requestBuilder
+			.setHeader("User-Agent", "minecraftcapes-mod/" + SharedConstants.getGameVersion().name());
+		
 		try(final HttpClient client = clientBuilder.build())
 		{
 			final HttpResponse<String> response =

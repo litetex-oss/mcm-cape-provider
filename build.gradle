@@ -5,13 +5,13 @@ plugins {
     id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
     id 'checkstyle'
     id 'pmd'
-    id 'com.modrinth.minotaur' version '2.8.7'
+    id 'com.modrinth.minotaur' version '2.8.8'
 }
 
 ext {
     checkstyleVersion = '10.26.1'
 
-    pmdVersion = '7.15.0'
+    pmdVersion = '7.16.0'
 
     // Derive version from yarn
     minecraft_version = project.yarn_mappings.split("\\+")[0]
@@ -85,14 +85,16 @@ dependencies {
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     // Required when translations and icons should be loaded correctly
-    modImplementation "net.fabricmc.fabric-api:fabric-api:0.129.0+1.21.8"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:0.130.0+1.21.8"
 
     modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
     modCompileOnly "maven.modrinth:skinshuffle:${project.skinshuffle_version}"
+    modCompileOnly "maven.modrinth:cicada:${project.cicada_version}"
+    modCompileOnly "maven.modrinth:minecraftcapes:${project.minecraftcapes_version}"
 
     // Only needed during development
     modLocalRuntime "com.terraformersmc:modmenu:${project.modmenu_version}"
-    modLocalRuntime "net.fabricmc.fabric-api:fabric-api:0.129.0+1.21.8"
+    modLocalRuntime "net.fabricmc.fabric-api:fabric-api:0.130.0+1.21.8"
     modLocalRuntime "me.djtheredstoner:DevAuth-fabric:1.2.1"
     modLocalRuntime "maven.modrinth:no-chat-reports:Fabric-1.21.7-v2.14.0"
 }

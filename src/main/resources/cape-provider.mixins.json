@@ -10,7 +10,10 @@
     "CapeFeatureRendererMixin",
     "PlayerListEntryMixin",
     "SkinOptionsScreenMixin",
-    "SkinShuffleCapesCompatMixin"
+    "compat.cicada.CapeHandlerMixin",
+    "compat.cicada.ConversationManagerMixin",
+    "compat.minecraftcapes.DownloadManagerMixin",
+    "compat.skinshuffle.CapesCompatMixin"
   ],
   "injectors": {
     "defaultRequire": 1

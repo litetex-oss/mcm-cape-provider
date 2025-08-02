@@ -21,4 +21,9 @@ public record CustomProviderConfig(
 		Objects.requireNonNull(name);
 		Objects.requireNonNull(uriTemplate);
 	}
+	
+	public CustomProviderConfig(final String id, final String name, final String uriTemplate)
+	{
+		this(id, name, uriTemplate, false, null, null, null, null);
+	}
 }

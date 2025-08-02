@@ -1,6 +1,9 @@
 package net.litetex.capes;
 
 import java.time.Duration;
+import java.time.Instant;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -17,11 +20,14 @@ import org.slf4j.LoggerFactory;
 import com.mojang.authlib.GameProfile;
 
 import net.litetex.capes.config.Config;
+import net.litetex.capes.config.ModProviderHandling;
 import net.litetex.capes.handler.PlayerCapeHandler;
 import net.litetex.capes.handler.PlayerCapeHandlerManager;
 import net.litetex.capes.handler.ProfileTextureLoadThrottler;
 import net.litetex.capes.provider.CapeProvider;
-import net.litetex.capes.provider.MinecraftCapeProvider;
+import net.litetex.capes.provider.CustomProvider;
+import net.litetex.capes.provider.DefaultMinecraftCapeProvider;
+import net.litetex.capes.provider.ModMetadataProvider;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.util.SkinTextures;
@@ -38,7 +44,7 @@ public class Capes
 		Identifier.of("textures/entity/equipment/wings/elytra.png");
 	
 	public static final Predicate<CapeProvider> EXCLUDE_DEFAULT_MINECRAFT_CP =
-		cp -> MinecraftCapeProvider.INSTANCE != cp;
+		cp -> DefaultMinecraftCapeProvider.INSTANCE != cp;
 	
 	private static Capes instance;
 	
@@ -107,6 +113,64 @@ public class Capes
 		this.profileTextureLoadThrottler = new ProfileTextureLoadThrottler(
 			this.playerCapeHandlerManager,
 			this.playerCacheSize());
+		
+		final long startMs = System.currentTimeMillis();
+		this.postProcessModProviders();
+		LOG.debug("Post processing mod providers took {}ms", System.currentTimeMillis() - startMs);
+	}
+	
+	protected void postProcessModProviders()
+	{
+		final ModProviderHandling modProviderHandling = this.config().getModProviderHandling();
+		if(modProviderHandling.activateByDefault())
+		{
+			// Works like this:
+			// Mod is present? -> FirstTimeMissing=Instant.MAX
+			// Mod was present during last time? -> FirstTimeMissing=NOW
+			// Remove all mods where FirstTimeMissing is too old
+			final Set<String> providerIdsLoadedByMods = this.getAllProviders().values()
+				.stream()
+				.filter(ModMetadataProvider.class::isInstance)
+				.map(ModMetadataProvider.class::cast)
+				.map(CustomProvider::id)
+				.collect(Collectors.toCollection(LinkedHashSet::new));
+			
+			final Instant nullPlaceholder = Instant.MAX; // GSON doesn't serialize nulls by default
+			final Instant now = Instant.now();
+			final Instant removeOutdated = now.minus(Duration.ofDays(7));
+			final Map<String, Instant> knownProviderIdsFirstTimeMissing =
+				Optional.ofNullable(this.config().getKnownModProviderIdsFirstTimeMissing())
+					.map(Map::entrySet)
+					.stream()
+					.flatMap(Collection::stream)
+					// Remove outdated
+					.filter(e -> nullPlaceholder.equals(e.getValue()) || e.getValue().isAfter(removeOutdated))
+					.collect(Collectors.toMap(
+						Map.Entry::getKey,
+						e -> nullPlaceholder.equals(e.getValue()) ? now : e.getValue()));
+			
+			final Set<String> activeProviderIds = Objects.requireNonNullElseGet(
+				this.config().getActiveProviderIds(),
+				LinkedHashSet::new);
+			providerIdsLoadedByMods.stream()
+				.filter(id -> !knownProviderIdsFirstTimeMissing.containsKey(id))
+				.forEach(activeProviderIds::add);
+			this.config().setActiveProviderIds(activeProviderIds);
+			
+			providerIdsLoadedByMods.forEach(id -> knownProviderIdsFirstTimeMissing.put(id, nullPlaceholder));
+			
+			this.config().setKnownModProviderIdsFirstTimeMissing(knownProviderIdsFirstTimeMissing);
+			this.saveConfig();
+			
+			return;
+		}
+		
+		// Reset all known providers due to privacy reasons
+		if(this.config().getKnownModProviderIdsFirstTimeMissing() != null)
+		{
+			this.config().setKnownModProviderIdsFirstTimeMissing(null);
+			this.saveConfig();
+		}
 	}
 	
 	public void saveConfig()
@@ -165,6 +229,11 @@ public class Capes
 			.filter(EXCLUDE_DEFAULT_MINECRAFT_CP)
 			.filter(Objects::nonNull)
 			.toList();
+	}
+	
+	public boolean isUseDefaultProvider()
+	{
+		return this.config().isUseDefaultProvider();
 	}
 	
 	public boolean validateProfile()
@@ -227,6 +296,18 @@ public class Capes
 					oldTextures.secure()));
 				return true;
 			}
+		}
+		if(!this.isUseDefaultProvider())
+		{
+			final SkinTextures oldTextures = oldTexureSupplier.get();
+			applyOverwrittenTextures.accept(new SkinTextures(
+				oldTextures.texture(),
+				oldTextures.textureUrl(),
+				null,
+				null,
+				oldTextures.model(),
+				oldTextures.secure()));
+			return true;
 		}
 		return false;
 	}

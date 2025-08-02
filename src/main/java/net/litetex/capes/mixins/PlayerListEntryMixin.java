@@ -31,7 +31,11 @@ public abstract class PlayerListEntryMixin
 		}
 	}
 	
-	@Inject(method = "getSkinTextures", at = @At("TAIL"), cancellable = true)
+	@Inject(
+		method = "getSkinTextures",
+		at = @At("TAIL"),
+		order = 1001, // Slightly later to suppress actions of other mods if present
+		cancellable = true)
 	private void getCapeTexture(final CallbackInfoReturnable<SkinTextures> cir)
 	{
 		Capes.instance().overwriteSkinTextures(this.profile, cir::getReturnValue, cir::setReturnValue);
