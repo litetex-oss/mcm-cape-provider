@@ -82,7 +82,7 @@ Here's a simple implementation:
       // Alternative: "uriTemplate"
       "url": "https://raw.githubusercontent.com/litetex-oss/mcm-cape-provider/refs/heads/dev/custom-cape-demo/uuid.png",
       "changeCapeUrl": "https://...",
-      "rateLimitedReqPerSec": 20
+      "rateLimitedReqPerSec": 20 // Default is 20
     }
   }
 }
