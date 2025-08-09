@@ -7,6 +7,14 @@
   "authors": [
     "litetex"
   ],
+  "contributors": [
+    {
+      "name": "Cael & Capes mod contributors",
+      "contact": {
+        "homepage": "https://github.com/CaelTheColher/Capes"
+      }
+    }
+  ],
   "contact": {
     "homepage": "https://github.com/litetex-oss/mcm-${id}",
     "sources": "https://github.com/litetex-oss/mcm-${id}",
@@ -14,20 +22,42 @@
   },
   "license": "${license_spdx_id}",
   "icon": "assets/icon.png",
-  "environment": "*",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "net.litetex.capes.fabric.FabricCapes"
+    ],
+    "modmenu": [
+      "net.litetex.capes.fabric.compat.ModMenuCompatibility"
+    ]
+  },
   "mixins": [
-    "template-placeholder.mixins.json"
+    "cape-provider.mixins.json"
   ],
-  "accessWidener": "template-placeholder.accesswidener",
+  "accessWidener": "cape-provider.accesswidener",
+  "requires": {
+    "fabric-api": "*"
+  },
   "recommends": {
     "fabricloader": ">=${loader_version}",
-    "minecraft": ">=${minecraft_version}"
+    "minecraft": ">=${minecraft_version}",
+    "modmenu": ">=${modmenu_version}"
+  },
+  "breaks": {
+    "capes": "*"
+  },
+  "conflicts": {
+    "minecraftcapes": "*",
+    "wynntils": "*",
+    "capemod": "*",
+    "cicada": "*"
   },
   "custom": {
     "modmenu": {
       "links": {
         "modmenu.github_releases": "https://github.com/litetex-oss/mcm-${id}/releases",
-        "modmenu.modrinth": "https://modrinth.com/mod/${id}"
+        "modmenu.modrinth": "https://modrinth.com/mod/${id}",
+        "modmenu.curseforge": "https://www.curseforge.com/minecraft/mc-mods/${id}"
       }
     }
   }

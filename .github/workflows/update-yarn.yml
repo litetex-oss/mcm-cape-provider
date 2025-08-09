@@ -55,7 +55,7 @@ jobs:
 
             echo "Deleting origin branch that contained the updates - if present"
             git push -f origin --delete ${{ env.UPDATE_BRANCH }} || true
-
+            
             exit 0
           fi
 
