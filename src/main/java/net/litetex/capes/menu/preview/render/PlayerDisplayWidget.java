@@ -88,4 +88,10 @@ public class PlayerDisplayWidget extends PlayerSkinWidget
 			scale,
 			context.scissorStack.peekLast()));
 	}
+	
+	@Override
+	public boolean isNarratable()
+	{
+		return true;
+	}
 }
