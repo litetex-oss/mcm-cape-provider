@@ -16,7 +16,6 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
@@ -89,10 +88,7 @@ public class PlayerDisplayGuiElementRenderer extends SpecialGuiElementRenderer<P
 					this.render(
 						models.elytra(),
 						matrixStack,
-						ItemRenderer.getArmorGlintConsumer(
-							this.vertexConsumers,
-							RenderLayer.getArmorCutoutNoCull(id),
-							false));
+						this.vertexConsumers.getBuffer(RenderLayer.getArmorCutoutNoCull(id)));
 				});
 		}
 		else if(payload.capeTextureSupplier() != null)
@@ -127,7 +123,7 @@ public class PlayerDisplayGuiElementRenderer extends SpecialGuiElementRenderer<P
 		}
 	}
 	
-	protected void render(final Model model, final MatrixStack stack, final VertexConsumer c)
+	protected void render(final Model<?> model, final MatrixStack stack, final VertexConsumer c)
 	{
 		model.render(stack, c, LIGHT, OverlayTexture.DEFAULT_UV);
 	}

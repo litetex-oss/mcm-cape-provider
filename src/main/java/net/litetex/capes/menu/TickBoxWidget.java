@@ -59,7 +59,7 @@ public class TickBoxWidget extends ClickableWidget
 	}
 	
 	@Override
-	public void onClick(final double mouseX, final double mouseY)
+	public void onClick(final double mouseX, final double mouseY, final boolean hold)
 	{
 		this.toggle();
 	}
