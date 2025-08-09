@@ -373,11 +373,11 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 		}
 		
 		@Override
-		public boolean mouseClicked(final double mouseX, final double mouseY, final int button)
+		public boolean mouseClicked(final double mouseX, final double mouseY, final int button, final boolean hold)
 		{
 			if(this.chbxActive.isMouseOver(mouseX, mouseY))
 			{
-				return this.chbxActive.mouseClicked(mouseX, mouseY, button);
+				return this.chbxActive.mouseClicked(mouseX, mouseY, button, hold);
 			}
 			if(this.onTxtClick != null && this.txtName.isMouseOver(mouseX, mouseY))
 			{
@@ -386,15 +386,15 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 			}
 			if(this.btnEditCape != null && this.btnEditCape.isMouseOver(mouseX, mouseY))
 			{
-				return this.btnEditCape.mouseClicked(mouseX, mouseY, button);
+				return this.btnEditCape.mouseClicked(mouseX, mouseY, button, hold);
 			}
 			if(this.icoMoveUp.isMouseOver(mouseX, mouseY))
 			{
-				return this.icoMoveUp.mouseClicked(mouseX, mouseY, button);
+				return this.icoMoveUp.mouseClicked(mouseX, mouseY, button, hold);
 			}
 			else if(this.icoMoveDown.isMouseOver(mouseX, mouseY))
 			{
-				return this.icoMoveDown.mouseClicked(mouseX, mouseY, button);
+				return this.icoMoveDown.mouseClicked(mouseX, mouseY, button, hold);
 			}
 			return true; // Select
 		}
@@ -487,9 +487,9 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 		}
 		
 		@Override
-		public void onClick(final double mouseX, final double mouseY)
+		public void onClick(final double mouseX, final double mouseY, final boolean hold)
 		{
-			super.onClick(mouseX, mouseY);
+			super.onClick(mouseX, mouseY, hold);
 			this.click();
 		}
 		
