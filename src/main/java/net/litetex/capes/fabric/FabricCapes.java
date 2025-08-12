@@ -69,9 +69,9 @@ public class FabricCapes implements ClientModInitializer
 			{
 				return this.gson.fromJson(Files.readString(configFilePath), Config.class);
 			}
-			catch(final IOException ioe)
+			catch(final Exception ex)
 			{
-				LOG.warn("Failed to read config file", ioe);
+				LOG.warn("Failed to read config file", ex);
 			}
 		}
 		
