@@ -85,7 +85,7 @@ dependencies {
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     // Required when translations and icons should be loaded correctly
-    modImplementation "net.fabricmc.fabric-api:fabric-api:0.130.0+1.21.8"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:0.132.1+1.21.9"
 
     modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
     modCompileOnly "maven.modrinth:skinshuffle:${project.skinshuffle_version}"
@@ -94,7 +94,7 @@ dependencies {
 
     // Only needed during development
     modLocalRuntime "com.terraformersmc:modmenu:${project.modmenu_version}"
-    modLocalRuntime "net.fabricmc.fabric-api:fabric-api:0.130.0+1.21.8"
+    modLocalRuntime "net.fabricmc.fabric-api:fabric-api:0.132.1+1.21.9"
     modLocalRuntime "me.djtheredstoner:DevAuth-fabric:1.2.1"
     modLocalRuntime "maven.modrinth:no-chat-reports:Fabric-1.21.7-v2.14.0"
 }
