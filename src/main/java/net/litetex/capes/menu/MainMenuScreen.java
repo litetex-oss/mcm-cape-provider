@@ -12,12 +12,14 @@ import net.litetex.capes.menu.other.OtherMenuScreen;
 import net.litetex.capes.menu.preview.PreviewMenuScreen;
 import net.litetex.capes.menu.provider.ProviderMenuScreen;
 import net.litetex.capes.util.CorrectHoverParentElement;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.option.GameOptionsScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.OptionListWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.text.Text;
 
@@ -37,8 +39,10 @@ public abstract class MainMenuScreen extends GameOptionsScreen implements Correc
 	@Override
 	protected void initBody()
 	{
-		super.initBody();
-		this.body.headerHeight = 28; // The first "row" is used by the buttons for the individual screens
+		// The first "row" is used by the buttons for the individual screens
+		this.body = this.layout.addBody(
+			new HeaderHeightOptionListWidget(this.client, this.width, this, 24));
+		this.addOptions();
 	}
 	
 	@SuppressWarnings("checkstyle:MagicNumber")
@@ -130,5 +134,46 @@ public abstract class MainMenuScreen extends GameOptionsScreen implements Correc
 	{
 		super.close();
 		this.capes().refreshIfMarked();
+	}
+	
+	static class HeaderHeightOptionListWidget extends OptionListWidget
+	{
+		private final int headerHeight;
+		
+		public HeaderHeightOptionListWidget(
+			final MinecraftClient client,
+			final int width,
+			final GameOptionsScreen optionsScreen,
+			final int headerHeight)
+		{
+			super(client, width, optionsScreen);
+			this.headerHeight = headerHeight;
+		}
+		
+		@Override
+		public int method_73378() // This is used initially (addEntry) when setting Y
+		{
+			return super.method_73378() + this.headerHeight;
+		}
+		
+		@Override
+		public void method_73367() // This is used for scroll calculation
+		{
+			int i = this.method_73376() - (int)this.getScrollY();
+			
+			for(final WidgetEntry entry : this.children)
+			{
+				entry.setY(i + this.headerHeight); // <-- Change here
+				i += entry.getHeight();
+				entry.setX(this.getRowLeft());
+				entry.method_73381(this.getRowWidth());
+			}
+		}
+		
+		@Override
+		protected int getContentsHeightWithPadding()
+		{
+			return super.getContentsHeightWithPadding() + this.headerHeight;
+		}
 	}
 }
