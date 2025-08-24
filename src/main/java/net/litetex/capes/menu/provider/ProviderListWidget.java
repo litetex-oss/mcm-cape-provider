@@ -80,13 +80,22 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 			).toList()
 		);
 		
-		this.getFirst().upVisible(false);
-		this.getEntry(this.children().size() - 2).downVisible(false);
+		final List<ProviderListEntry> children = this.children();
+		children.getFirst().upVisible(false);
+		children.get(children.size() - 2).downVisible(false);
 		
-		// MinecraftProvider is always there
-		final ProviderListEntry last = this.children().getLast();
+		// Default Provider (usually Minecraft) is always last and can't be moved
+		final ProviderListEntry last = children.getLast();
 		last.upVisible(false);
 		last.downVisible(false);
+	}
+	
+	@Override
+	public void setPosition(final int x, final int y)
+	{
+		super.setPosition(x, y);
+		// Recalc entry positions
+		this.method_73367();
 	}
 	
 	private ProviderListEntry createEntry(
@@ -316,16 +325,15 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 		@Override
 		public void render(
 			final DrawContext context,
-			final int index,
-			final int y,
-			final int x,
-			final int entryWidth,
-			final int entryHeight,
 			final int mouseX,
 			final int mouseY,
 			final boolean hovered,
 			final float tickDelta)
 		{
+			final int x = this.method_73380();
+			final int y = this.method_73382();
+			final int entryWidth = this.method_73387();
+			
 			this.chbxActive.setPosition(x, y + (ITEM_HEIGHT - this.chbxActive.getHeight() - 4) / 2);
 			this.chbxActive.render(context, mouseX, mouseY, tickDelta);
 			
