@@ -1,7 +1,6 @@
 package net.litetex.capes.menu.provider;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -94,8 +93,7 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 	public void setPosition(final int x, final int y)
 	{
 		super.setPosition(x, y);
-		// Recalc entry positions
-		this.method_73367();
+		this.recalculateAllChildrenPositions();
 	}
 	
 	private ProviderListEntry createEntry(
@@ -136,7 +134,7 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 		final int otherIndex = selfIndex + (up ? -1 : 1);
 		final ProviderListEntry other = children.get(otherIndex);
 		
-		Collections.swap(children, selfIndex, otherIndex);
+		this.swapEntriesOnPositions(selfIndex, otherIndex);
 		
 		final ProviderListEntry higherEntry = up ? entry : other;
 		final ProviderListEntry lowerEntry = up ? other : entry;
@@ -330,9 +328,9 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 			final boolean hovered,
 			final float tickDelta)
 		{
-			final int x = this.method_73380();
-			final int y = this.method_73382();
-			final int entryWidth = this.method_73387();
+			final int x = this.getContentX();
+			final int y = this.getContentY();
+			final int entryWidth = this.getContentWidth();
 			
 			this.chbxActive.setPosition(x, y + (ITEM_HEIGHT - this.chbxActive.getHeight() - 4) / 2);
 			this.chbxActive.render(context, mouseX, mouseY, tickDelta);
@@ -526,12 +524,6 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 		@Override
 		protected void appendClickableNarrations(final NarrationMessageBuilder builder)
 		{
-		}
-		
-		@Override
-		public boolean isNarratable()
-		{
-			return false;
 		}
 	}
 }

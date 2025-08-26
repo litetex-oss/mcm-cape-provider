@@ -121,12 +121,12 @@ public class PlayerCapeHandler
 		}
 		catch(final InterruptedException iex)
 		{
-			LOG.warn("Got interrupted[url='{}',profileId='{}']", url, this.profile.getId(), iex);
+			LOG.warn("Got interrupted[url='{}',profileId='{}']", url, this.profile.id(), iex);
 			Thread.currentThread().interrupt();
 		}
 		catch(final Exception ex)
 		{
-			LOG.warn("Failed to process texture[url='{}',profileId='{}']", url, this.profile.getId(), ex);
+			LOG.warn("Failed to process texture[url='{}',profileId='{}']", url, this.profile.id(), ex);
 		}
 		
 		this.resetCape();
@@ -197,7 +197,7 @@ public class PlayerCapeHandler
 				LOG.warn(
 					"Received animated texture with no frames[url='{}',profileId='{}']",
 					url,
-					this.profile.getId());
+					this.uuid());
 				return List.of();
 			}
 			
@@ -269,7 +269,7 @@ public class PlayerCapeHandler
 	
 	public UUID uuid()
 	{
-		return this.profile.getId();
+		return this.profile.id();
 	}
 	
 	public boolean hasElytraTexture()

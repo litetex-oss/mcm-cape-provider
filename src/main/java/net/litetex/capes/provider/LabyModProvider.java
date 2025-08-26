@@ -32,7 +32,7 @@ public class LabyModProvider implements CapeProvider
 	@Override
 	public String getBaseUrl(final GameProfile profile)
 	{
-		return "https://dl.labymod.net/capes/" + profile.getId().toString();
+		return "https://dl.labymod.net/capes/" + profile.id().toString();
 	}
 	
 	@Override
