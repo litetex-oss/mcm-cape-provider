@@ -151,23 +151,9 @@ public abstract class MainMenuScreen extends GameOptionsScreen implements Correc
 		}
 		
 		@Override
-		public int method_73378() // This is used initially (addEntry) when setting Y
+		protected int getYOfFirstEntry()
 		{
-			return super.method_73378() + this.headerHeight;
-		}
-		
-		@Override
-		public void method_73367() // This is used for scroll calculation
-		{
-			int i = this.method_73376() - (int)this.getScrollY();
-			
-			for(final WidgetEntry entry : this.children)
-			{
-				entry.setY(i + this.headerHeight); // <-- Change here
-				i += entry.getHeight();
-				entry.setX(this.getRowLeft());
-				entry.method_73381(this.getRowWidth());
-			}
+			return super.getYOfFirstEntry() + this.headerHeight;
 		}
 		
 		@Override

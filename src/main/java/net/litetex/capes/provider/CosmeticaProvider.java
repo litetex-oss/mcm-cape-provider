@@ -26,8 +26,8 @@ public class CosmeticaProvider implements CapeProvider
 	@Override
 	public String getBaseUrl(final GameProfile profile)
 	{
-		return "https://api.cosmetica.cc/get/cloak?username=" + profile.getName()
-			+ "&uuid=" + profile.getId().toString()
+		return "https://api.cosmetica.cc/get/cloak?username=" + profile.name()
+			+ "&uuid=" + profile.id().toString()
 			+ "&nothirdparty";
 	}
 	

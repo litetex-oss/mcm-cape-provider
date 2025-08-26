@@ -90,7 +90,7 @@ public class PlayerDisplayWidget extends PlayerSkinWidget
 	}
 	
 	@Override
-	public boolean isNarratable()
+	public boolean isInteractable()
 	{
 		return true;
 	}

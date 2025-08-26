@@ -42,7 +42,7 @@ public class WynntilsProvider implements CapeProvider
 		try(final HttpClient client = clientBuilder.build())
 		{
 			final JsonObject body = new JsonObject();
-			body.addProperty("uuid", profile.getId().toString());
+			body.addProperty("uuid", profile.id().toString());
 			
 			final HttpRequest request = requestBuilder
 				// Does UserAgent blocking: https://github.com/Wynntils/athena-backend/pull/36
