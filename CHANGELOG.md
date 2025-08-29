@@ -1,3 +1,6 @@
+# 4.1.0
+* Updated to 1.21.9
+
 # 4.0.2
 * Fixed: `$` inside `fabric.mod.json` is usually replaced by the build process #145
   * Added a note that this may require escaping using a `\`
