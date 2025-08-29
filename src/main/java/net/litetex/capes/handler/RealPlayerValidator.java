@@ -121,7 +121,7 @@ public class RealPlayerValidator
 		{
 			// Check if this is a real player (not a fake one create by a server)
 			// Use secure = false to utilize cache
-			return client.method_73361().sessionService().fetchProfile(id, false) != null;
+			return client.getApiServices().sessionService().fetchProfile(id, false) != null;
 		}
 		catch(final Exception ex)
 		{
