@@ -57,7 +57,7 @@ public class OptiFineCapeProvider implements CapeProvider
 			
 			final UUID id = client.getGameProfile().id();
 			
-			client.method_73361().sessionService().joinServer(id, client.getSession().getAccessToken(), serverId);
+			client.getApiServices().sessionService().joinServer(id, client.getSession().getAccessToken(), serverId);
 			return "https://optifine.net/capeChange?"
 				+ "u=" + id.toString().replace("-", "")
 				+ "&n=" + client.getSession().getUsername()
