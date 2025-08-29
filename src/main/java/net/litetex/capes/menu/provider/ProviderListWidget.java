@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -15,8 +16,10 @@ import net.litetex.capes.provider.CapeProvider;
 import net.litetex.capes.provider.DefaultMinecraftCapeProvider;
 import net.litetex.capes.provider.antifeature.AntiFeature;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.cursor.StandardCursors;
 import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -218,7 +221,10 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 			
 			this.nameTextSupplier = () ->
 				formatMutableTextIf(Text.literal(this.capeProvider.name()), hasHomePageUrl, Formatting.BLUE);
-			this.txtName = new TextWidget(
+			final BiFunction<Text, TextRenderer, TextWidget> widgetFunc = hasHomePageUrl
+				? ClickableTextWidget::new
+				: TextWidget::new;
+			this.txtName = widgetFunc.apply(
 				this.nameTextSupplier.get(),
 				MinecraftClient.getInstance().textRenderer);
 			
@@ -524,6 +530,25 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 		@Override
 		protected void appendClickableNarrations(final NarrationMessageBuilder builder)
 		{
+		}
+	}
+	
+	
+	static class ClickableTextWidget extends TextWidget
+	{
+		public ClickableTextWidget(final Text message, final TextRenderer textRenderer)
+		{
+			super(message, textRenderer);
+		}
+		
+		@Override
+		public void renderWidget(final DrawContext context, final int mouseX, final int mouseY, final float deltaTicks)
+		{
+			super.renderWidget(context, mouseX, mouseY, deltaTicks);
+			if(this.isMouseOver(mouseX, mouseY))
+			{
+				context.setCursor(StandardCursors.POINTING_HAND);
+			}
 		}
 	}
 }
