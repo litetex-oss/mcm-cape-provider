@@ -24,7 +24,7 @@ jobs:
           # Don't use default token as no workflows are run otherwise
           # https://github.com/orgs/community/discussions/65321#discussioncomment-6861423
           token: ${{ secrets.BOT_PR_PAT }}
-      
+
       - name: Init Git
         run: |
           git config --global user.email "164098849+litetex-oss-bot@users.noreply.github.com"

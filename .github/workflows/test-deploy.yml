@@ -9,14 +9,23 @@ jobs:
     timeout-minutes: 60
     steps:
     - uses: actions/checkout@v5
-    
+
     - name: Set up JDK
       uses: actions/setup-java@v5
       with:
         distribution: 'temurin'
         java-version: '21'
-        cache: 'gradle'
-    
+
+    - name: Try restore Gradle Cache
+      uses: actions/cache/restore@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-build-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-build-
+
     - name: Build and publish
       run: ./gradlew clean build modrinth --info --stacktrace
       env:
