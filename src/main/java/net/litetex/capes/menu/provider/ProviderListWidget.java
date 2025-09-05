@@ -18,6 +18,7 @@ import net.litetex.capes.provider.antifeature.AntiFeature;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.RenderPipelines;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.cursor.StandardCursors;
 import net.minecraft.client.gui.screen.ButtonTextures;
@@ -30,6 +31,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -385,11 +387,13 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 		}
 		
 		@Override
-		public boolean mouseClicked(final double mouseX, final double mouseY, final int button, final boolean hold)
+		public boolean mouseClicked(final Click click, final boolean doubled)
 		{
+			final double mouseX = click.x();
+			final double mouseY = click.y();
 			if(this.chbxActive.isMouseOver(mouseX, mouseY))
 			{
-				return this.chbxActive.mouseClicked(mouseX, mouseY, button, hold);
+				return this.chbxActive.mouseClicked(click, doubled);
 			}
 			if(this.onTxtClick != null && this.txtName.isMouseOver(mouseX, mouseY))
 			{
@@ -398,15 +402,15 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 			}
 			if(this.btnEditCape != null && this.btnEditCape.isMouseOver(mouseX, mouseY))
 			{
-				return this.btnEditCape.mouseClicked(mouseX, mouseY, button, hold);
+				return this.btnEditCape.mouseClicked(click, doubled);
 			}
 			if(this.icoMoveUp.isMouseOver(mouseX, mouseY))
 			{
-				return this.icoMoveUp.mouseClicked(mouseX, mouseY, button, hold);
+				return this.icoMoveUp.mouseClicked(click, doubled);
 			}
 			else if(this.icoMoveDown.isMouseOver(mouseX, mouseY))
 			{
-				return this.icoMoveDown.mouseClicked(mouseX, mouseY, button, hold);
+				return this.icoMoveDown.mouseClicked(click, doubled);
 			}
 			return true; // Select
 		}
@@ -420,14 +424,15 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 		}
 		
 		@Override
-		public boolean keyPressed(final int keyCode, final int scanCode, final int modifiers)
+		public boolean keyPressed(final KeyInput input)
 		{
+			final int keyCode = input.getKeycode();
 			if(GLFW.GLFW_KEY_SPACE == keyCode || GLFW.GLFW_KEY_ENTER == keyCode)
 			{
 				this.chbxActive.toggle();
 				return true;
 			}
-			if(GLFW.GLFW_MOD_SHIFT == modifiers)
+			if(GLFW.GLFW_MOD_SHIFT == input.modifiers())
 			{
 				if(GLFW.GLFW_KEY_UP == keyCode && this.icoMoveUp.visible)
 				{
@@ -440,8 +445,7 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 					return true;
 				}
 			}
-			
-			return super.keyReleased(keyCode, scanCode, modifiers);
+			return super.keyPressed(input);
 		}
 		
 		@Override
@@ -499,9 +503,9 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 		}
 		
 		@Override
-		public void onClick(final double mouseX, final double mouseY, final boolean hold)
+		public void onClick(final Click click, final boolean bl)
 		{
-			super.onClick(mouseX, mouseY, hold);
+			super.onClick(click, bl);
 			this.click();
 		}
 		
