@@ -2,6 +2,7 @@ package net.litetex.capes.menu;
 
 import java.util.function.BiConsumer;
 
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
@@ -59,7 +60,7 @@ public class TickBoxWidget extends ClickableWidget
 	}
 	
 	@Override
-	public void onClick(final double mouseX, final double mouseY, final boolean hold)
+	public void onClick(final Click click, final boolean bl)
 	{
 		this.toggle();
 	}
