@@ -22,8 +22,8 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.DefaultSkinHelper;
-import net.minecraft.client.util.Model;
 import net.minecraft.client.util.SkinTextures;
+import net.minecraft.entity.player.PlayerSkinType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -143,7 +143,7 @@ public class PreviewMenuScreen extends MainMenuScreen
 				.thenAcceptAsync(optSkinTextures ->
 					optSkinTextures.ifPresent(skinTextures -> {
 						this.skin = skinTextures;
-						this.slim = Model.SLIM.equals(this.skin.model());
+						this.slim = PlayerSkinType.SLIM.equals(this.skin.model());
 						
 						this.updateCapeAndElytraTexture();
 					}));
