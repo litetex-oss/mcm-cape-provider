@@ -76,7 +76,7 @@ public class WynntilsProvider implements CapeProvider
 				return null;
 			}
 			
-			return new ResolvedTextureInfo.Base64TextureInfo(responseData.texture(), false);
+			return new ResolvedTextureInfo.Base64TextureInfo(responseData.texture());
 		}
 	}
 	

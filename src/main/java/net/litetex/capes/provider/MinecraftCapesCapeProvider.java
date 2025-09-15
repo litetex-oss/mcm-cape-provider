@@ -9,6 +9,7 @@ import java.util.Map;
 import com.google.gson.Gson;
 import com.mojang.authlib.GameProfile;
 
+import net.litetex.capes.handler.textures.AnimatedSpriteTextureResolver;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 
@@ -65,7 +66,7 @@ public class MinecraftCapesCapeProvider implements CapeProvider
 			
 			return new ResolvedTextureInfo.Base64TextureInfo(
 				responseData.textures().get("cape"),
-				Boolean.TRUE.equals(responseData.animatedCape())
+				responseData.animatedCape() ? AnimatedSpriteTextureResolver.ID : null
 			);
 		}
 	}
