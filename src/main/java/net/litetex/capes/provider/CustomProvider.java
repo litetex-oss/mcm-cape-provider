@@ -54,7 +54,7 @@ public class CustomProvider implements CapeProvider
 			return textureResolverId;
 		}
 		// Legacy behavior
-		if(this.config.animated())
+		if(Boolean.TRUE.equals(this.config.animated()))
 		{
 			return AnimatedSpriteTextureResolver.ID;
 		}

@@ -10,7 +10,7 @@ public record CustomProviderConfig(
 	String id,
 	String name,
 	String uriTemplate,
-	boolean animated, // Old version of textureResolverId
+	Boolean animated, // Legacy version of textureResolverId
 	@Nullable
 	String textureResolverId,
 	String changeCapeUrl,

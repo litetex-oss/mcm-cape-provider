@@ -1,1 +1,2 @@
 net.litetex.capes.handler.textures.AnimatedSpriteTextureResolver
+net.litetex.capes.handler.textures.AnimatedGIFTextureResolver
