@@ -65,7 +65,7 @@ public class AnimatedGIFTextureResolver implements TextureResolver
 						frame.setColorArgb(
 							x,
 							y,
-							// If out of bound (due to compression -> transparent)
+							// If out of bound due to compression -> transparent
 							y >= height || x >= width ? 0x00000000 : img.getRGB(x, y));
 					}
 				}
