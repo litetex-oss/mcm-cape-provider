@@ -11,7 +11,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +28,8 @@ import com.mojang.authlib.GameProfile;
 
 import net.litetex.capes.Capes;
 import net.litetex.capes.config.AnimatedCapesHandling;
+import net.litetex.capes.handler.textures.DefaultTextureResolver;
+import net.litetex.capes.handler.textures.TextureResolver;
 import net.litetex.capes.provider.CapeProvider;
 import net.litetex.capes.provider.ResolvedTextureInfo;
 import net.minecraft.client.MinecraftClient;
@@ -103,16 +104,21 @@ public class PlayerCapeHandler
 				return false;
 			}
 			
-			final NativeImage cape = NativeImage.read(resolvedTextureInfo.imageBytes());
-			final boolean isAnimatedTexture = resolvedTextureInfo.animated();
+			final TextureResolver textureResolver = this.capes.getAllTextureResolvers()
+				.getOrDefault(resolvedTextureInfo.textureResolverId(), DefaultTextureResolver.INSTANCE);
 			
-			if(isAnimatedTexture && this.animatedCapesHandling() == AnimatedCapesHandling.OFF)
+			final AnimatedCapesHandling animatedCapesHandling = this.animatedCapesHandling();
+			if(textureResolver.animated() && animatedCapesHandling == AnimatedCapesHandling.OFF)
 			{
 				return false;
 			}
 			
 			this.optIdentifierProvider = this.registerTexturesAndGetProvider(
-				this.determineTexturesToRegister(isAnimatedTexture, cape, url));
+				this.determineTexturesToRegister(
+					textureResolver,
+					resolvedTextureInfo.imageBytes(),
+					animatedCapesHandling == AnimatedCapesHandling.FROZEN,
+					url));
 			
 			return this.optIdentifierProvider.isPresent();
 		}
@@ -167,86 +173,49 @@ public class PlayerCapeHandler
 	}
 	
 	private Map<Identifier, NativeImage> determineTexturesToRegister(
-		final boolean isAnimatedTexture,
-		final NativeImage cape,
-		final String url)
+		final TextureResolver textureResolver,
+		final byte[] imageData,
+		final boolean freezeAnimation,
+		final String url
+	) throws IOException
 	{
-		if(!isAnimatedTexture)
+		final TextureResolver.ResolvedTextureData resolved = textureResolver.resolve(
+			imageData,
+			freezeAnimation);
+		this.hasElytraTexture = !Boolean.FALSE.equals(resolved.hasElytra()); // if null -> default to true
+		
+		if(resolved instanceof final TextureResolver.DefaultResolvedTextureData defaultResolvedTextureData)
 		{
-			this.hasElytraTexture = Math.floorDiv(cape.getWidth(), cape.getHeight()) == 2;
-			return Map.of(identifier(this.uuid().toString()), this.toCapeTexture(cape));
+			return Map.of(identifier(this.uuid().toString()), defaultResolvedTextureData.texture());
 		}
-		
-		Stream<Map.Entry<Integer, NativeImage>> animatedTextureStream =
-			this.toAnimatedCapeTextureFrames(cape).entrySet().stream();
-		
-		final boolean freezeAnimatation = this.animatedCapesHandling() == AnimatedCapesHandling.FROZEN;
-		if(freezeAnimatation)
+		else if(resolved instanceof final TextureResolver.AnimatedResolvedTextureData animatedResolvedTextureData)
 		{
-			animatedTextureStream = animatedTextureStream.limit(1);
-		}
-		
-		final Map<Identifier, NativeImage> texturesToRegister = animatedTextureStream
-			.collect(Collectors.toMap(
-				e -> identifier(
-					this.uuid() + (!freezeAnimatation ? "/" + e.getKey() : "")),
-				Map.Entry::getValue,
-				(l, r) -> r,
-				LinkedHashMap::new));
-		
-		if(texturesToRegister.isEmpty())
-		{
-			LOG.warn(
-				"Received animated texture with no frames[url='{}',profileId='{}']",
-				url,
-				this.profile.getId());
-		}
-		
-		// Assume that elytra texture is available
-		this.hasElytraTexture = true;
-		return texturesToRegister;
-	}
-	
-	private NativeImage toCapeTexture(final NativeImage img)
-	{
-		int imageWidth = 64;
-		int imageHeight = 32;
-		final int srcWidth = img.getWidth();
-		final int srcHeight = img.getHeight();
-		while(imageWidth < srcWidth || imageHeight < srcHeight)
-		{
-			imageWidth *= 2;
-			imageHeight *= 2;
-		}
-		final NativeImage imgNew = new NativeImage(imageWidth, imageHeight, true);
-		for(int x = 0; x < srcWidth; x++)
-		{
-			for(int y = 0; y < srcHeight; y++)
+			final Map<Integer, NativeImage> textures = animatedResolvedTextureData.textures();
+			Stream<Map.Entry<Integer, NativeImage>> animatedTextureStream = textures.entrySet().stream();
+			
+			if(textures.isEmpty())
 			{
-				imgNew.setColorArgb(x, y, img.getColorArgb(x, y));
+				LOG.warn(
+					"Received animated texture with no frames[url='{}',profileId='{}']",
+					url,
+					this.profile.getId());
+				return Map.of();
 			}
-		}
-		img.close();
-		return imgNew;
-	}
-	
-	private Map<Integer, NativeImage> toAnimatedCapeTextureFrames(final NativeImage img)
-	{
-		final Map<Integer, NativeImage> frames = new HashMap<>();
-		final int totalFrames = img.getHeight() / (img.getWidth() / 2);
-		for(int currentFrame = 0; currentFrame < totalFrames; currentFrame++)
-		{
-			final NativeImage frame = new NativeImage(img.getWidth(), img.getWidth() / 2, true);
-			for(int x = 0; x < frame.getWidth(); x++)
+			
+			if(freezeAnimation)
 			{
-				for(int y = 0; y < frame.getHeight(); y++)
-				{
-					frame.setColorArgb(x, y, img.getColorArgb(x, y + (currentFrame * (img.getWidth() / 2))));
-				}
+				animatedTextureStream = animatedTextureStream.limit(1);
 			}
-			frames.put(currentFrame, frame);
+			
+			return animatedTextureStream
+				.collect(Collectors.toMap(
+					e -> identifier(
+						this.uuid() + (!freezeAnimation ? "/" + e.getKey() : "")),
+					Map.Entry::getValue,
+					(l, r) -> r,
+					LinkedHashMap::new));
 		}
-		return frames;
+		throw new IllegalStateException("Unexpected ResolvedTextureData: " + resolved.getClass().getSimpleName());
 	}
 	
 	private Optional<IdentifierProvider> registerTexturesAndGetProvider(

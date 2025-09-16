@@ -17,14 +17,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           # Required because otherwise there are always changes detected when executing diff/rev-list
           fetch-depth: 0
           # Don't use default token as no workflows are run otherwise
           # https://github.com/orgs/community/discussions/65321#discussioncomment-6861423
           token: ${{ secrets.BOT_PR_PAT }}
-      
+
       - name: Init Git
         run: |
           git config --global user.email "164098849+litetex-oss-bot@users.noreply.github.com"

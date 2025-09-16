@@ -25,6 +25,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.SpecialGuiElementRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.litetex.capes.Capes;
 import net.litetex.capes.config.Config;
+import net.litetex.capes.handler.textures.suppliers.TextureResolvers;
 import net.litetex.capes.menu.preview.render.PlayerDisplayGuiElementRenderer;
 import net.litetex.capes.provider.suppliers.CapeProviders;
 
@@ -49,7 +50,8 @@ public class FabricCapes implements ClientModInitializer
 			this::saveConfig,
 			CapeProviders.findAllProviders(
 				config.getCustomProviders(),
-				config.getModProviderHandling().load() ? new FabricModMetadataProviderSupplier() : null)
+				config.getModProviderHandling().load() ? new FabricModMetadataProviderSupplier() : null),
+			TextureResolvers.findAllResolvers()
 		));
 		
 		LOG.debug("Initialized");
@@ -69,9 +71,9 @@ public class FabricCapes implements ClientModInitializer
 			{
 				return this.gson.fromJson(Files.readString(configFilePath), Config.class);
 			}
-			catch(final IOException ioe)
+			catch(final Exception ex)
 			{
-				LOG.warn("Failed to read config file", ioe);
+				LOG.warn("Failed to read config file", ex);
 			}
 		}
 		

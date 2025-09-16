@@ -43,6 +43,7 @@ public class PlayerCapeHandlerManager
 	private final Capes capes;
 	private final boolean debugEnabled;
 	
+	@SuppressWarnings("PMD.CollectionTypeMismatch")
 	public PlayerCapeHandlerManager(final Capes capes)
 	{
 		this.capes = capes;

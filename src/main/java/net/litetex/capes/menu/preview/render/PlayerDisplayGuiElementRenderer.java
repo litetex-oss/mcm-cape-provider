@@ -1,6 +1,5 @@
 package net.litetex.capes.menu.preview.render;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -26,7 +25,6 @@ import net.minecraft.util.math.RotationAxis;
 @SuppressWarnings("checkstyle:MagicNumber")
 public class PlayerDisplayGuiElementRenderer extends SpecialGuiElementRenderer<PlayerDisplayGuiElementRenderState>
 {
-	public static final AtomicBoolean REGISTERED = new AtomicBoolean(false);
 	private static final int LIGHT = 0xF000F0;
 	
 	public PlayerDisplayGuiElementRenderer(final VertexConsumerProvider.Immediate immediate)

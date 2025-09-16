@@ -80,6 +80,7 @@ public class FabricModMetadataProviderSupplier implements ModMetadataProviderSup
 			name,
 			url,
 			false,
+			null,
 			Optional.ofNullable(capeObject.get("changeCapeUrl"))
 				.map(CustomValue::getAsString)
 				.orElse(null),

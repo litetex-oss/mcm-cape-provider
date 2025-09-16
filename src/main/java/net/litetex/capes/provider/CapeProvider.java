@@ -27,12 +27,12 @@ public interface CapeProvider
 		final HttpRequest.Builder requestBuilder,
 		final GameProfile profile) throws IOException, InterruptedException
 	{
-		return resolveTextureDefault(clientBuilder, requestBuilder, this.isDefaultAnimatedTexture());
+		return resolveTextureDefault(clientBuilder, requestBuilder, this.textureResolverId());
 	}
 	
-	default boolean isDefaultAnimatedTexture()
+	default String textureResolverId()
 	{
-		return false;
+		return null;
 	}
 	
 	default boolean hasChangeCapeUrl()
@@ -63,7 +63,7 @@ public interface CapeProvider
 	static ResolvedTextureInfo.ByteArrayTextureInfo resolveTextureDefault(
 		final HttpClient.Builder clientBuilder,
 		final HttpRequest.Builder requestBuilder,
-		final boolean animated) throws IOException, InterruptedException
+		final String textureResolverId) throws IOException, InterruptedException
 	{
 		try(final HttpClient client = clientBuilder.build())
 		{
@@ -75,7 +75,7 @@ public interface CapeProvider
 				return null;
 			}
 			
-			return new ResolvedTextureInfo.ByteArrayTextureInfo(response.body(), animated);
+			return new ResolvedTextureInfo.ByteArrayTextureInfo(response.body(), textureResolverId);
 		}
 	}
 }
