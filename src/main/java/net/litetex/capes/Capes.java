@@ -24,6 +24,7 @@ import net.litetex.capes.config.ModProviderHandling;
 import net.litetex.capes.handler.PlayerCapeHandler;
 import net.litetex.capes.handler.PlayerCapeHandlerManager;
 import net.litetex.capes.handler.ProfileTextureLoadThrottler;
+import net.litetex.capes.handler.textures.TextureResolver;
 import net.litetex.capes.provider.CapeProvider;
 import net.litetex.capes.provider.CustomProvider;
 import net.litetex.capes.provider.DefaultMinecraftCapeProvider;
@@ -61,6 +62,7 @@ public class Capes
 	private final Config config;
 	private final Consumer<Config> saveConfigFunc;
 	private final Map<String, CapeProvider> allProviders;
+	private final Map<String, TextureResolver> allTextureResolvers;
 	
 	private final boolean validateProfile;
 	private final Duration loadThrottleSuppressDuration;
@@ -76,11 +78,19 @@ public class Capes
 	public Capes(
 		final Config config,
 		final Consumer<Config> saveConfigFunc,
-		final Map<String, CapeProvider> allProviders)
+		final Map<String, CapeProvider> allProviders,
+		final Map<String, TextureResolver> allTextureResolvers)
 	{
 		this.config = config;
 		this.saveConfigFunc = saveConfigFunc;
 		this.allProviders = allProviders;
+		this.allTextureResolvers = allTextureResolvers;
+		
+		if(LOG.isDebugEnabled())
+		{
+			LOG.debug("Providers: {}", allProviders.keySet());
+			LOG.debug("Texture-Resolvers: {}", allTextureResolvers.keySet());
+		}
 		
 		// Calculate advanced/debug values
 		
@@ -214,6 +224,11 @@ public class Capes
 	public Map<String, CapeProvider> getAllProviders()
 	{
 		return this.allProviders;
+	}
+	
+	public Map<String, TextureResolver> getAllTextureResolvers()
+	{
+		return this.allTextureResolvers;
 	}
 	
 	public Optional<CapeProvider> getCapeProviderForSelf()

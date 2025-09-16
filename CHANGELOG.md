@@ -1,3 +1,10 @@
+# 4.0.0
+* Implemented Texture Resolvers
+  * Added support for GIFs #131
+  * Deprecated `animated`-flag: Use `textureResolverId` instead
+  * For further details please have a look at the corresponding documentation on the README
+* Various small code improvements
+
 # 3.0.0
 * Other mods can now define cape providers in their metadata #94
   * This way other developers don't have to manually implement/copy-paste code for adding custom capes (e.g. for supporters) which should result in less conflicts

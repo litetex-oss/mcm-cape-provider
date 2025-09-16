@@ -7,6 +7,7 @@ import java.util.Optional;
 import com.mojang.authlib.GameProfile;
 
 import net.litetex.capes.config.CustomProviderConfig;
+import net.litetex.capes.handler.textures.AnimatedSpriteTextureResolver;
 import net.litetex.capes.provider.antifeature.AntiFeature;
 import net.litetex.capes.provider.antifeature.AntiFeatures;
 import net.litetex.capes.provider.antifeature.DefaultAntiFeature;
@@ -45,9 +46,19 @@ public class CustomProvider implements CapeProvider
 	}
 	
 	@Override
-	public boolean isDefaultAnimatedTexture()
+	public String textureResolverId()
 	{
-		return this.config.animated();
+		final String textureResolverId = this.config.textureResolverId();
+		if(textureResolverId != null && !textureResolverId.isEmpty())
+		{
+			return textureResolverId;
+		}
+		// Legacy behavior
+		if(Boolean.TRUE.equals(this.config.animated()))
+		{
+			return AnimatedSpriteTextureResolver.ID;
+		}
+		return null;
 	}
 	
 	@Override
