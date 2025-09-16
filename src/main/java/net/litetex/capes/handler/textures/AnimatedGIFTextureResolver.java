@@ -30,13 +30,18 @@ public class AnimatedGIFTextureResolver implements TextureResolver
 	}
 	
 	@Override
-	public ResolvedTextureData resolve(final byte[] imageData) throws IOException
+	public ResolvedTextureData resolve(final byte[] imageData, final boolean shouldOnlyResolveFirstFrame)
+		throws IOException
 	{
 		final ImageReader reader = ImageIO.getImageReadersBySuffix("GIF").next();
 		try(final ImageInputStream in = ImageIO.createImageInputStream(new ByteArrayInputStream(imageData)))
 		{
 			reader.setInput(in);
-			final int numImages = reader.getNumImages(true);
+			int numImages = reader.getNumImages(true);
+			if(shouldOnlyResolveFirstFrame)
+			{
+				numImages = Math.min(1, numImages);
+			}
 			
 			final Map<Integer, NativeImage> frames = new HashMap<>();
 			int targetWidth = -1;

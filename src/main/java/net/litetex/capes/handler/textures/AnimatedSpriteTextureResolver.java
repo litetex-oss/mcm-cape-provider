@@ -24,12 +24,17 @@ public class AnimatedSpriteTextureResolver implements TextureResolver
 	}
 	
 	@Override
-	public ResolvedTextureData resolve(final byte[] imageData) throws IOException
+	public ResolvedTextureData resolve(final byte[] imageData, final boolean shouldOnlyResolveFirstFrame)
+		throws IOException
 	{
 		final Map<Integer, NativeImage> frames = new HashMap<>();
 		try(final NativeImage img = NativeImage.read(imageData))
 		{
-			final int totalFrames = img.getHeight() / (img.getWidth() / 2);
+			int totalFrames = img.getHeight() / (img.getWidth() / 2);
+			if(shouldOnlyResolveFirstFrame)
+			{
+				totalFrames = Math.min(1, totalFrames);
+			}
 			for(int currentFrame = 0; currentFrame < totalFrames; currentFrame++)
 			{
 				final NativeImage frame = new NativeImage(img.getWidth(), img.getWidth() / 2, true);

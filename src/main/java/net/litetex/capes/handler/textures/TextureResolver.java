@@ -12,7 +12,7 @@ public interface TextureResolver
 	
 	boolean animated();
 	
-	ResolvedTextureData resolve(byte[] imageData) throws IOException;
+	ResolvedTextureData resolve(byte[] imageData, boolean shouldOnlyResolveFirstFrame) throws IOException;
 	
 	interface ResolvedTextureData
 	{

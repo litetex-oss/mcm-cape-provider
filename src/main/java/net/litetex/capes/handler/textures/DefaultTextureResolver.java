@@ -23,7 +23,8 @@ public class DefaultTextureResolver implements TextureResolver
 	
 	@SuppressWarnings("checkstyle:MagicNumber")
 	@Override
-	public ResolvedTextureData resolve(final byte[] imageData) throws IOException
+	public ResolvedTextureData resolve(final byte[] imageData, final boolean shouldOnlyResolveFirstFrame)
+		throws IOException
 	{
 		try(final NativeImage img = NativeImage.read(imageData))
 		{

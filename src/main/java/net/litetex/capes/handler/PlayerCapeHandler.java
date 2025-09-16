@@ -107,13 +107,18 @@ public class PlayerCapeHandler
 			final TextureResolver textureResolver = this.capes.getAllTextureResolvers()
 				.getOrDefault(resolvedTextureInfo.textureResolverId(), DefaultTextureResolver.INSTANCE);
 			
-			if(textureResolver.animated() && this.animatedCapesHandling() == AnimatedCapesHandling.OFF)
+			final AnimatedCapesHandling animatedCapesHandling = this.animatedCapesHandling();
+			if(textureResolver.animated() && animatedCapesHandling == AnimatedCapesHandling.OFF)
 			{
 				return false;
 			}
 			
 			this.optIdentifierProvider = this.registerTexturesAndGetProvider(
-				this.determineTexturesToRegister(textureResolver, resolvedTextureInfo.imageBytes(), url));
+				this.determineTexturesToRegister(
+					textureResolver,
+					resolvedTextureInfo.imageBytes(),
+					animatedCapesHandling == AnimatedCapesHandling.FROZEN,
+					url));
 			
 			return this.optIdentifierProvider.isPresent();
 		}
@@ -170,9 +175,13 @@ public class PlayerCapeHandler
 	private Map<Identifier, NativeImage> determineTexturesToRegister(
 		final TextureResolver textureResolver,
 		final byte[] imageData,
-		final String url) throws IOException
+		final boolean freezeAnimation,
+		final String url
+	) throws IOException
 	{
-		final TextureResolver.ResolvedTextureData resolved = textureResolver.resolve(imageData);
+		final TextureResolver.ResolvedTextureData resolved = textureResolver.resolve(
+			imageData,
+			freezeAnimation);
 		this.hasElytraTexture = !Boolean.FALSE.equals(resolved.hasElytra()); // if null -> default to true
 		
 		if(resolved instanceof final TextureResolver.DefaultResolvedTextureData defaultResolvedTextureData)
@@ -193,7 +202,6 @@ public class PlayerCapeHandler
 				return Map.of();
 			}
 			
-			final boolean freezeAnimation = this.animatedCapesHandling() == AnimatedCapesHandling.FROZEN;
 			if(freezeAnimation)
 			{
 				animatedTextureStream = animatedTextureStream.limit(1);

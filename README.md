@@ -53,6 +53,19 @@ This demo showcases how to apply the capes inside [``custom-cape-demo``](https:/
 
 For more details have a look at [CustomProvider](https://github.com/litetex-oss/mcm-cape-provider/tree/dev/src/main/java/net/litetex/capes/provider/CustomProvider.java) and [CustomProviderConfig](https://github.com/litetex-oss/mcm-cape-provider/tree/dev/src/main/java/net/litetex/capes/config/CustomProviderConfig.java)
 
+##### Texture resolvers / Animated textures
+
+Texture resolvers can be selected using the `textureResolverId` attribute.
+The following resolvers are currently built-in:
+
+| Resolver-ID | Animated | Format | Example |
+| --- | --- | --- | --- |
+| `default` / null | ❌ | [PNG](https://de.wikipedia.org/wiki/Portable_Network_Graphics) | [uuid.png](https://raw.githubusercontent.com/litetex-oss/mcm-cape-provider/refs/heads/dev/custom-cape-demo/uuid.png) |
+| `sprite` | ✔ | Stacked [PNG](https://de.wikipedia.org/wiki/Portable_Network_Graphics) | [animated.png](https://raw.githubusercontent.com/litetex-oss/mcm-cape-provider/refs/heads/dev/custom-cape-demo/animated.png) |
+| `gif` | ✔ | [GIF](https://de.wikipedia.org/wiki/Graphics_Interchange_Format) | [animated.gif](https://raw.githubusercontent.com/litetex-oss/mcm-cape-provider/refs/heads/dev/custom-cape-demo/animated.gif) |
+
+Please note that animated textures can be frozen or completely disabled in the settings.
+
 #### As a developer / Proving capes through mods
 
 If you are a mod developer and want to e.g. display a cape for supporters of your mod, you can provide it using the mod's metadata / ``fabric.mod.json``.
