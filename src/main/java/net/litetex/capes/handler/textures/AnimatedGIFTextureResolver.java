@@ -108,7 +108,7 @@ public class AnimatedGIFTextureResolver implements TextureResolver
 		}
 	}
 	
-	@SuppressWarnings("checkstyle:MagicNumber")
+	@SuppressWarnings({"checkstyle:MagicNumber", "PMD.CognitiveComplexity"})
 	protected MetadataInfo resolveMetaDataInfo(final IIOMetadata metadata)
 	{
 		if(metadata == null)
@@ -127,7 +127,6 @@ public class AnimatedGIFTextureResolver implements TextureResolver
 		if(globalScreeDescriptor.getLength() > 0)
 		{
 			final IIOMetadataNode screenDescriptor = (IIOMetadataNode)globalScreeDescriptor.item(0);
-			
 			if(screenDescriptor != null)
 			{
 				width = Integer.parseInt(screenDescriptor.getAttribute("logicalScreenWidth"));
@@ -242,7 +241,7 @@ public class AnimatedGIFTextureResolver implements TextureResolver
 		{
 			final Node nodeItem = children.item(nodeIndex);
 			
-			if(nodeItem.getNodeName().equals("ImageDescriptor"))
+			if("ImageDescriptor".equals(nodeItem.getNodeName()))
 			{
 				final NamedNodeMap map = nodeItem.getAttributes();
 				
