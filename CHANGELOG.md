@@ -1,3 +1,7 @@
+# 4.0.1
+* Made animated GIF decoding more reliable
+  * This should fix broken textures #135
+
 # 4.0.0
 * Implemented Texture Resolvers
   * Added support for GIFs #131
