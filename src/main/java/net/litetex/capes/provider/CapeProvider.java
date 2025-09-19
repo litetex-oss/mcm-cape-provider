@@ -20,7 +20,7 @@ public interface CapeProvider
 {
 	double DEFAULT_RATE_LIMIT_REQ_PER_SEC = 20;
 	
-	int DEFAULT_MAX_DOWNLOAD_BYTES = 20_000_000; // 20MB
+	int DEFAULT_MAX_DOWNLOAD_BYTES = 10_000_000; // 10 MB
 	
 	String id();
 	
