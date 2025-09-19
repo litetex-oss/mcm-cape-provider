@@ -1,6 +1,7 @@
 # 4.0.1
 * Made animated GIF decoding more reliable
   * This should fix broken textures #135
+* The maximum size for image downloads is now 20MB by default
 
 # 4.0.0
 * Implemented Texture Resolvers
