@@ -26,7 +26,7 @@ import net.minecraft.client.texture.NativeImage;
 
 
 /**
- * Decodes Animated GIF.
+ * Decodes animated GIFs.
  * <p>
  * Sources:
  * <ul>
