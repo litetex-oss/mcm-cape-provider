@@ -1,8 +1,9 @@
 package net.litetex.capes.handler.textures;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.List;
 
+import net.litetex.capes.handler.AnimatedNativeImageContainer;
 import net.minecraft.client.texture.NativeImage;
 
 
@@ -29,11 +30,11 @@ public interface TextureResolver
 	
 	
 	record AnimatedResolvedTextureData(
-		Map<Integer, NativeImage> textures,
+		List<AnimatedNativeImageContainer> textures,
 		Boolean hasElytra
 	) implements ResolvedTextureData
 	{
-		public AnimatedResolvedTextureData(final Map<Integer, NativeImage> textures)
+		public AnimatedResolvedTextureData(final List<AnimatedNativeImageContainer> textures)
 		{
 			this(textures, null);
 		}

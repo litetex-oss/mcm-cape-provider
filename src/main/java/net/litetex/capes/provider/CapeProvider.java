@@ -1,10 +1,14 @@
 package net.litetex.capes.provider;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.BoundedInputStream;
 
 import com.mojang.authlib.GameProfile;
 
@@ -15,6 +19,8 @@ import net.minecraft.client.MinecraftClient;
 public interface CapeProvider
 {
 	double DEFAULT_RATE_LIMIT_REQ_PER_SEC = 20;
+	
+	int DEFAULT_MAX_DOWNLOAD_BYTES = 10_000_000; // 10 MB
 	
 	String id();
 	
@@ -67,15 +73,30 @@ public interface CapeProvider
 	{
 		try(final HttpClient client = clientBuilder.build())
 		{
-			final HttpResponse<byte[]> response =
-				client.send(requestBuilder.GET().build(), HttpResponse.BodyHandlers.ofByteArray());
+			final HttpResponse<InputStream> response =
+				client.send(requestBuilder.GET().build(), HttpResponse.BodyHandlers.ofInputStream());
 			
 			if(response.statusCode() / 100 != 2)
 			{
 				return null;
 			}
 			
-			return new ResolvedTextureInfo.ByteArrayTextureInfo(response.body(), textureResolverId);
+			try(final BoundedInputStream cappedIS = BoundedInputStream.builder()
+				.setInputStream(response.body())
+				.setMaxCount(DEFAULT_MAX_DOWNLOAD_BYTES)
+				.get())
+			{
+				final ResolvedTextureInfo.ByteArrayTextureInfo byteArrayTextureInfo =
+					new ResolvedTextureInfo.ByteArrayTextureInfo(
+						IOUtils.toByteArray(cappedIS),
+						textureResolverId);
+				if(cappedIS.getCount() >= DEFAULT_MAX_DOWNLOAD_BYTES)
+				{
+					throw new IllegalStateException(
+						"Aborted download because it exceeded the maximum allowed size: " + DEFAULT_MAX_DOWNLOAD_BYTES);
+				}
+				return byteArrayTextureInfo;
+			}
 		}
 	}
 }

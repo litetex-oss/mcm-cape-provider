@@ -8,17 +8,14 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -172,7 +169,7 @@ public class PlayerCapeHandler
 		return blockedCapeHashes.contains(Arrays.hashCode(imageBytes));
 	}
 	
-	private Map<Identifier, NativeImage> determineTexturesToRegister(
+	private List<TextureToRegister> determineTexturesToRegister(
 		final TextureResolver textureResolver,
 		final byte[] imageData,
 		final boolean freezeAnimation,
@@ -186,12 +183,14 @@ public class PlayerCapeHandler
 		
 		if(resolved instanceof final TextureResolver.DefaultResolvedTextureData defaultResolvedTextureData)
 		{
-			return Map.of(identifier(this.uuid().toString()), defaultResolvedTextureData.texture());
+			return List.of(new TextureToRegister(
+				identifier(this.uuid().toString()),
+				defaultResolvedTextureData.texture()));
 		}
 		else if(resolved instanceof final TextureResolver.AnimatedResolvedTextureData animatedResolvedTextureData)
 		{
-			final Map<Integer, NativeImage> textures = animatedResolvedTextureData.textures();
-			Stream<Map.Entry<Integer, NativeImage>> animatedTextureStream = textures.entrySet().stream();
+			final List<AnimatedNativeImageContainer> textures = animatedResolvedTextureData.textures();
+			Stream<AnimatedNativeImageContainer> animatedTextureStream = textures.stream();
 			
 			if(textures.isEmpty())
 			{
@@ -199,7 +198,7 @@ public class PlayerCapeHandler
 					"Received animated texture with no frames[url='{}',profileId='{}']",
 					url,
 					this.profile.getId());
-				return Map.of();
+				return List.of();
 			}
 			
 			if(freezeAnimation)
@@ -207,19 +206,19 @@ public class PlayerCapeHandler
 				animatedTextureStream = animatedTextureStream.limit(1);
 			}
 			
+			final AtomicInteger counter = new AtomicInteger(0);
 			return animatedTextureStream
-				.collect(Collectors.toMap(
-					e -> identifier(
-						this.uuid() + (!freezeAnimation ? "/" + e.getKey() : "")),
-					Map.Entry::getValue,
-					(l, r) -> r,
-					LinkedHashMap::new));
+				.map(c -> new TextureToRegister(
+					identifier(this.uuid() + (!freezeAnimation ? "/" + counter.getAndIncrement() : "")),
+					c.image(),
+					c.delayMs()))
+				.toList();
 		}
 		throw new IllegalStateException("Unexpected ResolvedTextureData: " + resolved.getClass().getSimpleName());
 	}
 	
 	private Optional<IdentifierProvider> registerTexturesAndGetProvider(
-		final Map<Identifier, NativeImage> texturesToRegister)
+		final List<TextureToRegister> texturesToRegister)
 	{
 		if(texturesToRegister.isEmpty())
 		{
@@ -229,10 +228,10 @@ public class PlayerCapeHandler
 		final TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
 		// Do texturing work NOT on Render thread
 		CompletableFuture.runAsync(
-				() -> texturesToRegister.forEach((id, texture) ->
+				() -> texturesToRegister.forEach(t ->
 					textureManager.registerTexture(
-						id,
-						new NativeImageBackedTexture(id::toString, texture))),
+						t.identifier(),
+						new NativeImageBackedTexture(t.identifier()::toString, t.image()))),
 				MinecraftClient.getInstance())
 			.exceptionally(ex -> {
 				LOG.warn("Failed to register textures", ex);
@@ -240,8 +239,20 @@ public class PlayerCapeHandler
 			});
 		
 		return Optional.of(texturesToRegister.size() == 1
-			? new DefaultIdentifierProvider(texturesToRegister.keySet().iterator().next())
-			: new AnimatedIdentifierProvider(texturesToRegister.keySet()));
+			? new DefaultIdentifierProvider(texturesToRegister.getFirst().identifier())
+			: new AnimatedIdentifierProvider(texturesToRegister));
+	}
+	
+	record TextureToRegister(
+		Identifier identifier,
+		NativeImage image,
+		int delayMs
+	)
+	{
+		public TextureToRegister(final Identifier identifier, final NativeImage image)
+		{
+			this(identifier, image, 100);
+		}
 	}
 	
 	private AnimatedCapesHandling animatedCapesHandling()
@@ -281,13 +292,21 @@ public class PlayerCapeHandler
 	
 	static class AnimatedIdentifierProvider implements IdentifierProvider
 	{
-		private final List<Identifier> identifiers;
+		private final List<IdentifierContainer> identifiers;
 		private int lastFrameIndex;
 		private long nextFrameTime;
 		
-		public AnimatedIdentifierProvider(final Collection<Identifier> identifiers)
+		public AnimatedIdentifierProvider(final Collection<TextureToRegister> identifiers)
 		{
-			this.identifiers = new ArrayList<>(identifiers);
+			this.identifiers = identifiers.stream()
+				.map(t -> new IdentifierContainer(
+					t.identifier(),
+					Math.clamp(
+						t.delayMs(),
+						1,
+						// 1min
+						60 * 1_000)))
+				.toList();
 		}
 		
 		@Override
@@ -298,17 +317,25 @@ public class PlayerCapeHandler
 			{
 				final int thisFrameIndex = (this.lastFrameIndex + 1) % this.identifiers.size();
 				this.lastFrameIndex = thisFrameIndex;
-				this.nextFrameTime = time + 100L;
 				
-				return this.identifiers.get(thisFrameIndex);
+				final IdentifierContainer ic = this.identifiers.get(thisFrameIndex);
+				this.nextFrameTime = time + ic.delay();
+				
+				return ic.identifier();
 			}
-			return this.identifiers.get(this.lastFrameIndex);
+			return this.identifiers.get(this.lastFrameIndex).identifier();
 		}
 		
 		@Override
 		public boolean dynamicIdentifier()
 		{
 			return true;
+		}
+		
+		record IdentifierContainer(
+			Identifier identifier,
+			int delay)
+		{
 		}
 	}
 }
