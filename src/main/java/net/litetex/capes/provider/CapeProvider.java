@@ -86,9 +86,16 @@ public interface CapeProvider
 				.setMaxCount(DEFAULT_MAX_DOWNLOAD_BYTES)
 				.get())
 			{
-				return new ResolvedTextureInfo.ByteArrayTextureInfo(
-					IOUtils.toByteArray(cappedIS),
-					textureResolverId);
+				final ResolvedTextureInfo.ByteArrayTextureInfo byteArrayTextureInfo =
+					new ResolvedTextureInfo.ByteArrayTextureInfo(
+						IOUtils.toByteArray(cappedIS),
+						textureResolverId);
+				if(cappedIS.getCount() >= DEFAULT_MAX_DOWNLOAD_BYTES)
+				{
+					throw new IllegalStateException(
+						"Aborted download because it exceeded the maximum allowed size: " + DEFAULT_MAX_DOWNLOAD_BYTES);
+				}
+				return byteArrayTextureInfo;
 			}
 		}
 	}
