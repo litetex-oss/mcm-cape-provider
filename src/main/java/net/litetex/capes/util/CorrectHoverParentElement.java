@@ -10,7 +10,7 @@ import net.minecraft.client.gui.ParentElement;
 
 public interface CorrectHoverParentElement extends ParentElement
 {
-	// Fixes click and hover not working when element our button is rendered on top!
+	// Fixes click and hover not working when element/button is rendered on top!
 	@Override
 	default Optional<Element> hoveredElement(final double mouseX, final double mouseY)
 	{
