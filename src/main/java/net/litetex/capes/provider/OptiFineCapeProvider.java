@@ -36,7 +36,7 @@ public class OptiFineCapeProvider implements CapeProvider
 	@Override
 	public String getBaseUrl(final GameProfile profile)
 	{
-		return "http://s.optifine.net/capes/" + profile.getName() + ".png";
+		return "http://s.optifine.net/capes/" + profile.name() + ".png";
 	}
 	
 	@Override
@@ -55,9 +55,9 @@ public class OptiFineCapeProvider implements CapeProvider
 			
 			final String serverId = random1Bi.xor(random2Bi).toString(16);
 			
-			final UUID id = client.getGameProfile().getId();
+			final UUID id = client.getGameProfile().id();
 			
-			client.getSessionService().joinServer(id, client.getSession().getAccessToken(), serverId);
+			client.getApiServices().sessionService().joinServer(id, client.getSession().getAccessToken(), serverId);
 			return "https://optifine.net/capeChange?"
 				+ "u=" + id.toString().replace("-", "")
 				+ "&n=" + client.getSession().getUsername()

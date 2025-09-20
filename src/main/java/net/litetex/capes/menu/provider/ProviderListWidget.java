@@ -1,10 +1,10 @@
 package net.litetex.capes.menu.provider;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -16,8 +16,11 @@ import net.litetex.capes.provider.CapeProvider;
 import net.litetex.capes.provider.DefaultMinecraftCapeProvider;
 import net.litetex.capes.provider.antifeature.AntiFeature;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.RenderPipelines;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.cursor.StandardCursors;
 import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -28,6 +31,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -80,13 +84,21 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 			).toList()
 		);
 		
-		this.getFirst().upVisible(false);
-		this.getEntry(this.children().size() - 2).downVisible(false);
+		final List<ProviderListEntry> children = this.children();
+		children.getFirst().upVisible(false);
+		children.get(children.size() - 2).downVisible(false);
 		
-		// MinecraftProvider is always there
-		final ProviderListEntry last = this.children().getLast();
+		// Default Provider (usually Minecraft) is always last and can't be moved
+		final ProviderListEntry last = children.getLast();
 		last.upVisible(false);
 		last.downVisible(false);
+	}
+	
+	@Override
+	public void setPosition(final int x, final int y)
+	{
+		super.setPosition(x, y);
+		this.recalculateAllChildrenPositions();
 	}
 	
 	private ProviderListEntry createEntry(
@@ -127,7 +139,7 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 		final int otherIndex = selfIndex + (up ? -1 : 1);
 		final ProviderListEntry other = children.get(otherIndex);
 		
-		Collections.swap(children, selfIndex, otherIndex);
+		this.swapEntriesOnPositions(selfIndex, otherIndex);
 		
 		final ProviderListEntry higherEntry = up ? entry : other;
 		final ProviderListEntry lowerEntry = up ? other : entry;
@@ -211,7 +223,10 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 			
 			this.nameTextSupplier = () ->
 				formatMutableTextIf(Text.literal(this.capeProvider.name()), hasHomePageUrl, Formatting.BLUE);
-			this.txtName = new TextWidget(
+			final BiFunction<Text, TextRenderer, TextWidget> widgetFunc = hasHomePageUrl
+				? ClickableTextWidget::new
+				: TextWidget::new;
+			this.txtName = widgetFunc.apply(
 				this.nameTextSupplier.get(),
 				MinecraftClient.getInstance().textRenderer);
 			
@@ -316,16 +331,15 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 		@Override
 		public void render(
 			final DrawContext context,
-			final int index,
-			final int y,
-			final int x,
-			final int entryWidth,
-			final int entryHeight,
 			final int mouseX,
 			final int mouseY,
 			final boolean hovered,
 			final float tickDelta)
 		{
+			final int x = this.getContentX();
+			final int y = this.getContentY();
+			final int entryWidth = this.getContentWidth();
+			
 			this.chbxActive.setPosition(x, y + (ITEM_HEIGHT - this.chbxActive.getHeight() - 4) / 2);
 			this.chbxActive.render(context, mouseX, mouseY, tickDelta);
 			
@@ -373,11 +387,13 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 		}
 		
 		@Override
-		public boolean mouseClicked(final double mouseX, final double mouseY, final int button)
+		public boolean mouseClicked(final Click click, final boolean doubled)
 		{
+			final double mouseX = click.x();
+			final double mouseY = click.y();
 			if(this.chbxActive.isMouseOver(mouseX, mouseY))
 			{
-				return this.chbxActive.mouseClicked(mouseX, mouseY, button);
+				return this.chbxActive.mouseClicked(click, doubled);
 			}
 			if(this.onTxtClick != null && this.txtName.isMouseOver(mouseX, mouseY))
 			{
@@ -386,15 +402,15 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 			}
 			if(this.btnEditCape != null && this.btnEditCape.isMouseOver(mouseX, mouseY))
 			{
-				return this.btnEditCape.mouseClicked(mouseX, mouseY, button);
+				return this.btnEditCape.mouseClicked(click, doubled);
 			}
 			if(this.icoMoveUp.isMouseOver(mouseX, mouseY))
 			{
-				return this.icoMoveUp.mouseClicked(mouseX, mouseY, button);
+				return this.icoMoveUp.mouseClicked(click, doubled);
 			}
 			else if(this.icoMoveDown.isMouseOver(mouseX, mouseY))
 			{
-				return this.icoMoveDown.mouseClicked(mouseX, mouseY, button);
+				return this.icoMoveDown.mouseClicked(click, doubled);
 			}
 			return true; // Select
 		}
@@ -408,14 +424,15 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 		}
 		
 		@Override
-		public boolean keyPressed(final int keyCode, final int scanCode, final int modifiers)
+		public boolean keyPressed(final KeyInput input)
 		{
+			final int keyCode = input.getKeycode();
 			if(GLFW.GLFW_KEY_SPACE == keyCode || GLFW.GLFW_KEY_ENTER == keyCode)
 			{
 				this.chbxActive.toggle();
 				return true;
 			}
-			if(GLFW.GLFW_MOD_SHIFT == modifiers)
+			if(GLFW.GLFW_MOD_SHIFT == input.modifiers())
 			{
 				if(GLFW.GLFW_KEY_UP == keyCode && this.icoMoveUp.visible)
 				{
@@ -428,8 +445,7 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 					return true;
 				}
 			}
-			
-			return super.keyReleased(keyCode, scanCode, modifiers);
+			return super.keyPressed(input);
 		}
 		
 		@Override
@@ -487,9 +503,9 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 		}
 		
 		@Override
-		public void onClick(final double mouseX, final double mouseY)
+		public void onClick(final Click click, final boolean bl)
 		{
-			super.onClick(mouseX, mouseY);
+			super.onClick(click, bl);
 			this.click();
 		}
 		
@@ -519,11 +535,24 @@ public class ProviderListWidget extends AlwaysSelectedEntryListWidget<ProviderLi
 		protected void appendClickableNarrations(final NarrationMessageBuilder builder)
 		{
 		}
+	}
+	
+	
+	static class ClickableTextWidget extends TextWidget
+	{
+		public ClickableTextWidget(final Text message, final TextRenderer textRenderer)
+		{
+			super(message, textRenderer);
+		}
 		
 		@Override
-		public boolean isNarratable()
+		public void renderWidget(final DrawContext context, final int mouseX, final int mouseY, final float deltaTicks)
 		{
-			return false;
+			super.renderWidget(context, mouseX, mouseY, deltaTicks);
+			if(this.isMouseOver(mouseX, mouseY))
+			{
+				context.setCursor(StandardCursors.POINTING_HAND);
+			}
 		}
 	}
 }
