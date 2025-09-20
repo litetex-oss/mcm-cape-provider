@@ -29,10 +29,12 @@ import net.litetex.capes.handler.textures.DefaultTextureResolver;
 import net.litetex.capes.handler.textures.TextureResolver;
 import net.litetex.capes.provider.CapeProvider;
 import net.litetex.capes.provider.ResolvedTextureInfo;
+import net.litetex.capes.util.CapeProviderTextureAsset;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.TextureManager;
+import net.minecraft.util.AssetInfo;
 import net.minecraft.util.Identifier;
 
 
@@ -43,7 +45,7 @@ public class PlayerCapeHandler
 	
 	private final Capes capes;
 	private final GameProfile profile;
-	private Optional<IdentifierProvider> optIdentifierProvider = Optional.empty();
+	private Optional<TextureProvider> optTextureProvider = Optional.empty();
 	private boolean hasElytraTexture = true;
 	
 	public PlayerCapeHandler(final Capes capes, final GameProfile profile)
@@ -52,24 +54,24 @@ public class PlayerCapeHandler
 		this.profile = profile;
 	}
 	
-	public Optional<IdentifierProvider> capeIdentifierProvider()
+	public Optional<TextureProvider> capeTextureProvider()
 	{
-		return this.optIdentifierProvider;
+		return this.optTextureProvider;
 	}
 	
-	public Identifier getCape()
+	public AssetInfo.TextureAsset getCape()
 	{
-		final IdentifierProvider identifierProvider = this.optIdentifierProvider.orElse(null);
-		if(identifierProvider != null)
+		final TextureProvider textureProvider = this.optTextureProvider.orElse(null);
+		if(textureProvider != null)
 		{
-			return identifierProvider.identifier();
+			return textureProvider.texture();
 		}
 		return null;
 	}
 	
 	public void resetCape()
 	{
-		this.optIdentifierProvider = Optional.empty();
+		this.optTextureProvider = Optional.empty();
 		this.hasElytraTexture = true;
 	}
 	
@@ -110,14 +112,14 @@ public class PlayerCapeHandler
 				return false;
 			}
 			
-			this.optIdentifierProvider = this.registerTexturesAndGetProvider(
+			this.optTextureProvider = this.registerTexturesAndGetProvider(
 				this.determineTexturesToRegister(
 					textureResolver,
 					resolvedTextureInfo.imageBytes(),
 					animatedCapesHandling == AnimatedCapesHandling.FROZEN,
 					url));
 			
-			return this.optIdentifierProvider.isPresent();
+			return this.optTextureProvider.isPresent();
 		}
 		catch(final InterruptedException iex)
 		{
@@ -217,7 +219,7 @@ public class PlayerCapeHandler
 		throw new IllegalStateException("Unexpected ResolvedTextureData: " + resolved.getClass().getSimpleName());
 	}
 	
-	private Optional<IdentifierProvider> registerTexturesAndGetProvider(
+	private Optional<TextureProvider> registerTexturesAndGetProvider(
 		final List<TextureToRegister> texturesToRegister)
 	{
 		if(texturesToRegister.isEmpty())
@@ -239,8 +241,8 @@ public class PlayerCapeHandler
 			});
 		
 		return Optional.of(texturesToRegister.size() == 1
-			? new DefaultIdentifierProvider(texturesToRegister.getFirst().identifier())
-			: new AnimatedIdentifierProvider(texturesToRegister));
+			? new DefaultTextureProvider(texturesToRegister.getFirst().identifier())
+			: new AnimatedTextureProvider(texturesToRegister));
 	}
 	
 	record TextureToRegister(
@@ -280,8 +282,13 @@ public class PlayerCapeHandler
 	// endregion
 	
 	
-	record DefaultIdentifierProvider(Identifier identifier) implements IdentifierProvider
+	record DefaultTextureProvider(CapeProviderTextureAsset texture) implements TextureProvider
 	{
+		DefaultTextureProvider(final Identifier id)
+		{
+			this(new CapeProviderTextureAsset(id));
+		}
+		
 		@Override
 		public boolean dynamicIdentifier()
 		{
@@ -290,17 +297,17 @@ public class PlayerCapeHandler
 	}
 	
 	
-	static class AnimatedIdentifierProvider implements IdentifierProvider
+	static class AnimatedTextureProvider implements TextureProvider
 	{
 		private final List<IdentifierContainer> identifiers;
 		private int lastFrameIndex;
 		private long nextFrameTime;
 		
-		public AnimatedIdentifierProvider(final Collection<TextureToRegister> identifiers)
+		AnimatedTextureProvider(final Collection<TextureToRegister> identifiers)
 		{
 			this.identifiers = identifiers.stream()
 				.map(t -> new IdentifierContainer(
-					t.identifier(),
+					new CapeProviderTextureAsset(t.identifier()),
 					Math.clamp(
 						t.delayMs(),
 						1,
@@ -310,7 +317,7 @@ public class PlayerCapeHandler
 		}
 		
 		@Override
-		public Identifier identifier()
+		public AssetInfo.TextureAsset texture()
 		{
 			final long time = System.currentTimeMillis();
 			if(time > this.nextFrameTime)
@@ -333,7 +340,7 @@ public class PlayerCapeHandler
 		}
 		
 		record IdentifierContainer(
-			Identifier identifier,
+			AssetInfo.TextureAsset identifier,
 			int delay)
 		{
 		}

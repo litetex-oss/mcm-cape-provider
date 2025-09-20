@@ -8,9 +8,9 @@ import java.util.function.Supplier;
 import com.mojang.authlib.GameProfile;
 
 import net.litetex.capes.Capes;
-import net.litetex.capes.handler.IdentifierProvider;
 import net.litetex.capes.handler.PlayerCapeHandler;
 import net.litetex.capes.handler.PlayerCapeHandlerManager;
+import net.litetex.capes.handler.TextureProvider;
 import net.litetex.capes.i18n.CapesI18NKeys;
 import net.litetex.capes.menu.MainMenuScreen;
 import net.litetex.capes.menu.preview.render.PlayerDisplayGuiPayload;
@@ -22,10 +22,10 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.DefaultSkinHelper;
-import net.minecraft.client.util.SkinTextures;
 import net.minecraft.entity.player.PlayerSkinType;
+import net.minecraft.entity.player.SkinTextures;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.AssetInfo;
 import net.minecraft.util.math.MathHelper;
 
 
@@ -115,7 +115,8 @@ public class PreviewMenuScreen extends MainMenuScreen
 	
 	static class ViewModel
 	{
-		private static final Supplier<Identifier> DEFAULT_ELYTRA_SUPPLIER = () -> Capes.DEFAULT_ELYTRA_IDENTIFIER;
+		private static final Supplier<AssetInfo.TextureAsset> DEFAULT_ELYTRA_SUPPLIER =
+			() -> Capes.DEFAULT_ELYTRA_TEXTURE;
 		
 		private final GameProfile gameProfile;
 		private SkinTextures skin;
@@ -123,8 +124,8 @@ public class PreviewMenuScreen extends MainMenuScreen
 		
 		private List<CapeProvider> capeProviders;
 		
-		private Supplier<Identifier> capeTextureSupplier;
-		private Supplier<Identifier> elytraTextureSupplier = DEFAULT_ELYTRA_SUPPLIER;
+		private Supplier<AssetInfo.TextureAsset> capeTextureSupplier;
+		private Supplier<AssetInfo.TextureAsset> elytraTextureSupplier = DEFAULT_ELYTRA_SUPPLIER;
 		
 		private boolean showBody = true;
 		private boolean showElytra;
@@ -168,8 +169,8 @@ public class PreviewMenuScreen extends MainMenuScreen
 				this.gameProfile, false, this.capeProviders, () -> {
 					final PlayerCapeHandler handler = playerCapeHandlerManager.getProfile(this.gameProfile);
 					
-					final Supplier<Identifier> determinedCapeTextureSupplier =
-						this.determineCapeIdentifierSupplier(handler);
+					final Supplier<AssetInfo.TextureAsset> determinedCapeTextureSupplier =
+						this.determineCapeTextureSupplier(handler);
 					this.capeTextureSupplier = determinedCapeTextureSupplier;
 					
 					this.elytraTextureSupplier = handler == null
@@ -182,20 +183,20 @@ public class PreviewMenuScreen extends MainMenuScreen
 				});
 		}
 		
-		private Supplier<Identifier> determineCapeIdentifierSupplier(final PlayerCapeHandler handler)
+		private Supplier<AssetInfo.TextureAsset> determineCapeTextureSupplier(final PlayerCapeHandler handler)
 		{
 			if(handler != null)
 			{
-				final IdentifierProvider identifierProvider = handler.capeIdentifierProvider().orElse(null);
-				if(identifierProvider != null)
+				final TextureProvider textureProvider = handler.capeTextureProvider().orElse(null);
+				if(textureProvider != null)
 				{
-					if(identifierProvider.dynamicIdentifier())
+					if(textureProvider.dynamicIdentifier())
 					{
-						return identifierProvider::identifier;
+						return textureProvider::texture;
 					}
 					
 					// Fetch only once
-					final Identifier identifier = identifierProvider.identifier();
+					final AssetInfo.TextureAsset identifier = textureProvider.texture();
 					return () -> identifier;
 				}
 			}
@@ -206,7 +207,7 @@ public class PreviewMenuScreen extends MainMenuScreen
 			return provider.isEmpty() && capes.isUseDefaultProvider()
 				// Default provider is present?
 				|| provider.filter(Capes.EXCLUDE_DEFAULT_MINECRAFT_CP).isEmpty()
-				? this.skin::capeTexture
+				? this.skin::cape
 				: () -> null;
 		}
 		
@@ -231,7 +232,7 @@ public class PreviewMenuScreen extends MainMenuScreen
 		private void rebuildPayload()
 		{
 			this.payload = new PlayerDisplayGuiPayload(
-				this.showBody ? this.skin.texture() : null,
+				this.showBody ? this.skin.body() : null,
 				this.capeTextureSupplier,
 				this.showElytra ? this.elytraTextureSupplier : null,
 				this.slim

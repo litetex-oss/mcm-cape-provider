@@ -29,9 +29,11 @@ import net.litetex.capes.provider.CapeProvider;
 import net.litetex.capes.provider.CustomProvider;
 import net.litetex.capes.provider.DefaultMinecraftCapeProvider;
 import net.litetex.capes.provider.ModMetadataProvider;
+import net.litetex.capes.util.CapeProviderTextureAsset;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.util.SkinTextures;
+import net.minecraft.entity.player.SkinTextures;
+import net.minecraft.util.AssetInfo;
 import net.minecraft.util.Identifier;
 
 
@@ -41,8 +43,8 @@ public class Capes
 	
 	public static final String MOD_ID = "cape-provider";
 	
-	public static final Identifier DEFAULT_ELYTRA_IDENTIFIER =
-		Identifier.of("textures/entity/equipment/wings/elytra.png");
+	public static final AssetInfo.TextureAsset DEFAULT_ELYTRA_TEXTURE =
+		new CapeProviderTextureAsset(Identifier.of("textures/entity/equipment/wings/elytra.png"));
 	
 	public static final Predicate<CapeProvider> EXCLUDE_DEFAULT_MINECRAFT_CP =
 		cp -> DefaultMinecraftCapeProvider.INSTANCE != cp;
@@ -294,17 +296,16 @@ public class Capes
 		final PlayerCapeHandler handler = this.playerCapeHandlerManager().getProfile(profile);
 		if(handler != null)
 		{
-			final Identifier capeTexture = handler.getCape();
+			final AssetInfo.TextureAsset capeTexture = handler.getCape();
 			if(capeTexture != null)
 			{
 				final SkinTextures oldTextures = oldTexureSupplier.get();
-				final Identifier elytraTexture = handler.hasElytraTexture()
+				final AssetInfo.TextureAsset elytraTexture = handler.hasElytraTexture()
 					&& this.config().isEnableElytraTexture()
 					? capeTexture
-					: Capes.DEFAULT_ELYTRA_IDENTIFIER;
+					: Capes.DEFAULT_ELYTRA_TEXTURE;
 				applyOverwrittenTextures.accept(new SkinTextures(
-					oldTextures.texture(),
-					oldTextures.textureUrl(),
+					oldTextures.body(),
 					capeTexture,
 					elytraTexture,
 					oldTextures.model(),
@@ -316,8 +317,7 @@ public class Capes
 		{
 			final SkinTextures oldTextures = oldTexureSupplier.get();
 			applyOverwrittenTextures.accept(new SkinTextures(
-				oldTextures.texture(),
-				oldTextures.textureUrl(),
+				oldTextures.body(),
 				null,
 				null,
 				oldTextures.model(),

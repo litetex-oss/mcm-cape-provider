@@ -17,6 +17,7 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.AssetInfo;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 
@@ -75,7 +76,7 @@ public class PlayerDisplayGuiElementRenderer extends SpecialGuiElementRenderer<P
 			this.render(
 				models.player(),
 				matrixStack,
-				this.vertexConsumers.getBuffer(models.player().getLayer(payload.bodyTexture())));
+				this.vertexConsumers.getBuffer(models.player().getLayer(payload.bodyTexture().texturePath())));
 		}
 		
 		if(payload.elytraTextureSupplier() != null)
@@ -108,19 +109,25 @@ public class PlayerDisplayGuiElementRenderer extends SpecialGuiElementRenderer<P
 	}
 	
 	protected void extractFromSupplierAndRender(
-		final Supplier<Identifier> supplier,
+		final Supplier<AssetInfo.TextureAsset> supplier,
 		final MatrixStack matrixStack,
 		final Consumer<Identifier> renderer)
 	{
-		final Identifier id = supplier.get();
-		if(id != null)
+		final AssetInfo.TextureAsset textureAsset = supplier.get();
+		if(textureAsset == null)
 		{
-			matrixStack.push();
-			
-			renderer.accept(id);
-			
-			matrixStack.pop();
+			return;
 		}
+		
+		final Identifier id = textureAsset.texturePath();
+		if(id == null)
+		{
+			return;
+		}
+		
+		matrixStack.push();
+		renderer.accept(id);
+		matrixStack.pop();
 	}
 	
 	protected void render(final Model<?> model, final MatrixStack stack, final VertexConsumer c)
