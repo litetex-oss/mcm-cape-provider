@@ -39,10 +39,30 @@ public class CustomProvider implements CapeProvider
 	@Override
 	public String getBaseUrl(final GameProfile profile)
 	{
-		return this.config.uriTemplate()
-			.replace("$name", profile.getName())
-			.replace("$id", profile.getId().toString())
-			.replace("$idNoHyphen", profile.getId().toString().replace("-", ""));
+		final String idString = profile.getId().toString();
+		String uriTemplate = this.config.uriTemplate();
+		if(uriTemplate.indexOf('$') != -1)
+		{
+			uriTemplate = this.fillInTemplate(uriTemplate, '$', idString, profile);
+		}
+		else if(uriTemplate.indexOf('§') != -1)
+		{
+			uriTemplate = this.fillInTemplate(uriTemplate, '§', idString, profile);
+		}
+		
+		return uriTemplate;
+	}
+	
+	protected String fillInTemplate(
+		final String uriTemplate,
+		final char prefix,
+		final String idString,
+		final GameProfile profile)
+	{
+		return uriTemplate
+			.replace(prefix + "name", profile.getName())
+			.replace(prefix + "id", idString)
+			.replace(prefix + "idNoHyphen", idString.replace("-", ""));
 	}
 	
 	@Override

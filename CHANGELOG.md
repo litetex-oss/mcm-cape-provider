@@ -1,3 +1,9 @@
+# 4.0.2
+* Fixed: `$` inside `fabric.mod.json` is usually replaced by the build process #145
+  * Added a note that this may require escaping using a `\`
+  * Made it possible to use `§` instead of `$`
+    * Updated the demo accordingly
+
 # 4.0.1
 * Made animated GIF decoding more reliable
   * This should fix broken textures #135

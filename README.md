@@ -96,8 +96,9 @@ Here's a simple implementation:
     "cape": {
       // Gives everyone a christmas cape
       // You can also use variables here, like $uuid. See above for more details
+      // You may have to escape the $ with \ or you can alternatively use § instead of $
       // Alternative: "uriTemplate"
-      "url": "https://raw.githubusercontent.com/litetex-oss/mcm-cape-provider/refs/heads/dev/custom-cape-demo/uuid.png",
+      "url": "https://example.org/textures/§uuid.png",
       "changeCapeUrl": "https://...",
       "rateLimitedReqPerSec": 20 // Default is 20
     }

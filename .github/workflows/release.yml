@@ -117,7 +117,7 @@ jobs:
           * [Modrinth](https://modrinth.com/mod/${{ steps.metadata.outputs.archivesBaseName }})
           * the GitHub release assets below
           * [Maven Central](https://repo.maven.apache.org/maven2/net/litetex/mcm/)
-          ${{ (steps.check-for-curseforge.outputs.has) && format('[CurseForge](https://www.curseforge.com/minecraft/mc-mods/{0})', steps.metadata.outputs.archivesBaseName) || '' }}
+          ${{ (steps.check-for-curseforge.outputs.has) && format('* [CurseForge](https://www.curseforge.com/minecraft/mc-mods/{0})', steps.metadata.outputs.archivesBaseName) || '' }}
 
   publish:
     runs-on: ubuntu-latest
