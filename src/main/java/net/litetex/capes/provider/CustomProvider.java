@@ -39,7 +39,7 @@ public class CustomProvider implements CapeProvider
 	@Override
 	public String getBaseUrl(final GameProfile profile)
 	{
-		final String idString = profile.getId().toString();
+		final String idString = profile.id().toString();
 		String uriTemplate = this.config.uriTemplate();
 		if(uriTemplate.indexOf('$') != -1)
 		{
@@ -60,7 +60,7 @@ public class CustomProvider implements CapeProvider
 		final GameProfile profile)
 	{
 		return uriTemplate
-			.replace(prefix + "name", profile.getName())
+			.replace(prefix + "name", profile.name())
 			.replace(prefix + "id", idString)
 			.replace(prefix + "idNoHyphen", idString.replace("-", ""));
 	}
