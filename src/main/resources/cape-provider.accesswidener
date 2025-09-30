@@ -1,5 +1,6 @@
 accessWidener v2 named
-accessible field net/minecraft/client/gui/widget/EntryListWidget headerHeight I
+accessible method net/minecraft/client/gui/widget/EntryListWidget recalculateAllChildrenPositions ()V
+extendable method net/minecraft/client/gui/widget/EntryListWidget getYOfFirstEntry ()I
 accessible field net/minecraft/client/gui/widget/PlayerSkinWidget wideModel Lnet/minecraft/client/render/entity/model/PlayerEntityModel;
 accessible field net/minecraft/client/gui/widget/PlayerSkinWidget slimModel Lnet/minecraft/client/render/entity/model/PlayerEntityModel;
 accessible field net/minecraft/client/gui/widget/PlayerSkinWidget skinSupplier Ljava/util/function/Supplier;

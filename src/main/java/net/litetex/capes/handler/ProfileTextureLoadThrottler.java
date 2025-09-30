@@ -26,7 +26,7 @@ public class ProfileTextureLoadThrottler
 	
 	public void loadIfRequired(final GameProfile profile)
 	{
-		final UUID id = profile.getId();
+		final UUID id = profile.id();
 		final Instant lastLoadTime = this.loadThrottle.get(id);
 		final Instant now = Instant.now();
 		if(lastLoadTime == null || lastLoadTime.isBefore(now.minus(Capes.instance().loadThrottleSuppressDuration())))
