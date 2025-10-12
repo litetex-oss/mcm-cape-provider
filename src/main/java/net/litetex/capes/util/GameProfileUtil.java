@@ -9,7 +9,7 @@ public final class GameProfileUtil
 {
 	public static boolean isSelf(final GameProfile profile)
 	{
-		return profile.getId().equals(MinecraftClient.getInstance().getSession().getUuidOrNull());
+		return profile.id().equals(MinecraftClient.getInstance().getSession().getUuidOrNull());
 	}
 	
 	private GameProfileUtil()

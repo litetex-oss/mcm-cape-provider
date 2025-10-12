@@ -33,7 +33,7 @@ public class MinecraftCapesCapeProvider implements CapeProvider
 	@Override
 	public String getBaseUrl(final GameProfile profile)
 	{
-		return "https://api.minecraftcapes.net/profile/" + profile.getId().toString().replace("-", "");
+		return "https://api.minecraftcapes.net/profile/" + profile.id().toString().replace("-", "");
 	}
 	
 	@Override

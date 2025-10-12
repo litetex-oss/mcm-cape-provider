@@ -14,7 +14,7 @@ import com.mojang.authlib.GameProfile;
 import net.litetex.capes.Capes;
 import net.litetex.capes.util.GameProfileUtil;
 import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.util.SkinTextures;
+import net.minecraft.entity.player.SkinTextures;
 
 
 @Mixin(PlayerListEntry.class)
