@@ -1,5 +1,5 @@
 # 4.1.1
-* Update Cosmetica API
+* Update Cosmetica API #166
 * Improved mod compatibility
 
 # 4.1.0
