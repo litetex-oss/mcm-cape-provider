@@ -46,7 +46,7 @@ public class WynntilsProvider implements CapeProvider
 			
 			final HttpRequest request = requestBuilder
 				// Does UserAgent blocking: https://github.com/Wynntils/athena-backend/pull/36
-				.header("User-Agent", "Wynntils Artemis\\3.2.9+MC-1.21.4 (client) FABRIC")
+				.header("User-Agent", "Wynntils Artemis\\3.3.0+MC-1.21.4 (client) FABRIC")
 				.header("Content-Type", "application/json")
 				.POST(HttpRequest.BodyPublishers.ofString(body.toString()))
 				.build();
@@ -101,7 +101,7 @@ public class WynntilsProvider implements CapeProvider
 	@Override
 	public double rateLimitedReqPerSec()
 	{
-		// Wynntils has a very underperforming backend
+		// has a very underperforming backend
 		return 4;
 	}
 }

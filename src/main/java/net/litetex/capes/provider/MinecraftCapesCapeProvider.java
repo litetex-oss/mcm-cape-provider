@@ -43,7 +43,8 @@ public class MinecraftCapesCapeProvider implements CapeProvider
 		final GameProfile profile) throws IOException, InterruptedException
 	{
 		requestBuilder
-			.setHeader("User-Agent", "minecraftcapes-mod/" + SharedConstants.getGameVersion().name());
+			.setHeader("User-Agent", "minecraftcapes-mod/" + SharedConstants.getGameVersion().name())
+			.setHeader("Accept", "application/json");
 		
 		try(final HttpClient client = clientBuilder.build())
 		{

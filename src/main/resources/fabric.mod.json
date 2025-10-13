@@ -51,7 +51,8 @@
     "minecraftcapes": "*",
     "wynntils": "*",
     "capemod": "*",
-    "cicada": "*"
+    "cicada": "*",
+    "bettercapes": "*"
   },
   "custom": {
     "modmenu": {
