@@ -1,3 +1,6 @@
+# 4.1.1
+* Update Cosmetica API
+
 # 4.1.0
 * Updated to 1.21.9
 
