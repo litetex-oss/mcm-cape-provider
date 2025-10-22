@@ -44,8 +44,8 @@ public class OtherMenuScreen extends MainMenuScreen
 						case ON -> ScreenTexts.ON;
 						case FROZEN -> Text.translatable(CapesI18NKeys.FROZEN);
 						case OFF -> ScreenTexts.OFF;
-					})
-				.initially(this.config().getAnimatedCapesHandling())
+					},
+					this.config()::getAnimatedCapesHandling)
 				.values(AnimatedCapesHandling.values())
 				.build(
 					Text.translatable(CapesI18NKeys.ANIMATED_TEXTURES),
@@ -66,8 +66,8 @@ public class OtherMenuScreen extends MainMenuScreen
 						case ON -> ScreenTexts.ON;
 						case ONLY_LOAD -> Text.translatable(CapesI18NKeys.LOAD);
 						case OFF -> ScreenTexts.OFF;
-					})
-				.initially(this.config().getModProviderHandling())
+					},
+					this.config()::getModProviderHandling)
 				.values(ModProviderHandling.values())
 				.tooltip(value -> Tooltip.of(
 					Text.translatable(CapesI18NKeys.LOAD_PROVIDERS)
