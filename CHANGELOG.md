@@ -1,3 +1,6 @@
+# 4.2.0
+* Updated to 1.21.11
+
 # 4.1.3
 * Fix broken build
 
