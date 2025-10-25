@@ -13,7 +13,7 @@ import net.minecraft.client.model.Model;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
@@ -89,7 +89,7 @@ public class PlayerDisplayGuiElementRenderer extends SpecialGuiElementRenderer<P
 					this.render(
 						models.elytra(),
 						matrixStack,
-						this.vertexConsumers.getBuffer(RenderLayer.getArmorCutoutNoCull(id)));
+						this.vertexConsumers.getBuffer(RenderLayers.armorCutoutNoCull(id)));
 				});
 		}
 		else if(payload.capeTextureSupplier() != null)
@@ -102,7 +102,7 @@ public class PlayerDisplayGuiElementRenderer extends SpecialGuiElementRenderer<P
 					this.render(
 						models.cape().getChild("body").getChild("cape"),
 						matrixStack,
-						this.vertexConsumers.getBuffer(RenderLayer.getArmorCutoutNoCull(id))
+						this.vertexConsumers.getBuffer(RenderLayers.armorCutoutNoCull(id))
 					);
 				});
 		}
