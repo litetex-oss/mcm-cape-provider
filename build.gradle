@@ -11,7 +11,7 @@ plugins {
 ext {
     checkstyleVersion = '12.1.0'
 
-    pmdVersion = '7.17.0'
+    pmdVersion = '7.18.0'
 
     // Derive version from yarn
     minecraft_version = project.yarn_mappings.split("\\+")[0]
