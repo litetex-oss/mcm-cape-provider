@@ -18,7 +18,6 @@ import net.litetex.capes.provider.CapeProvider;
 import net.litetex.capes.provider.DefaultMinecraftCapeProvider;
 import net.litetex.capes.provider.antifeature.AntiFeature;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -38,7 +37,8 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.Util;
 
 
 @SuppressWarnings("checkstyle:MagicNumber")
@@ -174,18 +174,18 @@ public class ProviderListWidget extends ObjectSelectionList<ProviderListWidget.P
 	{
 		private static final int BTN_EDIT_CAPE_WIDTH = 96;
 		
-		private static final ResourceLocation MOVE_UP_HIGHLIGHTED_TEXTURE =
-			ResourceLocation.parse("textures/gui/sprites/transferable_list/move_up_highlighted.png");
-		private static final ResourceLocation MOVE_UP_TEXTURE =
-			ResourceLocation.parse("textures/gui/sprites/transferable_list/move_up.png");
-		private static final ResourceLocation MOVE_DOWN_HIGHLIGHTED_TEXTURE =
-			ResourceLocation.parse("textures/gui/sprites/transferable_list/move_down_highlighted.png");
-		private static final ResourceLocation MOVE_DOWN_TEXTURE =
-			ResourceLocation.parse("textures/gui/sprites/transferable_list/move_down.png");
+		private static final Identifier MOVE_UP_HIGHLIGHTED_TEXTURE =
+			Identifier.parse("textures/gui/sprites/transferable_list/move_up_highlighted.png");
+		private static final Identifier MOVE_UP_TEXTURE =
+			Identifier.parse("textures/gui/sprites/transferable_list/move_up.png");
+		private static final Identifier MOVE_DOWN_HIGHLIGHTED_TEXTURE =
+			Identifier.parse("textures/gui/sprites/transferable_list/move_down_highlighted.png");
+		private static final Identifier MOVE_DOWN_TEXTURE =
+			Identifier.parse("textures/gui/sprites/transferable_list/move_down.png");
 		private static final WidgetSprites WARNING_BUTTON_TEXTURES = new WidgetSprites(
-			ResourceLocation.withDefaultNamespace("social_interactions/report_button"),
-			ResourceLocation.withDefaultNamespace("social_interactions/report_button_disabled"),
-			ResourceLocation.withDefaultNamespace("social_interactions/report_button_highlighted")
+			Identifier.withDefaultNamespace("social_interactions/report_button"),
+			Identifier.withDefaultNamespace("social_interactions/report_button_disabled"),
+			Identifier.withDefaultNamespace("social_interactions/report_button_highlighted")
 		);
 		
 		private final CapeProvider capeProvider;
@@ -459,8 +459,8 @@ public class ProviderListWidget extends ObjectSelectionList<ProviderListWidget.P
 	
 	static class UpDownIconWidget extends AbstractWidget
 	{
-		private final ResourceLocation texture;
-		private final ResourceLocation hoverTexture;
+		private final Identifier texture;
+		private final Identifier hoverTexture;
 		
 		private final int textureWidth;
 		private final int textureHeight;
@@ -477,8 +477,8 @@ public class ProviderListWidget extends ObjectSelectionList<ProviderListWidget.P
 		public UpDownIconWidget(
 			final int width,
 			final int height,
-			final ResourceLocation texture,
-			final ResourceLocation hoverTexture,
+			final Identifier texture,
+			final Identifier hoverTexture,
 			final int textureWidth,
 			final int textureHeight,
 			final Component text,

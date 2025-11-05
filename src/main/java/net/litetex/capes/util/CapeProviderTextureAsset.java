@@ -1,13 +1,13 @@
 package net.litetex.capes.util;
 
 import net.minecraft.core.ClientAsset;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 
-public record CapeProviderTextureAsset(ResourceLocation id) implements ClientAsset.Texture
+public record CapeProviderTextureAsset(Identifier id) implements ClientAsset.Texture
 {
 	@Override
-	public ResourceLocation texturePath()
+	public Identifier texturePath()
 	{
 		return this.id();
 	}
