@@ -12,9 +12,6 @@ ext {
     checkstyleVersion = '12.1.1'
 
     pmdVersion = '7.18.0'
-
-    // Derive version from yarn
-    minecraft_version = project.yarn_mappings.split("\\+")[0]
 }
 
 version = project.mod_version
@@ -81,7 +78,7 @@ dependencies {
     pmd "net.sourceforge.pmd:pmd-ant:${pmdVersion}",
             "net.sourceforge.pmd:pmd-java:${pmdVersion}"
 
-    minecraft "com.mojang:minecraft:${minecraft_version}"
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     // Required for rendering the preview
@@ -107,7 +104,7 @@ processResources {
                 "name": project.mod_name,
                 "desc": project.mod_desc,
                 "license_spdx_id": project.mod_license_spdx_id,
-                "minecraft_version": minecraft_version,
+                "minecraft_version": project.minecraft_version,
                 "loader_version": project.loader_version,
                 "fabric_api_version": project.fabric_api_version,
                 "modmenu_version": project.modmenu_version

@@ -1,0 +1,84 @@
+name: Update to latest MC version
+
+on:
+  schedule:
+    - cron: '47 1 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  UPDATE_BRANCH: automated/latest-mc
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # Required because otherwise there are always changes detected when executing diff/rev-list
+          fetch-depth: 0
+          # Don't use default token as no workflows are run otherwise
+          # https://github.com/orgs/community/discussions/65321#discussioncomment-6861423
+          token: ${{ secrets.BOT_PR_PAT }}
+
+      - name: Init Git
+        run: |
+          git config --global user.email "164098849+litetex-oss-bot@users.noreply.github.com"
+          git config --global user.name "litetex-oss-bot"
+
+      - name: Update
+        id: update
+        run: |
+          version_manifest=$(curl --fail -L https://piston-meta.mojang.com/mc/game/version_manifest_v2.json)
+          latest_snapshot=$(echo "$version_manifest" | jq -r .latest.snapshot)
+
+          echo "Getting PR target branch"
+          pr_target_branch=$(git branch --show-current)
+          echo "PR target branch is $pr_target_branch"
+          echo "pr_target_branch=$pr_target_branch" >> $GITHUB_OUTPUT
+          
+          echo "Deleting local branch that will contain the updates - if present"
+          git branch -D ${{ env.UPDATE_BRANCH }} || true
+
+          echo "Creating update branch"
+          git checkout -b ${{ env.UPDATE_BRANCH }}
+
+          echo "Replacing version"
+          sed -i "s/^\(minecraft_version\s*=\s*\).*\$/\1$latest_snapshot/" gradle.properties
+
+          if [[ "$(git status --porcelain)" == "" ]]; then
+            echo "No files to commit"
+            echo "abort=1" >> $GITHUB_OUTPUT
+
+            echo "Deleting origin branch that contained the updates - if present"
+            git push -f origin --delete ${{ env.UPDATE_BRANCH }} || true
+            
+            exit 0
+          fi
+
+          echo "Performing commit"
+          git add -A
+          git commit -m "Update to $latest_snapshot"
+
+          echo "Pushing update branch"
+          git push -f -u origin ${{ env.UPDATE_BRANCH }}
+
+          echo "abort=0" >> $GITHUB_OUTPUT
+          
+      - name: pull-request
+        if: steps.update.outputs.abort == 0
+        env:
+          # Don't use default token as no workflows are run otherwise
+          # https://github.com/orgs/community/discussions/65321#discussioncomment-6861423
+          GH_TOKEN: ${{ secrets.BOT_PR_PAT }}
+        run: |
+          gh_pr_up() { 
+            gh pr create -H "${{ env.UPDATE_BRANCH }}" "$@" || (git checkout "${{ env.UPDATE_BRANCH }}" && gh pr edit "$@")
+          }
+          gh_pr_up -B "${{ steps.update.outputs.pr_target_branch }}" \
+            --title "Latest Minecraft version" \
+            --body "An automated PR to update to the latest minecraft version.<br>[Source](https://piston-meta.mojang.com/mc/game/version_manifest_v2.json)"
