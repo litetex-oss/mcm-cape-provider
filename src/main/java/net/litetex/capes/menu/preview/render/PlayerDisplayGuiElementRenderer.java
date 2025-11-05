@@ -39,7 +39,7 @@ public class PlayerDisplayGuiElementRenderer extends PictureInPictureRenderer<Pl
 	}
 	
 	@Override
-	protected void render(
+	protected void renderToTexture(
 		final PlayerDisplayGuiElementRenderState state,
 		final PoseStack matrixStack)
 	{
