@@ -30,11 +30,11 @@ import net.litetex.capes.provider.CustomProvider;
 import net.litetex.capes.provider.DefaultMinecraftCapeProvider;
 import net.litetex.capes.provider.ModMetadataProvider;
 import net.litetex.capes.util.CapeProviderTextureAsset;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.entity.player.SkinTextures;
-import net.minecraft.util.AssetInfo;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.core.ClientAsset;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.PlayerSkin;
 
 
 public class Capes
@@ -43,8 +43,8 @@ public class Capes
 	
 	public static final String MOD_ID = "cape-provider";
 	
-	public static final AssetInfo.TextureAsset DEFAULT_ELYTRA_TEXTURE =
-		new CapeProviderTextureAsset(Identifier.of("textures/entity/equipment/wings/elytra.png"));
+	public static final ClientAsset.Texture DEFAULT_ELYTRA_TEXTURE =
+		new CapeProviderTextureAsset(ResourceLocation.parse("textures/entity/equipment/wings/elytra.png"));
 	
 	public static final Predicate<CapeProvider> EXCLUDE_DEFAULT_MINECRAFT_CP =
 		cp -> DefaultMinecraftCapeProvider.INSTANCE != cp;
@@ -210,10 +210,10 @@ public class Capes
 		this.profileTextureLoadThrottler.clearCache();
 		this.playerCapeHandlerManager.clearCache();
 		
-		final ClientPlayNetworkHandler networkHandler = MinecraftClient.getInstance().getNetworkHandler();
+		final ClientPacketListener networkHandler = Minecraft.getInstance().getConnection();
 		if(networkHandler != null)
 		{
-			networkHandler.getPlayerList().forEach(e ->
+			networkHandler.getOnlinePlayers().forEach(e ->
 				this.profileTextureLoadThrottler.loadIfRequired(e.getProfile()));
 		}
 	}
@@ -290,21 +290,21 @@ public class Capes
 	
 	public boolean overwriteSkinTextures(
 		final GameProfile profile,
-		final Supplier<SkinTextures> oldTexureSupplier,
-		final Consumer<SkinTextures> applyOverwrittenTextures)
+		final Supplier<PlayerSkin> oldTexureSupplier,
+		final Consumer<PlayerSkin> applyOverwrittenTextures)
 	{
 		final PlayerCapeHandler handler = this.playerCapeHandlerManager().getProfile(profile);
 		if(handler != null)
 		{
-			final AssetInfo.TextureAsset capeTexture = handler.getCape();
+			final ClientAsset.Texture capeTexture = handler.getCape();
 			if(capeTexture != null)
 			{
-				final SkinTextures oldTextures = oldTexureSupplier.get();
-				final AssetInfo.TextureAsset elytraTexture = handler.hasElytraTexture()
+				final PlayerSkin oldTextures = oldTexureSupplier.get();
+				final ClientAsset.Texture elytraTexture = handler.hasElytraTexture()
 					&& this.config().isEnableElytraTexture()
 					? capeTexture
 					: Capes.DEFAULT_ELYTRA_TEXTURE;
-				applyOverwrittenTextures.accept(new SkinTextures(
+				applyOverwrittenTextures.accept(new PlayerSkin(
 					oldTextures.body(),
 					capeTexture,
 					elytraTexture,
@@ -315,8 +315,8 @@ public class Capes
 		}
 		if(!this.isUseDefaultProvider())
 		{
-			final SkinTextures oldTextures = oldTexureSupplier.get();
-			applyOverwrittenTextures.accept(new SkinTextures(
+			final PlayerSkin oldTextures = oldTexureSupplier.get();
+			applyOverwrittenTextures.accept(new PlayerSkin(
 				oldTextures.body(),
 				null,
 				null,

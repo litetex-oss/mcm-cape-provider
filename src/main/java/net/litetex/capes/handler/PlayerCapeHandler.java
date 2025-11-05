@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.blaze3d.platform.NativeImage;
 
 import net.litetex.capes.Capes;
 import net.litetex.capes.config.AnimatedCapesHandling;
@@ -30,12 +31,11 @@ import net.litetex.capes.handler.textures.TextureResolver;
 import net.litetex.capes.provider.CapeProvider;
 import net.litetex.capes.provider.ResolvedTextureInfo;
 import net.litetex.capes.util.CapeProviderTextureAsset;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.client.texture.TextureManager;
-import net.minecraft.util.AssetInfo;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.core.ClientAsset;
+import net.minecraft.resources.ResourceLocation;
 
 
 @SuppressWarnings({"checkstyle:MagicNumber", "PMD.GodClass"})
@@ -59,7 +59,7 @@ public class PlayerCapeHandler
 		return this.optTextureProvider;
 	}
 	
-	public AssetInfo.TextureAsset getCape()
+	public ClientAsset.Texture getCape()
 	{
 		final TextureProvider textureProvider = this.optTextureProvider.orElse(null);
 		if(textureProvider != null)
@@ -139,7 +139,7 @@ public class PlayerCapeHandler
 	{
 		final HttpClient.Builder clientBuilder = HttpClient.newBuilder()
 			.connectTimeout(Duration.ofSeconds(10));
-		final Proxy proxy = MinecraftClient.getInstance().getNetworkProxy();
+		final Proxy proxy = Minecraft.getInstance().getProxy();
 		if(proxy != null)
 		{
 			clientBuilder.proxy(new ProxySelector()
@@ -227,14 +227,14 @@ public class PlayerCapeHandler
 			return Optional.empty();
 		}
 		
-		final TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
+		final TextureManager textureManager = Minecraft.getInstance().getTextureManager();
 		// Do texturing work NOT on Render thread
 		CompletableFuture.runAsync(
 				() -> texturesToRegister.forEach(t ->
-					textureManager.registerTexture(
+					textureManager.register(
 						t.identifier(),
-						new NativeImageBackedTexture(t.identifier()::toString, t.image()))),
-				MinecraftClient.getInstance())
+						new DynamicTexture(t.identifier()::toString, t.image()))),
+				Minecraft.getInstance())
 			.exceptionally(ex -> {
 				LOG.warn("Failed to register textures", ex);
 				return null;
@@ -246,12 +246,12 @@ public class PlayerCapeHandler
 	}
 	
 	record TextureToRegister(
-		Identifier identifier,
+		ResourceLocation identifier,
 		NativeImage image,
 		int delayMs
 	)
 	{
-		public TextureToRegister(final Identifier identifier, final NativeImage image)
+		public TextureToRegister(final ResourceLocation identifier, final NativeImage image)
 		{
 			this(identifier, image, 100);
 		}
@@ -262,9 +262,9 @@ public class PlayerCapeHandler
 		return this.capes.config().getAnimatedCapesHandling();
 	}
 	
-	static Identifier identifier(final String id)
+	static ResourceLocation identifier(final String id)
 	{
-		return Identifier.of(Capes.MOD_ID, id);
+		return ResourceLocation.fromNamespaceAndPath(Capes.MOD_ID, id);
 	}
 	
 	// region Getter
@@ -284,7 +284,7 @@ public class PlayerCapeHandler
 	
 	record DefaultTextureProvider(CapeProviderTextureAsset texture) implements TextureProvider
 	{
-		DefaultTextureProvider(final Identifier id)
+		DefaultTextureProvider(final ResourceLocation id)
 		{
 			this(new CapeProviderTextureAsset(id));
 		}
@@ -317,7 +317,7 @@ public class PlayerCapeHandler
 		}
 		
 		@Override
-		public AssetInfo.TextureAsset texture()
+		public ClientAsset.Texture texture()
 		{
 			final long time = System.currentTimeMillis();
 			if(time > this.nextFrameTime)
@@ -340,7 +340,7 @@ public class PlayerCapeHandler
 		}
 		
 		record IdentifierContainer(
-			AssetInfo.TextureAsset identifier,
+			ClientAsset.Texture identifier,
 			int delay)
 		{
 		}

@@ -1,9 +1,9 @@
 package net.litetex.capes.provider.antifeature;
 
-import net.minecraft.text.MutableText;
+import net.minecraft.network.chat.MutableComponent;
 
 
 public interface AntiFeature
 {
-	MutableText message();
+	MutableComponent message();
 }

@@ -1,6 +1,6 @@
 package net.litetex.capes.handler;
 
-import net.minecraft.client.texture.NativeImage;
+import com.mojang.blaze3d.platform.NativeImage;
 
 
 public record AnimatedNativeImageContainer(

@@ -1,4 +1,4 @@
-name: Update yarn
+name: Update to latest MC version
 
 on:
   schedule:
@@ -10,7 +10,7 @@ permissions:
   pull-requests: write
 
 env:
-  UPDATE_BRANCH: automated/update-yarn
+  UPDATE_BRANCH: automated/latest-mc
 
 jobs:
   update:
@@ -33,7 +33,8 @@ jobs:
       - name: Update
         id: update
         run: |
-          yarnVersion=$(curl --fail -L https://maven.fabricmc.net/net/fabricmc/yarn/maven-metadata.xml | grep -oP "(?<=<latest>)[^<]+")
+          version_manifest=$(curl --fail -L https://piston-meta.mojang.com/mc/game/version_manifest_v2.json)
+          latest_snapshot=$(echo "$version_manifest" | jq -r .latest.snapshot)
 
           echo "Getting PR target branch"
           pr_target_branch=$(git branch --show-current)
@@ -46,8 +47,8 @@ jobs:
           echo "Creating update branch"
           git checkout -b ${{ env.UPDATE_BRANCH }}
 
-          echo "Replacing yarn version"
-          sed -i "s/^\(yarn_mappings\s*=\s*\).*\$/\1$yarnVersion/" gradle.properties
+          echo "Replacing version"
+          sed -i "s/^\(minecraft_version\s*=\s*\).*\$/\1$latest_snapshot/" gradle.properties
 
           if [[ "$(git status --porcelain)" == "" ]]; then
             echo "No files to commit"
@@ -61,7 +62,7 @@ jobs:
 
           echo "Performing commit"
           git add -A
-          git commit -m "Yarn $yarnVersion"
+          git commit -m "Update to $latest_snapshot"
 
           echo "Pushing update branch"
           git push -f -u origin ${{ env.UPDATE_BRANCH }}
@@ -79,5 +80,5 @@ jobs:
             gh pr create -H "${{ env.UPDATE_BRANCH }}" "$@" || (git checkout "${{ env.UPDATE_BRANCH }}" && gh pr edit "$@")
           }
           gh_pr_up -B "${{ steps.update.outputs.pr_target_branch }}" \
-            --title "Yarn update" \
-            --body "An automated PR to update [yarn](https://github.com/FabricMC/yarn).<br>[Source](https://maven.fabricmc.net/net/fabricmc/yarn/maven-metadata.xml)"
+            --title "Latest Minecraft version" \
+            --body "An automated PR to update to the latest minecraft version.<br>[Source](https://piston-meta.mojang.com/mc/game/version_manifest_v2.json)"

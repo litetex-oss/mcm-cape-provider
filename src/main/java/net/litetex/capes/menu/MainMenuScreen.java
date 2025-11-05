@@ -12,36 +12,36 @@ import net.litetex.capes.menu.other.OtherMenuScreen;
 import net.litetex.capes.menu.preview.PreviewMenuScreen;
 import net.litetex.capes.menu.provider.ProviderMenuScreen;
 import net.litetex.capes.util.CorrectHoverParentElement;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.option.GameOptionsScreen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.OptionListWidget;
-import net.minecraft.client.option.GameOptions;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.Options;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.OptionsList;
+import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.options.OptionsSubScreen;
+import net.minecraft.network.chat.Component;
 
 
-public abstract class MainMenuScreen extends GameOptionsScreen implements CorrectHoverParentElement
+public abstract class MainMenuScreen extends OptionsSubScreen implements CorrectHoverParentElement
 {
-	private final List<Element> selfManagedDrawableChilds = new ArrayList<>();
+	private final List<GuiEventListener> selfManagedDrawableChilds = new ArrayList<>();
 	
 	protected MainMenuScreen(
 		final Screen parent,
-		final GameOptions gameOptions)
+		final Options gameOptions)
 	{
-		super(parent, gameOptions, Text.translatable(CapesI18NKeys.CAPE_OPTIONS));
+		super(parent, gameOptions, Component.translatable(CapesI18NKeys.CAPE_OPTIONS));
 	}
 	
 	@SuppressWarnings("checkstyle:MagicNumber")
 	@Override
-	protected void initBody()
+	protected void addContents()
 	{
 		// The first "row" is used by the buttons for the individual screens
-		this.body = this.layout.addBody(
-			new HeaderHeightOptionListWidget(this.client, this.width, this, 24));
+		this.list = this.layout.addToContents(
+			new HeaderHeightOptionListWidget(this.minecraft, this.width, this, 24));
 		this.addOptions();
 	}
 	
@@ -63,52 +63,52 @@ public abstract class MainMenuScreen extends GameOptionsScreen implements Correc
 		Stream.of(
 				new ButtonBuildData(
 					CapesI18NKeys.PREVIEW,
-					() -> new PreviewMenuScreen(this.parent, this.gameOptions),
+					() -> new PreviewMenuScreen(this.lastScreen, this.options),
 					-(buttonW / 2),
 					PreviewMenuScreen.class
 				),
 				new ButtonBuildData(
 					CapesI18NKeys.MANAGE_PROVIDERS,
-					() -> new ProviderMenuScreen(this.parent, this.gameOptions),
+					() -> new ProviderMenuScreen(this.lastScreen, this.options),
 					-(buttonW + offset),
 					ProviderMenuScreen.class),
 				new ButtonBuildData(
 					CapesI18NKeys.OTHER,
-					() -> new OtherMenuScreen(this.parent, this.gameOptions),
+					() -> new OtherMenuScreen(this.lastScreen, this.options),
 					offset,
 					OtherMenuScreen.class
 				))
 			.forEach(data -> {
-				final ButtonWidget buttonWidget = this.addSelfManagedDrawableChild(ButtonWidget.builder(
-						Text.translatable(data.translationKey()),
-						b -> this.client.setScreen(data.screenSupplier().get()))
-					.position((this.width / 2) + data.positionDiff(), 35)
+				final Button buttonWidget = this.addSelfManagedDrawableChild(Button.builder(
+						Component.translatable(data.translationKey()),
+						b -> this.minecraft.setScreen(data.screenSupplier().get()))
+					.pos((this.width / 2) + data.positionDiff(), 35)
 					.size(buttonW, 20)
 					.build());
 				buttonWidget.active = !(data.clazz().isInstance(this));
 			});
 	}
 	
-	protected <T extends Element & Drawable & Selectable> T addSelfManagedDrawableChild(final T drawableElement)
+	protected <T extends GuiEventListener & Renderable & NarratableEntry> T addSelfManagedDrawableChild(final T drawableElement)
 	{
 		this.selfManagedDrawableChilds.add(drawableElement);
-		return this.addDrawableChild(drawableElement);
+		return this.addRenderableWidget(drawableElement);
 	}
 	
 	@Override
-	protected void clearChildren()
+	protected void clearWidgets()
 	{
 		this.selfManagedDrawableChilds.clear();
-		super.clearChildren();
+		super.clearWidgets();
 	}
 	
 	@Override
-	protected void refreshWidgetPositions()
+	protected void repositionElements()
 	{
-		this.selfManagedDrawableChilds.forEach(this::remove);
+		this.selfManagedDrawableChilds.forEach(this::removeWidget);
 		this.selfManagedDrawableChilds.clear();
 		
-		super.refreshWidgetPositions();
+		super.repositionElements();
 		
 		this.initSelfMangedDrawableChilds();
 	}
@@ -130,20 +130,20 @@ public abstract class MainMenuScreen extends GameOptionsScreen implements Correc
 	}
 	
 	@Override
-	public void close()
+	public void onClose()
 	{
-		super.close();
+		super.onClose();
 		this.capes().refreshIfMarked();
 	}
 	
-	static class HeaderHeightOptionListWidget extends OptionListWidget
+	static class HeaderHeightOptionListWidget extends OptionsList
 	{
 		private final int headerHeight;
 		
 		public HeaderHeightOptionListWidget(
-			final MinecraftClient client,
+			final Minecraft client,
 			final int width,
-			final GameOptionsScreen optionsScreen,
+			final OptionsSubScreen optionsScreen,
 			final int headerHeight)
 		{
 			super(client, width, optionsScreen);
@@ -151,15 +151,15 @@ public abstract class MainMenuScreen extends GameOptionsScreen implements Correc
 		}
 		
 		@Override
-		protected int getYOfFirstEntry()
+		protected int getFirstEntryY()
 		{
-			return super.getYOfFirstEntry() + this.headerHeight;
+			return super.getFirstEntryY() + this.headerHeight;
 		}
 		
 		@Override
-		protected int getContentsHeightWithPadding()
+		protected int contentHeight()
 		{
-			return super.getContentsHeightWithPadding() + this.headerHeight;
+			return super.contentHeight() + this.headerHeight;
 		}
 	}
 }

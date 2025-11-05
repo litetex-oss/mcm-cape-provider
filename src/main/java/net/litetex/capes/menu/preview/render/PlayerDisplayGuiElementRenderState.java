@@ -2,8 +2,8 @@ package net.litetex.capes.menu.preview.render;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.client.gui.ScreenRect;
-import net.minecraft.client.gui.render.state.special.SpecialGuiElementRenderState;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState;
 
 
 public record PlayerDisplayGuiElementRenderState(
@@ -12,14 +12,14 @@ public record PlayerDisplayGuiElementRenderState(
 	float xRotation,
 	float yRotation,
 	float yPivot,
+	int x0,
+	int y0,
 	int x1,
 	int y1,
-	int x2,
-	int y2,
 	float scale,
-	@Nullable ScreenRect scissorArea,
-	@Nullable ScreenRect bounds
-) implements SpecialGuiElementRenderState
+	@Nullable ScreenRectangle scissorArea,
+	@Nullable ScreenRectangle bounds
+) implements PictureInPictureRenderState
 {
 	@SuppressWarnings("PMD.ExcessiveParameterList") // Derived from MC code
 	public PlayerDisplayGuiElementRenderState(
@@ -28,12 +28,12 @@ public record PlayerDisplayGuiElementRenderState(
 		final float xRotation,
 		final float yRotation,
 		final float yPivot,
+		final int x0,
+		final int y0,
 		final int x1,
 		final int y1,
-		final int x2,
-		final int y2,
 		final float scale,
-		@Nullable final ScreenRect screenRect
+		@Nullable final ScreenRectangle screenRect
 	)
 	{
 		this(
@@ -42,12 +42,12 @@ public record PlayerDisplayGuiElementRenderState(
 			xRotation,
 			yRotation,
 			yPivot,
+			x0,
+			y0,
 			x1,
 			y1,
-			x2,
-			y2,
 			scale,
 			screenRect,
-			SpecialGuiElementRenderState.createBounds(x1, y1, x2, y2, screenRect));
+			PictureInPictureRenderState.getBounds(x0, y0, x1, y1, screenRect));
 	}
 }

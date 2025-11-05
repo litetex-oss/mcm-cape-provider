@@ -25,7 +25,7 @@ import net.litetex.capes.provider.ratelimit.CapeProviderRateLimits;
 import net.litetex.capes.util.GameProfileUtil;
 import net.litetex.capes.util.collections.DiscardingQueue;
 import net.litetex.capes.util.collections.MaxSizedHashMap;
-import net.minecraft.util.logging.UncaughtExceptionHandler;
+import net.minecraft.DefaultUncaughtExceptionHandlerWithName;
 
 
 @SuppressWarnings({"checkstyle:MagicNumber", "PMD.GodClass"})
@@ -74,7 +74,7 @@ public class PlayerCapeHandlerManager
 						final Thread thread = new Thread(r);
 						thread.setName("Cape-" + COUNTER.getAndIncrement());
 						thread.setDaemon(true);
-						thread.setUncaughtExceptionHandler(new UncaughtExceptionHandler(LOG));
+						thread.setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandlerWithName(LOG));
 						return thread;
 					}
 				});

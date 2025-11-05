@@ -11,7 +11,7 @@ import com.mojang.authlib.GameProfile;
 
 import net.litetex.capes.provider.antifeature.AntiFeature;
 import net.litetex.capes.provider.antifeature.AntiFeatures;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 
 public class CosmeticaProvider implements CapeProvider
@@ -86,7 +86,7 @@ public class CosmeticaProvider implements CapeProvider
 	}
 	
 	@Override
-	public String changeCapeUrl(final MinecraftClient client)
+	public String changeCapeUrl(final Minecraft client)
 	{
 		return "https://login.cosmetica.cc";
 	}

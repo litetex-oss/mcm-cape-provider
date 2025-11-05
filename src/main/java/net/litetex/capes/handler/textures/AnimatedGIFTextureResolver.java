@@ -21,8 +21,9 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.mojang.blaze3d.platform.NativeImage;
+
 import net.litetex.capes.handler.AnimatedNativeImageContainer;
-import net.minecraft.client.texture.NativeImage;
 
 
 /**
@@ -39,7 +40,7 @@ import net.minecraft.client.texture.NativeImage;
  * </ul>
  * </p>
  *
- * @implNote Best effort - might not work with all GIFs
+ * NOTE: Best effort - might not work with all GIFs
  */
 public class AnimatedGIFTextureResolver implements TextureResolver
 {
@@ -94,7 +95,7 @@ public class AnimatedGIFTextureResolver implements TextureResolver
 						{
 							for(int y = 0; y < height; y++)
 							{
-								frame.setColorArgb(x, y, image.getRGB(x, y));
+								frame.setPixel(x, y, image.getRGB(x, y));
 							}
 						}
 						return new AnimatedNativeImageContainer(frame, imageFrame.delay() * 10);

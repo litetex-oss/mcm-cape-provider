@@ -2,13 +2,13 @@ package net.litetex.capes.menu.preview.render;
 
 import java.util.function.Supplier;
 
-import net.minecraft.util.AssetInfo;
+import net.minecraft.core.ClientAsset;
 
 
 public record PlayerDisplayGuiPayload(
-	AssetInfo.TextureAsset bodyTexture,
-	Supplier<AssetInfo.TextureAsset> capeTextureSupplier,
-	Supplier<AssetInfo.TextureAsset> elytraTextureSupplier,
+	ClientAsset.Texture bodyTexture,
+	Supplier<ClientAsset.Texture> capeTextureSupplier,
+	Supplier<ClientAsset.Texture> elytraTextureSupplier,
 	boolean slim
 )
 {

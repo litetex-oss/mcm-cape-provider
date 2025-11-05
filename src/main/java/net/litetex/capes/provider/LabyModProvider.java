@@ -10,7 +10,7 @@ import com.mojang.authlib.GameProfile;
 
 import net.litetex.capes.provider.antifeature.AntiFeature;
 import net.litetex.capes.provider.antifeature.AntiFeatures;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 
 public class LabyModProvider implements CapeProvider
@@ -63,7 +63,7 @@ public class LabyModProvider implements CapeProvider
 	}
 	
 	@Override
-	public String changeCapeUrl(final MinecraftClient client)
+	public String changeCapeUrl(final Minecraft client)
 	{
 		return "https://labymod.net/login";
 	}

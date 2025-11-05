@@ -13,7 +13,7 @@ import org.apache.commons.io.input.BoundedInputStream;
 import com.mojang.authlib.GameProfile;
 
 import net.litetex.capes.provider.antifeature.AntiFeature;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 
 public interface CapeProvider
@@ -46,7 +46,7 @@ public interface CapeProvider
 		return false;
 	}
 	
-	default String changeCapeUrl(final MinecraftClient client)
+	default String changeCapeUrl(final Minecraft client)
 	{
 		return null;
 	}

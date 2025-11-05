@@ -11,8 +11,8 @@ import net.litetex.capes.handler.textures.AnimatedSpriteTextureResolver;
 import net.litetex.capes.provider.antifeature.AntiFeature;
 import net.litetex.capes.provider.antifeature.AntiFeatures;
 import net.litetex.capes.provider.antifeature.DefaultAntiFeature;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 
 
 public class CustomProvider implements CapeProvider
@@ -88,7 +88,7 @@ public class CustomProvider implements CapeProvider
 	}
 	
 	@Override
-	public String changeCapeUrl(final MinecraftClient client)
+	public String changeCapeUrl(final Minecraft client)
 	{
 		return this.config.changeCapeUrl();
 	}
@@ -110,7 +110,7 @@ public class CustomProvider implements CapeProvider
 		return this.config.antiFeatures().stream()
 			.filter(Objects::nonNull)
 			.map(s -> Optional.ofNullable(AntiFeatures.ALL_DEFAULT.get(s))
-				.orElseGet(() -> new DefaultAntiFeature(Text.literal(s))))
+				.orElseGet(() -> new DefaultAntiFeature(Component.literal(s))))
 			.toList();
 	}
 	

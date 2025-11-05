@@ -3,12 +3,12 @@ package net.litetex.capes.menu.preview.render;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.widget.PlayerSkinWidget;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.entity.model.ElytraEntityModel;
-import net.minecraft.client.render.entity.model.EntityModelLayers;
-import net.minecraft.client.render.entity.model.LoadedEntityModels;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.PlayerSkinWidget;
+import net.minecraft.client.model.ElytraModel;
+import net.minecraft.client.model.geom.EntityModelSet;
+import net.minecraft.client.model.geom.ModelLayers;
+import net.minecraft.client.model.geom.ModelPart;
 
 
 @SuppressWarnings("checkstyle:MagicNumber")
@@ -17,13 +17,13 @@ public class PlayerDisplayWidget extends PlayerSkinWidget
 	private final Supplier<PlayerDisplayGuiPayload> payloadSupplier;
 	private final Consumer<PlayerDisplayGuiModels> preModelRenderAction;
 	
-	private final ElytraEntityModel elytraEntityModel;
+	private final ElytraModel elytraEntityModel;
 	private final ModelPart capeModel;
 	
 	public PlayerDisplayWidget(
 		final int width,
 		final int height,
-		final LoadedEntityModels entityModels,
+		final EntityModelSet entityModels,
 		final Supplier<PlayerDisplayGuiPayload> payloadSupplier,
 		final Consumer<PlayerDisplayGuiModels> preModelRenderAction)
 	{
@@ -31,12 +31,12 @@ public class PlayerDisplayWidget extends PlayerSkinWidget
 		this.payloadSupplier = payloadSupplier;
 		this.preModelRenderAction = preModelRenderAction;
 		
-		this.elytraEntityModel = new ElytraEntityModel(entityModels.getModelPart(EntityModelLayers.ELYTRA));
-		this.capeModel = entityModels.getModelPart(EntityModelLayers.PLAYER_CAPE);
+		this.elytraEntityModel = new ElytraModel(entityModels.bakeLayer(ModelLayers.ELYTRA));
+		this.capeModel = entityModels.bakeLayer(ModelLayers.PLAYER_CAPE);
 	}
 	
 	@Override
-	protected void renderWidget(final DrawContext context, final int mouseX, final int mouseY, final float deltaTicks)
+	protected void renderWidget(final GuiGraphics context, final int mouseX, final int mouseY, final float deltaTicks)
 	{
 		final PlayerDisplayGuiPayload payload = this.payloadSupplier.get();
 		
@@ -52,8 +52,8 @@ public class PlayerDisplayWidget extends PlayerSkinWidget
 			models,
 			payload,
 			0.97F * this.getHeight() / 2.125F,
-			this.xRotation,
-			this.yRotation,
+			this.rotationX,
+			this.rotationY,
 			-1.0625F,
 			this.getX(),
 			this.getY(),
@@ -63,7 +63,7 @@ public class PlayerDisplayWidget extends PlayerSkinWidget
 	
 	@SuppressWarnings("PMD.ExcessiveParameterList") // Derived from MC code
 	public void addToDrawContext(
-		final DrawContext context,
+		final GuiGraphics context,
 		final PlayerDisplayGuiModels models,
 		final PlayerDisplayGuiPayload payload,
 		final float scale,
@@ -75,7 +75,7 @@ public class PlayerDisplayWidget extends PlayerSkinWidget
 		final int x2,
 		final int y2)
 	{
-		context.state.addSpecialElement(new PlayerDisplayGuiElementRenderState(
+		context.guiRenderState.submitPicturesInPictureState(new PlayerDisplayGuiElementRenderState(
 			models,
 			payload,
 			xRotation,
@@ -86,6 +86,6 @@ public class PlayerDisplayWidget extends PlayerSkinWidget
 			x2,
 			y2,
 			scale,
-			context.scissorStack.peekLast()));
+			context.scissorStack.peek()));
 	}
 }
