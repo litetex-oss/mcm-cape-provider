@@ -89,7 +89,8 @@ public abstract class MainMenuScreen extends OptionsSubScreen implements Correct
 			});
 	}
 	
-	protected <T extends GuiEventListener & Renderable & NarratableEntry> T addSelfManagedDrawableChild(final T drawableElement)
+	protected <T extends GuiEventListener & Renderable & NarratableEntry> T addSelfManagedDrawableChild(
+		final T drawableElement)
 	{
 		this.selfManagedDrawableChilds.add(drawableElement);
 		return this.addRenderableWidget(drawableElement);
