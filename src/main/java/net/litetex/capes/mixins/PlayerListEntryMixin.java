@@ -13,17 +13,17 @@ import com.mojang.authlib.GameProfile;
 
 import net.litetex.capes.Capes;
 import net.litetex.capes.util.GameProfileUtil;
-import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.entity.player.SkinTextures;
+import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.world.entity.player.PlayerSkin;
 
 
-@Mixin(PlayerListEntry.class)
+@Mixin(PlayerInfo.class)
 public abstract class PlayerListEntryMixin
 {
-	@Inject(method = "texturesSupplier", at = @At("HEAD"))
+	@Inject(method = "createSkinLookup", at = @At("HEAD"))
 	private static void loadTextures(
 		final GameProfile profile,
-		final CallbackInfoReturnable<Supplier<SkinTextures>> cir)
+		final CallbackInfoReturnable<Supplier<PlayerSkin>> cir)
 	{
 		if(!Capes.instance().config().isOnlyLoadForSelf() || GameProfileUtil.isSelf(profile))
 		{
@@ -32,11 +32,11 @@ public abstract class PlayerListEntryMixin
 	}
 	
 	@Inject(
-		method = "getSkinTextures",
+		method = "getSkin",
 		at = @At("TAIL"),
 		order = 1001, // Slightly later to suppress actions of other mods if present
 		cancellable = true)
-	private void getCapeTexture(final CallbackInfoReturnable<SkinTextures> cir)
+	private void getCapeTexture(final CallbackInfoReturnable<PlayerSkin> cir)
 	{
 		Capes.instance().overwriteSkinTextures(this.profile, cir::getReturnValue, cir::setReturnValue);
 	}

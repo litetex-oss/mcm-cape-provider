@@ -1,12 +1,12 @@
 package net.litetex.capes.handler;
 
-import net.minecraft.util.AssetInfo;
+import net.minecraft.core.ClientAsset;
 
 
 public interface TextureProvider
 {
 	// Never null!
-	AssetInfo.TextureAsset texture();
+	ClientAsset.Texture texture();
 	
 	boolean dynamicIdentifier();
 }

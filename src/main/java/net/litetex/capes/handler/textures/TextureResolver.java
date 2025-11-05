@@ -3,8 +3,9 @@ package net.litetex.capes.handler.textures;
 import java.io.IOException;
 import java.util.List;
 
+import com.mojang.blaze3d.platform.NativeImage;
+
 import net.litetex.capes.handler.AnimatedNativeImageContainer;
-import net.minecraft.client.texture.NativeImage;
 
 
 public interface TextureResolver

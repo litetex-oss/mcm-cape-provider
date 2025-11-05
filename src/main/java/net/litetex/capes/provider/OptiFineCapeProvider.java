@@ -12,7 +12,7 @@ import com.mojang.authlib.GameProfile;
 
 import net.litetex.capes.provider.antifeature.AntiFeature;
 import net.litetex.capes.provider.antifeature.AntiFeatures;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 
 public class OptiFineCapeProvider implements CapeProvider
@@ -46,7 +46,7 @@ public class OptiFineCapeProvider implements CapeProvider
 	}
 	
 	@Override
-	public String changeCapeUrl(final MinecraftClient client)
+	public String changeCapeUrl(final Minecraft client)
 	{
 		try
 		{
@@ -57,10 +57,10 @@ public class OptiFineCapeProvider implements CapeProvider
 			
 			final UUID id = client.getGameProfile().id();
 			
-			client.getApiServices().sessionService().joinServer(id, client.getSession().getAccessToken(), serverId);
+			client.services().sessionService().joinServer(id, client.getUser().getAccessToken(), serverId);
 			return "https://optifine.net/capeChange?"
 				+ "u=" + id.toString().replace("-", "")
-				+ "&n=" + client.getSession().getUsername()
+				+ "&n=" + client.getUser().getName()
 				+ "&s=" + serverId;
 		}
 		catch(final Exception ex)

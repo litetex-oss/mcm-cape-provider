@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import com.mojang.authlib.GameProfile;
 
 import net.litetex.capes.util.collections.MaxSizedHashMap;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 
 public class RealPlayerValidator
@@ -33,7 +33,7 @@ public class RealPlayerValidator
 	
 	private boolean checkReal(final GameProfile profile)
 	{
-		final ValidityState validityState = this.determineIfInvalid(MinecraftClient.getInstance(), profile);
+		final ValidityState validityState = this.determineIfInvalid(Minecraft.getInstance(), profile);
 		
 		LOG.debug(
 			"Determined that {}/{} is {}a real player: {}",
@@ -45,10 +45,10 @@ public class RealPlayerValidator
 		return validityState.isValid();
 	}
 	
-	private ValidityState determineIfInvalid(final MinecraftClient client, final GameProfile profile)
+	private ValidityState determineIfInvalid(final Minecraft client, final GameProfile profile)
 	{
 		// The current player is always valid
-		if(profile.id().equals(client.getSession().getUuidOrNull()))
+		if(profile.id().equals(client.getUser().getProfileId()))
 		{
 			return ValidityState.SELF;
 		}
@@ -115,13 +115,13 @@ public class RealPlayerValidator
 		return true;
 	}
 	
-	private boolean isValidSessionProfile(final MinecraftClient client, final UUID id)
+	private boolean isValidSessionProfile(final Minecraft client, final UUID id)
 	{
 		try
 		{
 			// Check if this is a real player (not a fake one create by a server)
 			// Use secure = false to utilize cache
-			return client.getApiServices().sessionService().fetchProfile(id, false) != null;
+			return client.services().sessionService().fetchProfile(id, false) != null;
 		}
 		catch(final Exception ex)
 		{

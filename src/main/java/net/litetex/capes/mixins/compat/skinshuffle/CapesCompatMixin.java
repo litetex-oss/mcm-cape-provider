@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import com.mojang.authlib.GameProfile;
 
 import net.litetex.capes.Capes;
-import net.minecraft.entity.player.SkinTextures;
+import net.minecraft.world.entity.player.PlayerSkin;
 
 
 // Hijack the mixin for the Capes mod and modify it as needed
@@ -20,8 +20,8 @@ public abstract class CapesCompatMixin
 	@Inject(method = "loadTextures", at = @At("HEAD"), cancellable = true, remap = false, require = 0)
 	private static void loadTextures(
 		final GameProfile profile,
-		final SkinTextures oldTextures,
-		final CallbackInfoReturnable<SkinTextures> cir)
+		final PlayerSkin oldTextures,
+		final CallbackInfoReturnable<PlayerSkin> cir)
 	{
 		if(!Capes.instance().overwriteSkinTextures(profile, () -> oldTextures, cir::setReturnValue))
 		{

@@ -2,7 +2,7 @@ package net.litetex.capes.handler.textures;
 
 import java.io.IOException;
 
-import net.minecraft.client.texture.NativeImage;
+import com.mojang.blaze3d.platform.NativeImage;
 
 
 public class DefaultTextureResolver implements TextureResolver
@@ -42,7 +42,7 @@ public class DefaultTextureResolver implements TextureResolver
 			{
 				for(int y = 0; y < srcHeight; y++)
 				{
-					imgNew.setColorArgb(x, y, img.getColorArgb(x, y));
+					imgNew.setPixel(x, y, img.getPixel(x, y));
 				}
 			}
 			

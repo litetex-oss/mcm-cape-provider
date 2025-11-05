@@ -79,7 +79,7 @@ dependencies {
             "net.sourceforge.pmd:pmd-java:${pmdVersion}"
 
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     // Required for rendering the preview
     modImplementation fabricApi.module("fabric-rendering-v1", project.fabric_api_version)

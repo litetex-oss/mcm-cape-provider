@@ -3,8 +3,9 @@ package net.litetex.capes.handler.textures;
 import java.io.IOException;
 import java.util.stream.IntStream;
 
+import com.mojang.blaze3d.platform.NativeImage;
+
 import net.litetex.capes.handler.AnimatedNativeImageContainer;
-import net.minecraft.client.texture.NativeImage;
 
 
 public class AnimatedSpriteTextureResolver implements TextureResolver
@@ -42,7 +43,7 @@ public class AnimatedSpriteTextureResolver implements TextureResolver
 					{
 						for(int y = 0; y < frame.getHeight(); y++)
 						{
-							frame.setColorArgb(x, y, img.getColorArgb(x, y + (currentFrame * (img.getWidth() / 2))));
+							frame.setPixel(x, y, img.getPixel(x, y + (currentFrame * (img.getWidth() / 2))));
 						}
 					}
 					return frame;

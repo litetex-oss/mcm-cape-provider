@@ -1,25 +1,25 @@
 package net.litetex.capes.provider.antifeature;
 
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 
 
 public class DefaultAntiFeature implements AntiFeature
 {
-	private final MutableText text;
+	private final MutableComponent text;
 	
 	public DefaultAntiFeature(final String translateKey)
 	{
-		this(Text.translatable(translateKey));
+		this(Component.translatable(translateKey));
 	}
 	
-	public DefaultAntiFeature(final MutableText text)
+	public DefaultAntiFeature(final MutableComponent text)
 	{
 		this.text = text;
 	}
 	
 	@Override
-	public MutableText message()
+	public MutableComponent message()
 	{
 		return this.text;
 	}
