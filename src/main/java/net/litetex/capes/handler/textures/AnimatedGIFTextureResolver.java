@@ -39,7 +39,7 @@ import net.minecraft.client.texture.NativeImage;
  * </ul>
  * </p>
  *
- * @implNote Best effort - might not work with all GIFs
+ * NOTE: Best effort - might not work with all GIFs
  */
 public class AnimatedGIFTextureResolver implements TextureResolver
 {
