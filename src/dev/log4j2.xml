@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
 	<Loggers>
-		<Logger level="${sys:capes.log.level:-debug}" name="net.litetex.capes" additivity="false">
+		<Logger level="${sys:net.litetex.log.level:-debug}" name="net.litetex" additivity="false">
 			<AppenderRef ref="DebugFile"/>
 			<AppenderRef ref="SysOut"/>
 			<AppenderRef ref="LatestFile"/>
