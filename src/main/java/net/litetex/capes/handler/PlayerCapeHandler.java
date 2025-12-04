@@ -38,7 +38,7 @@ import net.minecraft.core.ClientAsset;
 import net.minecraft.resources.ResourceLocation;
 
 
-@SuppressWarnings({"checkstyle:MagicNumber", "PMD.GodClass"})
+@SuppressWarnings("checkstyle:MagicNumber")
 public class PlayerCapeHandler
 {
 	private static final Logger LOG = LoggerFactory.getLogger(PlayerCapeHandler.class);
