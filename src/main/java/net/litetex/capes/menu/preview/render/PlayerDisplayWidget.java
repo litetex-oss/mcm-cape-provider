@@ -5,10 +5,10 @@ import java.util.function.Supplier;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.PlayerSkinWidget;
-import net.minecraft.client.model.ElytraModel;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.object.equipment.ElytraModel;
 
 
 @SuppressWarnings("checkstyle:MagicNumber")
