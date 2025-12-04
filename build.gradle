@@ -11,7 +11,7 @@ plugins {
 ext {
     checkstyleVersion = '12.1.2'
 
-    pmdVersion = '7.18.0'
+    pmdVersion = '7.19.0'
 }
 
 version = project.mod_version

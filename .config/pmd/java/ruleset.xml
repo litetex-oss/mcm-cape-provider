@@ -2,7 +2,7 @@
 <ruleset name="Default"
 		 xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
 		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+		 xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.github.io/ruleset_2_0_0.xsd">
 
 	<description>
 		This ruleset checks the code for discouraged programming constructs.
@@ -10,11 +10,14 @@
 
 	<!-- Only rules that don't overlap with CheckStyle! -->
 
+	<!-- About: Formatting -->
+	<!-- Some lines (e.g. description, examples and CDATA) have to start without any indents or this will result in incorrect formatting -->
+
 	<rule ref="category/java/bestpractices.xml/AvoidPrintStackTrace"/>
-	<rule ref="category/java/bestpractices.xml/AvoidStringBufferField"/>
 	<rule ref="category/java/bestpractices.xml/AvoidUsingHardCodedIP"/>
 	<rule ref="category/java/bestpractices.xml/ConstantsInInterface"/>
 	<rule ref="category/java/bestpractices.xml/ExhaustiveSwitchHasDefault"/>
+	<rule ref="category/java/bestpractices.xml/LabeledStatement"/>
 	<rule ref="category/java/bestpractices.xml/LiteralsFirstInComparisons"/>
 	<!-- CheckStyle can't handle this switch behavior -> delegated to PMD -->
 	<rule ref="category/java/bestpractices.xml/NonExhaustiveSwitch"/>
@@ -26,6 +29,7 @@
 	<rule ref="category/java/bestpractices.xml/PreserveStackTrace"/>
 	<rule ref="category/java/bestpractices.xml/SimplifiableTestAssertion"/>
 	<rule ref="category/java/bestpractices.xml/SystemPrintln"/>
+	<rule ref="category/java/bestpractices.xml/UnnecessaryWarningSuppression"/>
 	<rule ref="category/java/bestpractices.xml/UnusedAssignment"/>
 	<rule ref="category/java/bestpractices.xml/UnusedPrivateField"/>
 	<rule ref="category/java/bestpractices.xml/UseCollectionIsEmpty"/>
@@ -144,6 +148,7 @@
 	<rule ref="category/java/errorprone.xml/DontUseFloatTypeForLoopIndices"/>
 	<rule ref="category/java/errorprone.xml/EqualsNull"/>
 	<rule ref="category/java/errorprone.xml/IdempotentOperations"/>
+	<rule ref="category/java/errorprone.xml/IdenticalConditionalBranches"/>
 	<rule ref="category/java/errorprone.xml/ImplicitSwitchFallThrough"/>
 	<rule ref="category/java/errorprone.xml/InstantiationToGetClass"/>
 	<rule ref="category/java/errorprone.xml/InvalidLogMessageFormat"/>
@@ -151,6 +156,8 @@
 	<rule ref="category/java/errorprone.xml/MisplacedNullCheck"/>
 	<rule ref="category/java/errorprone.xml/MoreThanOneLogger"/>
 	<rule ref="category/java/errorprone.xml/NonStaticInitializer"/>
+	<rule ref="category/java/errorprone.xml/ReplaceJavaUtilCalendar"/>
+	<rule ref="category/java/errorprone.xml/ReplaceJavaUtilDate"/>
 	<rule ref="category/java/errorprone.xml/ReturnFromFinallyBlock"/>
 	<rule ref="category/java/errorprone.xml/SingletonClassReturningNewInstance"/>
 	<rule ref="category/java/errorprone.xml/UnconditionalIfStatement"/>
@@ -182,6 +189,9 @@
 
 		<!-- Handled by checkstyle -->
 		<exclude name="RedundantFieldInitializer"/>
+
+		<!-- Not in use and resource intensive -->
+		<exclude name="UseIOStreamsWithApacheCommonsFileItem"/>
 
 		<!-- Nowadays optimized by compiler; No code bloating needed -->
 		<exclude name="UseStringBufferForStringAppends"/>
