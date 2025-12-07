@@ -3,20 +3,20 @@ package net.litetex.capes.provider;
 import com.mojang.authlib.GameProfile;
 
 
-public class MinecraftCapeProvider implements CapeProvider
+public class DefaultMinecraftCapeProvider implements CapeProvider
 {
-	public static final MinecraftCapeProvider INSTANCE = new MinecraftCapeProvider();
+	public static final DefaultMinecraftCapeProvider INSTANCE = new DefaultMinecraftCapeProvider();
 	
 	@Override
 	public String id()
 	{
-		return "minecraft";
+		return "default";
 	}
 	
 	@Override
 	public String name()
 	{
-		return "Minecraft";
+		return "Default / Minecraft";
 	}
 	
 	@Override

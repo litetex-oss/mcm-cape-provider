@@ -12,20 +12,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import com.mojang.authlib.GameProfile;
 
 import net.litetex.capes.Capes;
-import net.litetex.capes.handler.PlayerCapeHandler;
 import net.litetex.capes.util.GameProfileUtil;
-import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.util.SkinTextures;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.world.entity.player.PlayerSkin;
 
 
-@Mixin(PlayerListEntry.class)
+@Mixin(PlayerInfo.class)
 public abstract class PlayerListEntryMixin
 {
-	@Inject(method = "texturesSupplier", at = @At("HEAD"))
+	@Inject(method = "createSkinLookup", at = @At("HEAD"))
 	private static void loadTextures(
 		final GameProfile profile,
-		final CallbackInfoReturnable<Supplier<SkinTextures>> cir)
+		final CallbackInfoReturnable<Supplier<PlayerSkin>> cir)
 	{
 		if(!Capes.instance().config().isOnlyLoadForSelf() || GameProfileUtil.isSelf(profile))
 		{
@@ -33,29 +31,14 @@ public abstract class PlayerListEntryMixin
 		}
 	}
 	
-	@Inject(method = "getSkinTextures", at = @At("TAIL"), cancellable = true)
-	private void getCapeTexture(final CallbackInfoReturnable<SkinTextures> cir)
+	@Inject(
+		method = "getSkin",
+		at = @At("TAIL"),
+		order = 1001, // Slightly later to suppress actions of other mods if present
+		cancellable = true)
+	private void getCapeTexture(final CallbackInfoReturnable<PlayerSkin> cir)
 	{
-		final PlayerCapeHandler handler = Capes.instance().playerCapeHandlerManager().getProfile(this.profile);
-		if(handler != null)
-		{
-			final Identifier capeTexture = handler.getCape();
-			if(capeTexture != null)
-			{
-				final SkinTextures oldTextures = cir.getReturnValue();
-				final Identifier elytraTexture = handler.hasElytraTexture()
-					&& Capes.instance().config().isEnableElytraTexture()
-					? capeTexture
-					: Capes.DEFAULT_ELYTRA_IDENTIFIER;
-				cir.setReturnValue(new SkinTextures(
-					oldTextures.texture(),
-					oldTextures.textureUrl(),
-					capeTexture,
-					elytraTexture,
-					oldTextures.model(),
-					oldTextures.secure()));
-			}
-		}
+		Capes.instance().overwriteSkinTextures(this.profile, cir::getReturnValue, cir::setReturnValue);
 	}
 	
 	@Shadow

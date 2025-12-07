@@ -2,29 +2,31 @@ package net.litetex.capes.menu.preview;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.mojang.authlib.GameProfile;
 
 import net.litetex.capes.Capes;
-import net.litetex.capes.handler.IdentifierProvider;
 import net.litetex.capes.handler.PlayerCapeHandler;
 import net.litetex.capes.handler.PlayerCapeHandlerManager;
+import net.litetex.capes.handler.TextureProvider;
 import net.litetex.capes.i18n.CapesI18NKeys;
 import net.litetex.capes.menu.MainMenuScreen;
 import net.litetex.capes.menu.preview.render.PlayerDisplayGuiPayload;
 import net.litetex.capes.menu.preview.render.PlayerDisplayWidget;
 import net.litetex.capes.provider.CapeProvider;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.render.entity.model.PlayerEntityModel;
-import net.minecraft.client.util.DefaultSkinHelper;
-import net.minecraft.client.util.SkinTextures;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.Options;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.resources.DefaultPlayerSkin;
+import net.minecraft.core.ClientAsset;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.PlayerModelType;
+import net.minecraft.world.entity.player.PlayerSkin;
 
 
 @SuppressWarnings("checkstyle:MagicNumber")
@@ -36,7 +38,7 @@ public class PreviewMenuScreen extends MainMenuScreen
 	
 	public PreviewMenuScreen(
 		final Screen parent,
-		final GameOptions gameOptions)
+		final Options gameOptions)
 	{
 		super(parent, gameOptions);
 		
@@ -44,10 +46,10 @@ public class PreviewMenuScreen extends MainMenuScreen
 		this.playerWidget = new PlayerDisplayWidget(
 			120,
 			120,
-			MinecraftClient.getInstance().getLoadedEntityModels(),
+			Minecraft.getInstance().getEntityModels(),
 			this.viewModel::getPayload,
 			models -> playerLimbAnimator.animate(models.player(), 1));
-		this.playerWidget.yRotation = 185; // Default view = from behind, facing the cape/elytra
+		this.playerWidget.rotationY = 185; // Default view = from behind, facing the cape/elytra
 	}
 	
 	@SuppressWarnings("checkstyle:MagicNumber")
@@ -58,7 +60,7 @@ public class PreviewMenuScreen extends MainMenuScreen
 		
 		int buttonW = 200;
 		
-		this.addSelfManagedDrawableChild(ButtonWidget.builder(
+		this.addSelfManagedDrawableChild(Button.builder(
 				this.textForCurrentlyDisplayedCapeProvider(),
 				button -> {
 					final Capes capes = Capes.instance();
@@ -76,7 +78,7 @@ public class PreviewMenuScreen extends MainMenuScreen
 					
 					button.setMessage(this.textForCurrentlyDisplayedCapeProvider());
 				})
-			.position((this.width / 2) - (buttonW / 2), 60)
+			.pos((this.width / 2) - (buttonW / 2), 60)
 			.size(buttonW, 20)
 			.build());
 		
@@ -86,43 +88,44 @@ public class PreviewMenuScreen extends MainMenuScreen
 		buttonW = 100;
 		final int playerWidgetCenterY = this.playerWidget.getY() + (this.playerWidget.getHeight() / 2);
 		
-		this.addSelfManagedDrawableChild(ButtonWidget.builder(
-				Text.translatable(CapesI18NKeys.TOGGLE_ELYTRA),
+		this.addSelfManagedDrawableChild(Button.builder(
+				Component.translatable(CapesI18NKeys.TOGGLE_ELYTRA),
 				b -> this.viewModel.toggleShowElytra())
-			.position((this.width / 4) - (buttonW / 2), playerWidgetCenterY - 23)
+			.pos((this.width / 4) - (buttonW / 2), playerWidgetCenterY - 23)
 			.size(buttonW, 20)
 			.build());
 		
-		this.addSelfManagedDrawableChild(ButtonWidget.builder(
-				Text.translatable(CapesI18NKeys.TOGGLE_PLAYER),
+		this.addSelfManagedDrawableChild(Button.builder(
+				Component.translatable(CapesI18NKeys.TOGGLE_PLAYER),
 				b -> this.viewModel.toggleShowBody())
-			.position((this.width / 4) - (buttonW / 2), playerWidgetCenterY + 2)
+			.pos((this.width / 4) - (buttonW / 2), playerWidgetCenterY + 2)
 			.size(buttonW, 20)
 			.build());
 		
 		this.addSelfManagedDrawableChild(this.playerWidget);
 	}
 	
-	private Text textForCurrentlyDisplayedCapeProvider()
+	private Component textForCurrentlyDisplayedCapeProvider()
 	{
 		return Capes.instance().getCapeProviderForSelf()
 			.map(CapeProvider::name)
-			.map(Text::literal)
-			.orElseGet(() -> Text.translatable(CapesI18NKeys.ACTIVATED_PROVIDERS));
+			.map(Component::literal)
+			.orElseGet(() -> Component.translatable(CapesI18NKeys.ACTIVATED_PROVIDERS));
 	}
 	
 	static class ViewModel
 	{
-		private static final Supplier<Identifier> DEFAULT_ELYTRA_SUPPLIER = () -> Capes.DEFAULT_ELYTRA_IDENTIFIER;
+		private static final Supplier<ClientAsset.Texture> DEFAULT_ELYTRA_SUPPLIER =
+			() -> Capes.DEFAULT_ELYTRA_TEXTURE;
 		
 		private final GameProfile gameProfile;
-		private SkinTextures skin;
+		private PlayerSkin skin;
 		private boolean slim;
 		
 		private List<CapeProvider> capeProviders;
 		
-		private Supplier<Identifier> capeTextureSupplier;
-		private Supplier<Identifier> elytraTextureSupplier = DEFAULT_ELYTRA_SUPPLIER;
+		private Supplier<ClientAsset.Texture> capeTextureSupplier;
+		private Supplier<ClientAsset.Texture> elytraTextureSupplier = DEFAULT_ELYTRA_SUPPLIER;
 		
 		private boolean showBody = true;
 		private boolean showElytra;
@@ -131,17 +134,17 @@ public class PreviewMenuScreen extends MainMenuScreen
 		
 		public ViewModel()
 		{
-			this.gameProfile = MinecraftClient.getInstance().getGameProfile();
-			this.skin = DefaultSkinHelper.getSkinTextures(this.gameProfile);
+			this.gameProfile = Minecraft.getInstance().getGameProfile();
+			this.skin = DefaultPlayerSkin.get(this.gameProfile);
 			
 			this.refreshActiveCapeProviders();
 			this.rebuildPayload();
 			
-			MinecraftClient.getInstance().getSkinProvider().fetchSkinTextures(this.gameProfile)
+			Minecraft.getInstance().getSkinManager().get(this.gameProfile)
 				.thenAcceptAsync(optSkinTextures ->
 					optSkinTextures.ifPresent(skinTextures -> {
 						this.skin = skinTextures;
-						this.slim = SkinTextures.Model.SLIM.equals(this.skin.model());
+						this.slim = PlayerModelType.SLIM.equals(this.skin.model());
 						
 						this.updateCapeAndElytraTexture();
 					}));
@@ -166,8 +169,8 @@ public class PreviewMenuScreen extends MainMenuScreen
 				this.gameProfile, false, this.capeProviders, () -> {
 					final PlayerCapeHandler handler = playerCapeHandlerManager.getProfile(this.gameProfile);
 					
-					final Supplier<Identifier> determinedCapeTextureSupplier =
-						this.determineCapeIdentifierSupplier(handler);
+					final Supplier<ClientAsset.Texture> determinedCapeTextureSupplier =
+						this.determineCapeTextureSupplier(handler);
 					this.capeTextureSupplier = determinedCapeTextureSupplier;
 					
 					this.elytraTextureSupplier = handler == null
@@ -180,24 +183,32 @@ public class PreviewMenuScreen extends MainMenuScreen
 				});
 		}
 		
-		private Supplier<Identifier> determineCapeIdentifierSupplier(final PlayerCapeHandler handler)
+		private Supplier<ClientAsset.Texture> determineCapeTextureSupplier(final PlayerCapeHandler handler)
 		{
 			if(handler != null)
 			{
-				final IdentifierProvider identifierProvider = handler.capeIdentifierProvider().orElse(null);
-				if(identifierProvider != null)
+				final TextureProvider textureProvider = handler.capeTextureProvider().orElse(null);
+				if(textureProvider != null)
 				{
-					if(identifierProvider.dynamicIdentifier())
+					if(textureProvider.dynamicIdentifier())
 					{
-						return identifierProvider::identifier;
+						return textureProvider::texture;
 					}
 					
 					// Fetch only once
-					final Identifier identifier = identifierProvider.identifier();
+					final ClientAsset.Texture identifier = textureProvider.texture();
 					return () -> identifier;
 				}
 			}
-			return this.skin::capeTexture;
+			
+			final Capes capes = Capes.instance();
+			final Optional<CapeProvider> provider = capes.getCapeProviderForSelf();
+			// Is all active providers and useDefaultProvider?
+			return provider.isEmpty() && capes.isUseDefaultProvider()
+				// Default provider is present?
+				|| provider.filter(Capes.EXCLUDE_DEFAULT_MINECRAFT_CP).isEmpty()
+				? this.skin::cape
+				: () -> null;
 		}
 		
 		public void providerChanged()
@@ -221,7 +232,7 @@ public class PreviewMenuScreen extends MainMenuScreen
 		private void rebuildPayload()
 		{
 			this.payload = new PlayerDisplayGuiPayload(
-				this.showBody ? this.skin.texture() : null,
+				this.showBody ? this.skin.body() : null,
 				this.capeTextureSupplier,
 				this.showElytra ? this.elytraTextureSupplier : null,
 				this.slim
@@ -248,7 +259,7 @@ public class PreviewMenuScreen extends MainMenuScreen
 			this.msBetweenUpdates = 1000 / fps;
 		}
 		
-		public void animate(final PlayerEntityModel player, final float tickDelta)
+		public void animate(final PlayerModel player, final float tickDelta)
 		{
 			if(player == null)
 			{
@@ -266,10 +277,10 @@ public class PreviewMenuScreen extends MainMenuScreen
 			final float calcLimbAngle = this.limbAngle - LIMB_DISTANCE * (1.0f - tickDelta);
 			
 			final float a = calcLimbAngle * 0.6662f;
-			player.rightArm.pitch = MathHelper.cos(a + 3.1415927f) * 2.0f * LIMB_DISTANCE * 0.5f;
-			player.leftArm.pitch = MathHelper.cos(a) * 2.0f * LIMB_DISTANCE * 0.5f;
-			player.rightLeg.pitch = MathHelper.cos(a) * 1.4f * LIMB_DISTANCE;
-			player.leftLeg.pitch = MathHelper.cos(a + 3.1415927f) * 1.4f * LIMB_DISTANCE;
+			player.rightArm.xRot = Mth.cos(a + 3.1415927f) * 2.0f * LIMB_DISTANCE * 0.5f;
+			player.leftArm.xRot = Mth.cos(a) * 2.0f * LIMB_DISTANCE * 0.5f;
+			player.rightLeg.xRot = Mth.cos(a) * 1.4f * LIMB_DISTANCE;
+			player.leftLeg.xRot = Mth.cos(a + 3.1415927f) * 1.4f * LIMB_DISTANCE;
 		}
 	}
 }

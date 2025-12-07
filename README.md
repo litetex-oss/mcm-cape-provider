@@ -25,6 +25,7 @@ Improved/Reworked version of the ["Capes" mod](https://github.com/CaelTheColher/
 
 ### Creating a custom cape provider
 
+#### As a user
 This demo showcases how to apply the capes inside [``custom-cape-demo``](https://github.com/litetex-oss/mcm-cape-provider/tree/dev/custom-cape-demo).
 
 1. Open the config file located in ``config/cape-provider.json5``
@@ -51,6 +52,61 @@ This demo showcases how to apply the capes inside [``custom-cape-demo``](https:/
 3. Restart the game and activate the provider
 
 For more details have a look at [CustomProvider](https://github.com/litetex-oss/mcm-cape-provider/tree/dev/src/main/java/net/litetex/capes/provider/CustomProvider.java) and [CustomProviderConfig](https://github.com/litetex-oss/mcm-cape-provider/tree/dev/src/main/java/net/litetex/capes/config/CustomProviderConfig.java)
+
+##### Maximum size
+
+Images/Textures should not exceed 10MB otherwise they might be ignored.
+
+##### Texture resolvers / Animated textures
+
+Texture resolvers can be selected using the `textureResolverId` attribute.
+The following resolvers are currently built-in:
+
+| Resolver-ID | Animated | Format | Example | Notes |
+| --- | --- | --- | --- | --- |
+| `default` / null | ❌ | [PNG](https://de.wikipedia.org/wiki/Portable_Network_Graphics) | [uuid.png](https://raw.githubusercontent.com/litetex-oss/mcm-cape-provider/refs/heads/dev/custom-cape-demo/uuid.png) | |
+| `sprite` | ✔ | Stacked [PNG](https://de.wikipedia.org/wiki/Portable_Network_Graphics) | [animated.png](https://raw.githubusercontent.com/litetex-oss/mcm-cape-provider/refs/heads/dev/custom-cape-demo/animated.png) | |
+| `gif` | ✔ | [GIF](https://de.wikipedia.org/wiki/Graphics_Interchange_Format) | [animated.gif](https://raw.githubusercontent.com/litetex-oss/mcm-cape-provider/refs/heads/dev/custom-cape-demo/animated.gif) | _Usage not recommended_<br/>GIFs require more resources when compared to more modern formats like PNG. |
+
+Please note that animated textures can be frozen or completely disabled in the settings.
+
+#### As a developer / Proving capes through mods
+
+If you are a mod developer and want to e.g. display a cape for supporters of your mod, you can provide it using the mod's metadata / ``fabric.mod.json``.
+The overall behavior is similar to how [``modmenu``](https://github.com/TerraformersMC/ModMenu?tab=readme-ov-file#fabric-metadata-api) handles this.
+
+Here's a simple implementation:
+
+``fabric.mod.json``
+```json5
+{
+  ...
+  "custom": {
+    "cape": "https://raw.githubusercontent.com/litetex-oss/mcm-cape-provider/refs/heads/dev/custom-cape-demo/uuid.png"
+  }
+}
+```
+
+<details><summary>Here's a more detailed variant</summary>
+
+``fabric.mod.json``
+```json5
+{
+  "custom": {
+    "cape": {
+      // Gives everyone a christmas cape
+      // You can also use variables here, like $uuid. See above for more details
+      // You may have to escape the $ with \ or you can alternatively use § instead of $
+      // Alternative: "uriTemplate"
+      "url": "https://example.org/textures/§uuid.png",
+      "changeCapeUrl": "https://...",
+      "rateLimitedReqPerSec": 20 // Default is 20
+    }
+  }
+}
+```
+
+</details>
 
 You can also create a [programmatic cape provider](https://github.com/litetex-oss/mcm-cape-provider/tree/dev/PROGRAMMATIC_PROVIDER.md).
 

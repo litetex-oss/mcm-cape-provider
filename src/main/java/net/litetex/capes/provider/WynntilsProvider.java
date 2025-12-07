@@ -10,7 +10,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 
 public class WynntilsProvider implements CapeProvider
@@ -42,11 +42,11 @@ public class WynntilsProvider implements CapeProvider
 		try(final HttpClient client = clientBuilder.build())
 		{
 			final JsonObject body = new JsonObject();
-			body.addProperty("uuid", profile.getId().toString());
+			body.addProperty("uuid", profile.id().toString());
 			
 			final HttpRequest request = requestBuilder
 				// Does UserAgent blocking: https://github.com/Wynntils/athena-backend/pull/36
-				.header("User-Agent", "Wynntils Artemis\\3.0.6+MC-1.21.4 (client) FABRIC")
+				.header("User-Agent", "Wynntils Artemis\\3.3.0+MC-1.21.4 (client) FABRIC")
 				.header("Content-Type", "application/json")
 				.POST(HttpRequest.BodyPublishers.ofString(body.toString()))
 				.build();
@@ -76,7 +76,7 @@ public class WynntilsProvider implements CapeProvider
 				return null;
 			}
 			
-			return new ResolvedTextureInfo.Base64TextureInfo(responseData.texture(), false);
+			return new ResolvedTextureInfo.Base64TextureInfo(responseData.texture());
 		}
 	}
 	
@@ -87,7 +87,7 @@ public class WynntilsProvider implements CapeProvider
 	}
 	
 	@Override
-	public String changeCapeUrl(final MinecraftClient client)
+	public String changeCapeUrl(final Minecraft client)
 	{
 		return "https://account.wynntils.com";
 	}
@@ -96,5 +96,12 @@ public class WynntilsProvider implements CapeProvider
 	public String homepageUrl()
 	{
 		return "https://wynntils.com";
+	}
+	
+	@Override
+	public double rateLimitedReqPerSec()
+	{
+		// has a very underperforming backend
+		return 4;
 	}
 }

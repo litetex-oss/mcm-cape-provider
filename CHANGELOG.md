@@ -1,3 +1,84 @@
+# 4.1.3
+* Fix broken build
+
+# 4.1.2
+* Migrated to "official" mappings in preparation for the removal of obfuscation
+* Updated dependencies
+
+# 4.1.1
+* Update Cosmetica API #166
+* Improved mod compatibility
+
+# 4.1.0
+* Updated to 1.21.9
+
+# 4.0.2
+* Fixed: `$` inside `fabric.mod.json` is usually replaced by the build process #145
+  * Added a note that this may require escaping using a `\`
+  * Made it possible to use `§` instead of `$`
+    * Updated the demo accordingly
+
+# 4.0.1
+* Made animated GIF decoding more reliable
+  * This should fix broken textures #135
+* The maximum size for image downloads is now 10MB by default
+
+# 4.0.0
+* Implemented Texture Resolvers
+  * Added support for GIFs #131
+  * Deprecated `animated`-flag: Use `textureResolverId` instead
+  * For further details please have a look at the corresponding documentation on the README
+* Various small code improvements
+
+# 3.0.0
+* Other mods can now define cape providers in their metadata #94
+  * This way other developers don't have to manually implement/copy-paste code for adding custom capes (e.g. for supporters) which should result in less conflicts
+  * Cape providers loaded from other mod's metadata are automatically loaded and activated by default
+    * This can be changed in the settings under ``Other > Providers from mods``
+  * Usage example:
+    * Simple implementation:<br/>
+      ``fabric.mod.json``
+      ```json5
+      {
+        ...
+        "custom": {
+          "cape": "https://raw.githubusercontent.com/litetex-oss/mcm-cape-provider/refs/heads/dev/custom-cape-demo/uuid.png"
+        }
+      }
+      ```
+    * More detailed variant:<br/>
+      ``fabric.mod.json``
+      ```json5
+      {
+        "custom": {
+          "cape": {
+            // Gives everyone a christmas cape
+            // You can also use variables here, like $uuid. See above for more details
+            // Alternative: "uriTemplate"
+            "url": "https://raw.githubusercontent.com/litetex-oss/mcm-cape-provider/refs/heads/dev/custom-cape-demo/uuid.png",
+            "changeCapeUrl": "https://...",
+            "rateLimitedReqPerSec": 20
+          }
+        }
+      }
+      ```
+
+# 2.3.0
+* Make it possible to disable the default/Minecraft provider #64
+* Improved mod compatibility
+
+# 2.2.0
+* Improved real player detection
+  * Capes are now only loaded for players with a valid UUID
+* Improved load balancing with cape providers
+  * Providers are now rate limited
+    * the default is 20 req/s
+    * can be overwriten per provider using ``rateLimitedReqPerSec``
+  * If there are too many pending cape load tasks the oldest ones will now be automatically discarded
+* Limited amount of tracked players to prevent running out of memory
+* Now compatibile with ``SkinShuffle``
+* Now targeting 1.21.8
+
 # 2.1.0
 * Fixed mod configuration button not being displayed correctly in Skin Customization Screen when resizing #79
 * Fully utilize fabric-api. fabric-api is now required #78

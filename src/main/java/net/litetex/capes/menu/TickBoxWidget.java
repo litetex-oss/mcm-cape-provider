@@ -2,14 +2,15 @@ package net.litetex.capes.menu;
 
 import java.util.function.BiConsumer;
 
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.Component;
 
 
 @SuppressWarnings("checkstyle:MagicNumber")
-public class TickBoxWidget extends ClickableWidget
+public class TickBoxWidget extends AbstractWidget
 {
 	private boolean ticked;
 	private final BiConsumer<TickBoxWidget, Boolean> onTickChanged;
@@ -20,14 +21,14 @@ public class TickBoxWidget extends ClickableWidget
 		final boolean readOnly,
 		final BiConsumer<TickBoxWidget, Boolean> onTickChanged)
 	{
-		super(0, 0, size, size, Text.empty());
+		super(0, 0, size, size, Component.empty());
 		this.active = !readOnly;
 		this.ticked = ticked;
 		this.onTickChanged = onTickChanged;
 	}
 	
 	@Override
-	protected void renderWidget(final DrawContext context, final int mouseX, final int mouseY, final float delta)
+	protected void renderWidget(final GuiGraphics context, final int mouseX, final int mouseY, final float delta)
 	{
 		final int x = this.getX();
 		final int y = this.getY();
@@ -45,7 +46,7 @@ public class TickBoxWidget extends ClickableWidget
 	}
 	
 	private void drawBorder(
-		final DrawContext context,
+		final GuiGraphics context,
 		final int x1,
 		final int y1,
 		final int x2,
@@ -59,7 +60,7 @@ public class TickBoxWidget extends ClickableWidget
 	}
 	
 	@Override
-	public void onClick(final double mouseX, final double mouseY)
+	public void onClick(final MouseButtonEvent click, final boolean bl)
 	{
 		this.toggle();
 	}
@@ -79,7 +80,7 @@ public class TickBoxWidget extends ClickableWidget
 	}
 	
 	@Override
-	protected void appendClickableNarrations(final NarrationMessageBuilder builder)
+	protected void updateWidgetNarration(final NarrationElementOutput builder)
 	{
 	}
 }

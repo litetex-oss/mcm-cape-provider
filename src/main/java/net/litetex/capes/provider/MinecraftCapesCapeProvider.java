@@ -9,7 +9,9 @@ import java.util.Map;
 import com.google.gson.Gson;
 import com.mojang.authlib.GameProfile;
 
-import net.minecraft.client.MinecraftClient;
+import net.litetex.capes.handler.textures.AnimatedSpriteTextureResolver;
+import net.minecraft.SharedConstants;
+import net.minecraft.client.Minecraft;
 
 
 public class MinecraftCapesCapeProvider implements CapeProvider
@@ -31,7 +33,7 @@ public class MinecraftCapesCapeProvider implements CapeProvider
 	@Override
 	public String getBaseUrl(final GameProfile profile)
 	{
-		return "https://api.minecraftcapes.net/profile/" + profile.getId().toString().replace("-", "");
+		return "https://api.minecraftcapes.net/profile/" + profile.id().toString().replace("-", "");
 	}
 	
 	@Override
@@ -40,6 +42,10 @@ public class MinecraftCapesCapeProvider implements CapeProvider
 		final HttpRequest.Builder requestBuilder,
 		final GameProfile profile) throws IOException, InterruptedException
 	{
+		requestBuilder
+			.setHeader("User-Agent", "minecraftcapes-mod/" + SharedConstants.getCurrentVersion().name())
+			.setHeader("Accept", "application/json");
+		
 		try(final HttpClient client = clientBuilder.build())
 		{
 			final HttpResponse<String> response =
@@ -61,7 +67,7 @@ public class MinecraftCapesCapeProvider implements CapeProvider
 			
 			return new ResolvedTextureInfo.Base64TextureInfo(
 				responseData.textures().get("cape"),
-				Boolean.TRUE.equals(responseData.animatedCape())
+				responseData.animatedCape() ? AnimatedSpriteTextureResolver.ID : null
 			);
 		}
 	}
@@ -73,7 +79,7 @@ public class MinecraftCapesCapeProvider implements CapeProvider
 	}
 	
 	@Override
-	public String changeCapeUrl(final MinecraftClient client)
+	public String changeCapeUrl(final Minecraft client)
 	{
 		return this.homepageUrl();
 	}

@@ -13,18 +13,27 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-    - uses: actions/checkout@v4
-      
+    - uses: actions/checkout@v6
+
     - name: Set up JDK
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         java-version: '21'
         distribution: 'temurin'
-        cache: 'gradle'
-      
+
+    - name: Try restore Gradle Cache
+      uses: actions/cache/restore@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-build-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-build-
+
     - name: Build
       run: ./gradlew build --info
-      
+
     - name: Check for uncommited changes
       run: |
         if [[ "$(git status --porcelain)" != "" ]]; then
@@ -50,13 +59,13 @@ jobs:
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
-    - uses: actions/checkout@v4
-      
+    - uses: actions/checkout@v6
+
     - name: Configure Git
       run: |
         git config --global user.email "actions@github.com"
         git config --global user.name "GitHub Actions"
-      
+
     - name: UN-Snap version and output
       id: version
       run: |
@@ -71,13 +80,13 @@ jobs:
 
         echo "Contents of gradle.properties"
         cat gradle.properties
-    
+
     - name: Get metadata
       id: metadata
       run: |
-        archives_base_name=$(grep -Po 'archives_base_name=\K.*' gradle.properties)
-        echo "archives_base_name=$archives_base_name" >> $GITHUB_OUTPUT
-  
+        archivesBaseName=$(grep -Po 'archivesBaseName=\K.*' gradle.properties)
+        echo "archivesBaseName=$archivesBaseName" >> $GITHUB_OUTPUT
+
     - name: Commit and Push
       run: |
         git add -A
@@ -85,7 +94,13 @@ jobs:
         git push origin
         git tag v${{ steps.version.outputs.release }}
         git push origin --tags
-    
+
+    - id: check-for-curseforge
+      run: |
+        [ -z $CURSEFORGE_TOKEN ] || echo "has=true" >> "$GITHUB_OUTPUT"
+      env:
+        CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
+
     - name: Create Release
       id: create_release
       uses: shogo82148/actions-create-release@v1
@@ -99,31 +114,40 @@ jobs:
 
           ## Installation
           The mod can be downloaded from
-          * [Modrinth](https://modrinth.com/mod/${{ steps.metadata.outputs.archives_base_name }})
-          * [CurseForge](https://www.curseforge.com/minecraft/mc-mods/${{ steps.metadata.outputs.archives_base_name }})
+          * [Modrinth](https://modrinth.com/mod/${{ steps.metadata.outputs.archivesBaseName }})
           * the GitHub release assets below
           * [Maven Central](https://repo.maven.apache.org/maven2/net/litetex/mcm/)
+          ${{ (steps.check-for-curseforge.outputs.has) && format('* [CurseForge](https://www.curseforge.com/minecraft/mc-mods/{0})', steps.metadata.outputs.archivesBaseName) || '' }}
 
   publish:
     runs-on: ubuntu-latest
     needs: [prepare_release]
     timeout-minutes: 60
     steps:
-    - uses: actions/checkout@v4
-    
+    - uses: actions/checkout@v6
+
     - name: Set up JDK
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         distribution: 'temurin'
         java-version: 21
-        cache: 'gradle'
+
+    - name: Try restore Gradle Cache
+      uses: actions/cache/restore@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-build-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-build-
     
     - name: Init Git and pull
       run: |
         git config --global user.email "actions@github.com"
         git config --global user.name "GitHub Actions"
         git pull
-    
+
     - name: Build and publish
       run: ./gradlew clean build modrinth --info --stacktrace
       env:
@@ -141,6 +165,7 @@ jobs:
           !build/libs/*-javadoc.jar
 
     - name: Publish to OSSRH
+      continue-on-error: true
       run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository --info --stacktrace
       env:
         MAVEN_GPG_PRIVATE_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
@@ -148,8 +173,15 @@ jobs:
         SONATYPE_MAVEN_CENTRAL_PORTAL_USERNAME: ${{ secrets.SONATYPE_MAVEN_CENTRAL_PORTAL_USERNAME }}
         SONATYPE_MAVEN_CENTRAL_PORTAL_TOKEN: ${{ secrets.SONATYPE_MAVEN_CENTRAL_PORTAL_TOKEN }}
 
+    - id: check-for-curseforge
+      run: |
+        [ -z $CURSEFORGE_TOKEN ] || echo "has=true" >> "$GITHUB_OUTPUT"
+      env:
+        CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
+
     - name: Publish to CurseForge
       uses: Kira-NT/mc-publish@995edadc13559a8b28d0b7e6571229f067ec7659 # v3
+      if: ${{ steps.check-for-curseforge.outputs.has }}
       with:
         curseforge-id: 1291862
         curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
@@ -162,14 +194,14 @@ jobs:
     needs: [publish]
     timeout-minutes: 10
     steps:
-    - uses: actions/checkout@v4
-      
+    - uses: actions/checkout@v6
+
     - name: Init Git and pull
       run: |
         git config --global user.email "actions@github.com"
         git config --global user.name "GitHub Actions"
         git pull
-        
+
     - name: Inc Version and SNAP root
       run: |
         originalVersion=$(grep -Po 'mod_version=\K.*' gradle.properties)
@@ -185,7 +217,7 @@ jobs:
         git add -A
         git commit -m "Preparing for next development iteration"
         git push origin
-    
+
     - name: pull-request
       env:
         GH_TOKEN: ${{ github.token }}

@@ -1,27 +1,24 @@
 plugins {
-    id 'fabric-loom' version '1.10.5'
+    id 'fabric-loom' version '1.14.1'
     id 'maven-publish'
     id 'signing'
     id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
     id 'checkstyle'
     id 'pmd'
-    id 'com.modrinth.minotaur' version '2.8.7'
+    id 'com.modrinth.minotaur' version '2.8.10'
 }
 
 ext {
-    checkstyleVersion = '10.26.1'
+    checkstyleVersion = '12.2.0'
 
-    pmdVersion = '7.15.0'
-
-    // Derive version from yarn
-    minecraft_version = project.yarn_mappings.split("\\+")[0]
+    pmdVersion = '7.19.0'
 }
 
 version = project.mod_version
 group = project.maven_group
 
 base {
-    archivesName = project.archives_base_name
+    archivesName = project.archivesBaseName
 }
 
 loom {
@@ -81,30 +78,35 @@ dependencies {
     pmd "net.sourceforge.pmd:pmd-ant:${pmdVersion}",
             "net.sourceforge.pmd:pmd-java:${pmdVersion}"
 
-    minecraft "com.mojang:minecraft:${minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-    // Required when translations and icons should be loaded correctly
-    modImplementation "net.fabricmc.fabric-api:fabric-api:0.128.2+1.21.7"
+    // Required for rendering the preview
+    modImplementation fabricApi.module("fabric-rendering-v1", project.fabric_api_version)
+    // Required for loading resources like translations or icons
+    modImplementation fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)
 
     modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
+    modCompileOnly "maven.modrinth:skinshuffle:${project.skinshuffle_version}"
+    modCompileOnly "maven.modrinth:minecraftcapes:${project.minecraftcapes_version}"
 
     // Only needed during development
     modLocalRuntime "com.terraformersmc:modmenu:${project.modmenu_version}"
-    modLocalRuntime "net.fabricmc.fabric-api:fabric-api:0.128.2+1.21.7"
+    modLocalRuntime "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
     modLocalRuntime "me.djtheredstoner:DevAuth-fabric:1.2.1"
-    modLocalRuntime "maven.modrinth:no-chat-reports:Fabric-1.21.7-v2.14.0"
+    modLocalRuntime "maven.modrinth:no-chat-reports:Fabric-1.21.10-v2.16.0"
 }
 
 processResources {
     filesMatching("fabric.mod.json") {
         expand "version": project.version,
-                "id": project.archives_base_name,
+                "id": project.archivesBaseName,
                 "name": project.mod_name,
                 "desc": project.mod_desc,
                 "license_spdx_id": project.mod_license_spdx_id,
-                "minecraft_version": minecraft_version,
+                "minecraft_version": project.minecraft_version,
                 "loader_version": project.loader_version,
+                "fabric_api_version": project.fabric_api_version,
                 "modmenu_version": project.modmenu_version
     }
 }
@@ -118,6 +120,7 @@ checkstyle {
 
 pmd {
     consoleOutput = true
+    incrementalAnalysis = true
     ruleSetFiles = files(".config/pmd/java/ruleset.xml")
     toolVersion = pmdVersion
 }
@@ -161,7 +164,7 @@ jar {
 publishing {
     publications {
         create("mavenJava", MavenPublication) {
-            artifactId = project.archives_base_name
+            artifactId = project.archivesBaseName
             from components.java
             pom {
                 name = project.mod_name
@@ -193,7 +196,7 @@ tasks.modrinth.dependsOn(tasks.modrinthSyncBody)
 // https://github.com/modrinth/minotaur/blob/master/README.md#available-properties
 modrinth {
     // token defaults to "MODRINTH_TOKEN" environment variable
-    projectId = project.archives_base_name
+    projectId = project.archivesBaseName
     // Default/empty value is release
     versionType = System.getenv("MODRINTH_VERSION_TYPE")
     uploadFile = remapJar

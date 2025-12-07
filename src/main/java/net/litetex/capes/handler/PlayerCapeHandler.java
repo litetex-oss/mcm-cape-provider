@@ -8,44 +8,44 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.blaze3d.platform.NativeImage;
 
 import net.litetex.capes.Capes;
 import net.litetex.capes.config.AnimatedCapesHandling;
+import net.litetex.capes.handler.textures.DefaultTextureResolver;
+import net.litetex.capes.handler.textures.TextureResolver;
 import net.litetex.capes.provider.CapeProvider;
 import net.litetex.capes.provider.ResolvedTextureInfo;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.client.texture.TextureManager;
-import net.minecraft.util.Identifier;
+import net.litetex.capes.util.CapeProviderTextureAsset;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.core.ClientAsset;
+import net.minecraft.resources.ResourceLocation;
 
 
-@SuppressWarnings({"checkstyle:MagicNumber", "PMD.GodClass"})
+@SuppressWarnings("checkstyle:MagicNumber")
 public class PlayerCapeHandler
 {
 	private static final Logger LOG = LoggerFactory.getLogger(PlayerCapeHandler.class);
 	
 	private final Capes capes;
 	private final GameProfile profile;
-	private Optional<IdentifierProvider> optIdentifierProvider;
+	private Optional<TextureProvider> optTextureProvider = Optional.empty();
 	private boolean hasElytraTexture = true;
 	
 	public PlayerCapeHandler(final Capes capes, final GameProfile profile)
@@ -54,24 +54,24 @@ public class PlayerCapeHandler
 		this.profile = profile;
 	}
 	
-	public Optional<IdentifierProvider> capeIdentifierProvider()
+	public Optional<TextureProvider> capeTextureProvider()
 	{
-		return this.optIdentifierProvider;
+		return this.optTextureProvider;
 	}
 	
-	public Identifier getCape()
+	public ClientAsset.Texture getCape()
 	{
-		final IdentifierProvider identifierProvider = this.optIdentifierProvider.orElse(null);
-		if(identifierProvider != null)
+		final TextureProvider textureProvider = this.optTextureProvider.orElse(null);
+		if(textureProvider != null)
 		{
-			return identifierProvider.identifier();
+			return textureProvider.texture();
 		}
 		return null;
 	}
 	
 	public void resetCape()
 	{
-		this.optIdentifierProvider = Optional.empty();
+		this.optTextureProvider = Optional.empty();
 		this.hasElytraTexture = true;
 	}
 	
@@ -103,27 +103,32 @@ public class PlayerCapeHandler
 				return false;
 			}
 			
-			final NativeImage cape = NativeImage.read(resolvedTextureInfo.imageBytes());
-			final boolean isAnimatedTexture = resolvedTextureInfo.animated();
+			final TextureResolver textureResolver = this.capes.getAllTextureResolvers()
+				.getOrDefault(resolvedTextureInfo.textureResolverId(), DefaultTextureResolver.INSTANCE);
 			
-			if(isAnimatedTexture && this.animatedCapesHandling() == AnimatedCapesHandling.OFF)
+			final AnimatedCapesHandling animatedCapesHandling = this.animatedCapesHandling();
+			if(textureResolver.animated() && animatedCapesHandling == AnimatedCapesHandling.OFF)
 			{
 				return false;
 			}
 			
-			this.optIdentifierProvider = this.registerTexturesAndGetProvider(
-				this.determineTexturesToRegister(isAnimatedTexture, cape, url));
+			this.optTextureProvider = this.registerTexturesAndGetProvider(
+				this.determineTexturesToRegister(
+					textureResolver,
+					resolvedTextureInfo.imageBytes(),
+					animatedCapesHandling == AnimatedCapesHandling.FROZEN,
+					url));
 			
-			return this.optIdentifierProvider.isPresent();
+			return this.optTextureProvider.isPresent();
 		}
 		catch(final InterruptedException iex)
 		{
-			LOG.warn("Got interrupted[url='{}',profileId='{}']", url, this.profile.getId(), iex);
+			LOG.warn("Got interrupted[url='{}',profileId='{}']", url, this.profile.id(), iex);
 			Thread.currentThread().interrupt();
 		}
 		catch(final Exception ex)
 		{
-			LOG.warn("Failed to process texture[url='{}',profileId='{}']", url, this.profile.getId(), ex);
+			LOG.warn("Failed to process texture[url='{}',profileId='{}']", url, this.profile.id(), ex);
 		}
 		
 		this.resetCape();
@@ -134,7 +139,7 @@ public class PlayerCapeHandler
 	{
 		final HttpClient.Builder clientBuilder = HttpClient.newBuilder()
 			.connectTimeout(Duration.ofSeconds(10));
-		final Proxy proxy = MinecraftClient.getInstance().getNetworkProxy();
+		final Proxy proxy = Minecraft.getInstance().getProxy();
 		if(proxy != null)
 		{
 			clientBuilder.proxy(new ProxySelector()
@@ -166,113 +171,90 @@ public class PlayerCapeHandler
 		return blockedCapeHashes.contains(Arrays.hashCode(imageBytes));
 	}
 	
-	private Map<Identifier, NativeImage> determineTexturesToRegister(
-		final boolean isAnimatedTexture,
-		final NativeImage cape,
-		final String url)
+	private List<TextureToRegister> determineTexturesToRegister(
+		final TextureResolver textureResolver,
+		final byte[] imageData,
+		final boolean freezeAnimation,
+		final String url
+	) throws IOException
 	{
-		if(!isAnimatedTexture)
+		final TextureResolver.ResolvedTextureData resolved = textureResolver.resolve(
+			imageData,
+			freezeAnimation);
+		this.hasElytraTexture = !Boolean.FALSE.equals(resolved.hasElytra()); // if null -> default to true
+		
+		if(resolved instanceof final TextureResolver.DefaultResolvedTextureData defaultResolvedTextureData)
 		{
-			this.hasElytraTexture = Math.floorDiv(cape.getWidth(), cape.getHeight()) == 2;
-			return Map.of(identifier(this.uuid().toString()), this.toCapeTexture(cape));
+			return List.of(new TextureToRegister(
+				identifier(this.uuid().toString()),
+				defaultResolvedTextureData.texture()));
 		}
-		
-		Stream<Map.Entry<Integer, NativeImage>> animatedTextureStream =
-			this.toAnimatedCapeTextureFrames(cape).entrySet().stream();
-		
-		final boolean freezeAnimatation = this.animatedCapesHandling() == AnimatedCapesHandling.FROZEN;
-		if(freezeAnimatation)
+		else if(resolved instanceof final TextureResolver.AnimatedResolvedTextureData animatedResolvedTextureData)
 		{
-			animatedTextureStream = animatedTextureStream.limit(1);
-		}
-		
-		final Map<Identifier, NativeImage> texturesToRegister = animatedTextureStream
-			.collect(Collectors.toMap(
-				e -> identifier(
-					this.uuid() + (!freezeAnimatation ? "/" + e.getKey() : "")),
-				Map.Entry::getValue,
-				(l, r) -> r,
-				LinkedHashMap::new));
-		
-		if(texturesToRegister.isEmpty())
-		{
-			LOG.warn(
-				"Received animated texture with no frames[url='{}',profileId='{}']",
-				url,
-				this.profile.getId());
-		}
-		
-		// Assume that elytra texture is available
-		this.hasElytraTexture = true;
-		return texturesToRegister;
-	}
-	
-	private NativeImage toCapeTexture(final NativeImage img)
-	{
-		int imageWidth = 64;
-		int imageHeight = 32;
-		final int srcWidth = img.getWidth();
-		final int srcHeight = img.getHeight();
-		while(imageWidth < srcWidth || imageHeight < srcHeight)
-		{
-			imageWidth *= 2;
-			imageHeight *= 2;
-		}
-		final NativeImage imgNew = new NativeImage(imageWidth, imageHeight, true);
-		for(int x = 0; x < srcWidth; x++)
-		{
-			for(int y = 0; y < srcHeight; y++)
+			final List<AnimatedNativeImageContainer> textures = animatedResolvedTextureData.textures();
+			Stream<AnimatedNativeImageContainer> animatedTextureStream = textures.stream();
+			
+			if(textures.isEmpty())
 			{
-				imgNew.setColorArgb(x, y, img.getColorArgb(x, y));
+				LOG.warn(
+					"Received animated texture with no frames[url='{}',profileId='{}']",
+					url,
+					this.uuid());
+				return List.of();
 			}
-		}
-		img.close();
-		return imgNew;
-	}
-	
-	private Map<Integer, NativeImage> toAnimatedCapeTextureFrames(final NativeImage img)
-	{
-		final Map<Integer, NativeImage> frames = new HashMap<>();
-		final int totalFrames = img.getHeight() / (img.getWidth() / 2);
-		for(int currentFrame = 0; currentFrame < totalFrames; currentFrame++)
-		{
-			final NativeImage frame = new NativeImage(img.getWidth(), img.getWidth() / 2, true);
-			for(int x = 0; x < frame.getWidth(); x++)
+			
+			if(freezeAnimation)
 			{
-				for(int y = 0; y < frame.getHeight(); y++)
-				{
-					frame.setColorArgb(x, y, img.getColorArgb(x, y + (currentFrame * (img.getWidth() / 2))));
-				}
+				animatedTextureStream = animatedTextureStream.limit(1);
 			}
-			frames.put(currentFrame, frame);
+			
+			final AtomicInteger counter = new AtomicInteger(0);
+			return animatedTextureStream
+				.map(c -> new TextureToRegister(
+					identifier(this.uuid() + (!freezeAnimation ? "/" + counter.getAndIncrement() : "")),
+					c.image(),
+					c.delayMs()))
+				.toList();
 		}
-		return frames;
+		throw new IllegalStateException("Unexpected ResolvedTextureData: " + resolved.getClass().getSimpleName());
 	}
 	
-	private Optional<IdentifierProvider> registerTexturesAndGetProvider(
-		final Map<Identifier, NativeImage> texturesToRegister)
+	private Optional<TextureProvider> registerTexturesAndGetProvider(
+		final List<TextureToRegister> texturesToRegister)
 	{
 		if(texturesToRegister.isEmpty())
 		{
 			return Optional.empty();
 		}
 		
-		final TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
+		final TextureManager textureManager = Minecraft.getInstance().getTextureManager();
 		// Do texturing work NOT on Render thread
 		CompletableFuture.runAsync(
-				() -> texturesToRegister.forEach((id, texture) ->
-					textureManager.registerTexture(
-						id,
-						new NativeImageBackedTexture(id::toString, texture))),
-				MinecraftClient.getInstance())
+				() -> texturesToRegister.forEach(t ->
+					textureManager.register(
+						t.identifier(),
+						new DynamicTexture(t.identifier()::toString, t.image()))),
+				Minecraft.getInstance())
 			.exceptionally(ex -> {
 				LOG.warn("Failed to register textures", ex);
 				return null;
 			});
 		
 		return Optional.of(texturesToRegister.size() == 1
-			? new DefaultIdentifierProvider(texturesToRegister.keySet().iterator().next())
-			: new AnimatedIdentifierProvider(texturesToRegister.keySet()));
+			? new DefaultTextureProvider(texturesToRegister.getFirst().identifier())
+			: new AnimatedTextureProvider(texturesToRegister));
+	}
+	
+	record TextureToRegister(
+		ResourceLocation identifier,
+		NativeImage image,
+		int delayMs
+	)
+	{
+		public TextureToRegister(final ResourceLocation identifier, final NativeImage image)
+		{
+			this(identifier, image, 100);
+		}
 	}
 	
 	private AnimatedCapesHandling animatedCapesHandling()
@@ -280,16 +262,16 @@ public class PlayerCapeHandler
 		return this.capes.config().getAnimatedCapesHandling();
 	}
 	
-	static Identifier identifier(final String id)
+	static ResourceLocation identifier(final String id)
 	{
-		return Identifier.of(Capes.MOD_ID, id);
+		return ResourceLocation.fromNamespaceAndPath(Capes.MOD_ID, id);
 	}
 	
 	// region Getter
 	
 	public UUID uuid()
 	{
-		return this.profile.getId();
+		return this.profile.id();
 	}
 	
 	public boolean hasElytraTexture()
@@ -300,8 +282,13 @@ public class PlayerCapeHandler
 	// endregion
 	
 	
-	record DefaultIdentifierProvider(Identifier identifier) implements IdentifierProvider
+	record DefaultTextureProvider(CapeProviderTextureAsset texture) implements TextureProvider
 	{
+		DefaultTextureProvider(final ResourceLocation id)
+		{
+			this(new CapeProviderTextureAsset(id));
+		}
+		
 		@Override
 		public boolean dynamicIdentifier()
 		{
@@ -310,36 +297,52 @@ public class PlayerCapeHandler
 	}
 	
 	
-	static class AnimatedIdentifierProvider implements IdentifierProvider
+	static class AnimatedTextureProvider implements TextureProvider
 	{
-		private final List<Identifier> identifiers;
+		private final List<IdentifierContainer> identifiers;
 		private int lastFrameIndex;
 		private long nextFrameTime;
 		
-		public AnimatedIdentifierProvider(final Collection<Identifier> identifiers)
+		AnimatedTextureProvider(final Collection<TextureToRegister> identifiers)
 		{
-			this.identifiers = new ArrayList<>(identifiers);
+			this.identifiers = identifiers.stream()
+				.map(t -> new IdentifierContainer(
+					new CapeProviderTextureAsset(t.identifier()),
+					Math.clamp(
+						t.delayMs(),
+						1,
+						// 1min
+						60 * 1_000)))
+				.toList();
 		}
 		
 		@Override
-		public Identifier identifier()
+		public ClientAsset.Texture texture()
 		{
 			final long time = System.currentTimeMillis();
 			if(time > this.nextFrameTime)
 			{
 				final int thisFrameIndex = (this.lastFrameIndex + 1) % this.identifiers.size();
 				this.lastFrameIndex = thisFrameIndex;
-				this.nextFrameTime = time + 100L;
 				
-				return this.identifiers.get(thisFrameIndex);
+				final IdentifierContainer ic = this.identifiers.get(thisFrameIndex);
+				this.nextFrameTime = time + ic.delay();
+				
+				return ic.identifier();
 			}
-			return this.identifiers.get(this.lastFrameIndex);
+			return this.identifiers.get(this.lastFrameIndex).identifier();
 		}
 		
 		@Override
 		public boolean dynamicIdentifier()
 		{
 			return true;
+		}
+		
+		record IdentifierContainer(
+			ClientAsset.Texture identifier,
+			int delay)
+		{
 		}
 	}
 }

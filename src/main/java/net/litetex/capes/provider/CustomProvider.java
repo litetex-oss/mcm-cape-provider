@@ -7,11 +7,12 @@ import java.util.Optional;
 import com.mojang.authlib.GameProfile;
 
 import net.litetex.capes.config.CustomProviderConfig;
+import net.litetex.capes.handler.textures.AnimatedSpriteTextureResolver;
 import net.litetex.capes.provider.antifeature.AntiFeature;
 import net.litetex.capes.provider.antifeature.AntiFeatures;
 import net.litetex.capes.provider.antifeature.DefaultAntiFeature;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 
 
 public class CustomProvider implements CapeProvider
@@ -38,16 +39,46 @@ public class CustomProvider implements CapeProvider
 	@Override
 	public String getBaseUrl(final GameProfile profile)
 	{
-		return this.config.uriTemplate()
-			.replace("$name", profile.getName())
-			.replace("$id", profile.getId().toString())
-			.replace("$idNoHyphen", profile.getId().toString().replace("-", ""));
+		final String idString = profile.id().toString();
+		String uriTemplate = this.config.uriTemplate();
+		if(uriTemplate.indexOf('$') != -1)
+		{
+			uriTemplate = this.fillInTemplate(uriTemplate, '$', idString, profile);
+		}
+		else if(uriTemplate.indexOf('§') != -1)
+		{
+			uriTemplate = this.fillInTemplate(uriTemplate, '§', idString, profile);
+		}
+		
+		return uriTemplate;
+	}
+	
+	protected String fillInTemplate(
+		final String uriTemplate,
+		final char prefix,
+		final String idString,
+		final GameProfile profile)
+	{
+		return uriTemplate
+			.replace(prefix + "name", profile.name())
+			.replace(prefix + "id", idString)
+			.replace(prefix + "idNoHyphen", idString.replace("-", ""));
 	}
 	
 	@Override
-	public boolean isDefaultAnimatedTexture()
+	public String textureResolverId()
 	{
-		return this.config.animated();
+		final String textureResolverId = this.config.textureResolverId();
+		if(textureResolverId != null && !textureResolverId.isEmpty())
+		{
+			return textureResolverId;
+		}
+		// Legacy behavior
+		if(Boolean.TRUE.equals(this.config.animated()))
+		{
+			return AnimatedSpriteTextureResolver.ID;
+		}
+		return null;
 	}
 	
 	@Override
@@ -57,7 +88,7 @@ public class CustomProvider implements CapeProvider
 	}
 	
 	@Override
-	public String changeCapeUrl(final MinecraftClient client)
+	public String changeCapeUrl(final Minecraft client)
 	{
 		return this.config.changeCapeUrl();
 	}
@@ -79,7 +110,15 @@ public class CustomProvider implements CapeProvider
 		return this.config.antiFeatures().stream()
 			.filter(Objects::nonNull)
 			.map(s -> Optional.ofNullable(AntiFeatures.ALL_DEFAULT.get(s))
-				.orElseGet(() -> new DefaultAntiFeature(Text.literal(s))))
+				.orElseGet(() -> new DefaultAntiFeature(Component.literal(s))))
 			.toList();
+	}
+	
+	@Override
+	public double rateLimitedReqPerSec()
+	{
+		return this.config.rateLimitedReqPerSec() != null
+			? this.config.rateLimitedReqPerSec()
+			: DEFAULT_RATE_LIMIT_REQ_PER_SEC;
 	}
 }
