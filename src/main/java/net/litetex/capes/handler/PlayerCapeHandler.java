@@ -35,10 +35,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.core.ClientAsset;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 
-@SuppressWarnings({"checkstyle:MagicNumber", "PMD.GodClass"})
+@SuppressWarnings("checkstyle:MagicNumber")
 public class PlayerCapeHandler
 {
 	private static final Logger LOG = LoggerFactory.getLogger(PlayerCapeHandler.class);
@@ -246,12 +246,12 @@ public class PlayerCapeHandler
 	}
 	
 	record TextureToRegister(
-		ResourceLocation identifier,
+		Identifier identifier,
 		NativeImage image,
 		int delayMs
 	)
 	{
-		public TextureToRegister(final ResourceLocation identifier, final NativeImage image)
+		public TextureToRegister(final Identifier identifier, final NativeImage image)
 		{
 			this(identifier, image, 100);
 		}
@@ -262,9 +262,9 @@ public class PlayerCapeHandler
 		return this.capes.config().getAnimatedCapesHandling();
 	}
 	
-	static ResourceLocation identifier(final String id)
+	static Identifier identifier(final String id)
 	{
-		return ResourceLocation.fromNamespaceAndPath(Capes.MOD_ID, id);
+		return Identifier.fromNamespaceAndPath(Capes.MOD_ID, id);
 	}
 	
 	// region Getter
@@ -284,7 +284,7 @@ public class PlayerCapeHandler
 	
 	record DefaultTextureProvider(CapeProviderTextureAsset texture) implements TextureProvider
 	{
-		DefaultTextureProvider(final ResourceLocation id)
+		DefaultTextureProvider(final Identifier id)
 		{
 			this(new CapeProviderTextureAsset(id));
 		}

@@ -1,3 +1,9 @@
+# 4.2.0
+* Updated to 1.21.11
+
+# 4.1.3
+* Fix broken build
+
 # 4.1.2
 * Migrated to "official" mappings in preparation for the removal of obfuscation
 * Updated dependencies

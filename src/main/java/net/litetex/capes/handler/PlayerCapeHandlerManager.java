@@ -28,7 +28,7 @@ import net.litetex.capes.util.collections.MaxSizedHashMap;
 import net.minecraft.DefaultUncaughtExceptionHandlerWithName;
 
 
-@SuppressWarnings({"checkstyle:MagicNumber", "PMD.GodClass"})
+@SuppressWarnings("checkstyle:MagicNumber")
 public class PlayerCapeHandlerManager
 {
 	private static final Logger LOG = LoggerFactory.getLogger(PlayerCapeHandlerManager.class);

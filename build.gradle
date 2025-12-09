@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.13.3'
+    id 'fabric-loom' version '1.14.5'
     id 'maven-publish'
     id 'signing'
     id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
@@ -9,9 +9,9 @@ plugins {
 }
 
 ext {
-    checkstyleVersion = '12.1.1'
+    checkstyleVersion = '12.2.0'
 
-    pmdVersion = '7.18.0'
+    pmdVersion = '7.19.0'
 }
 
 version = project.mod_version
@@ -93,8 +93,9 @@ dependencies {
     // Only needed during development
     modLocalRuntime "com.terraformersmc:modmenu:${project.modmenu_version}"
     modLocalRuntime "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
-    modLocalRuntime "me.djtheredstoner:DevAuth-fabric:1.2.1"
-    modLocalRuntime "maven.modrinth:no-chat-reports:Fabric-1.21.10-v2.16.0"
+    // https://github.com/DJtheRedstoner/DevAuth/issues/24
+//    modLocalRuntime "me.djtheredstoner:DevAuth-fabric:1.2.1"
+//    modLocalRuntime "maven.modrinth:no-chat-reports:Fabric-1.21.10-v2.16.0"
 }
 
 processResources {
