@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(targets = "net/minecraftcapes/player/DownloadManager", remap = false)
 public abstract class DownloadManagerMixin
 {
-	@Inject(method = "prepareDownload", at = @At("HEAD"), cancellable = true, remap = false, require = 0)
+	@Inject(method = "prepareDownload*", at = @At("HEAD"), cancellable = true, remap = false, require = 0)
 	private static void prepareDownload(
 		final UUID playerUUID,
 		final String playerName,
