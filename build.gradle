@@ -91,7 +91,7 @@ dependencies {
     modCompileOnly "maven.modrinth:minecraftcapes:${project.minecraftcapes_version}"
 
     // Only needed during development
-//    modLocalRuntime "com.terraformersmc:modmenu:${project.modmenu_version}"
+    modLocalRuntime "com.terraformersmc:modmenu:${project.modmenu_version}"
     modLocalRuntime "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
     // https://github.com/DJtheRedstoner/DevAuth/issues/24
 //    modLocalRuntime "me.djtheredstoner:DevAuth-fabric:1.2.1"
