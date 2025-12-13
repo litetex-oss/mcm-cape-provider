@@ -71,7 +71,7 @@ jobs:
         fi
 
     - name: Upload mod files
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: mod-files-java-${{ matrix.java }}
         path: |
@@ -145,7 +145,7 @@ jobs:
 
     - name: Upload report
       if: always()
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: pmd-report
         if-no-files-found: ignore
