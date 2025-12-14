@@ -44,8 +44,7 @@ public class MinecraftCapesCapeProvider implements CapeProvider
 		final GameProfile profile) throws IOException, InterruptedException
 	{
 		requestBuilder
-			.setHeader("User-Agent", "minecraftcapes-mod/" + SharedConstants.getCurrentVersion().name())
-			.setHeader("Accept", "application/json");
+			.setHeader("User-Agent", "minecraftcapes-mod/" + SharedConstants.getCurrentVersion().name());
 		
 		record ResponseData(
 			Boolean animatedCape,
@@ -61,7 +60,12 @@ public class MinecraftCapesCapeProvider implements CapeProvider
 		try(final HttpClient client = clientBuilder.build())
 		{
 			final HttpResponse<String> response =
-				client.send(requestBuilder.GET().build(), HttpResponse.BodyHandlers.ofString());
+				client.send(
+					requestBuilder.copy()
+						.setHeader("Accept", "application/json")
+						.GET()
+						.build(),
+					HttpResponse.BodyHandlers.ofString());
 			
 			if(response.statusCode() / 100 != 2)
 			{
