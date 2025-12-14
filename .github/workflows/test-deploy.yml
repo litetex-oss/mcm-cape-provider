@@ -17,7 +17,7 @@ jobs:
         java-version: '21'
 
     - name: Try restore Gradle Cache
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         path: |
           ~/.gradle/caches
@@ -34,7 +34,7 @@ jobs:
         MODRINTH_CHANGELOG_TEXT: 'Available at https://github.com/litetex-oss/mcm-cape-provider/blob/dev/CHANGELOG.md<br/><i>Please note that this is a SNAPSHOT which might be unstable</i>'
 
     - name: Upload mod files
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: mod-files
         path: |
