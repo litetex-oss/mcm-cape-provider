@@ -1,3 +1,6 @@
+# 4.2.1
+* Removed Wynntils #204
+
 # 4.2.0
 * Updated to 1.21.11
 
