@@ -1,12 +1,13 @@
 package net.litetex.capes.provider;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Map;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 import com.mojang.authlib.GameProfile;
 
 import net.litetex.capes.handler.textures.AnimatedSpriteTextureResolver;
@@ -46,6 +47,17 @@ public class MinecraftCapesCapeProvider implements CapeProvider
 			.setHeader("User-Agent", "minecraftcapes-mod/" + SharedConstants.getCurrentVersion().name())
 			.setHeader("Accept", "application/json");
 		
+		record ResponseData(
+			Boolean animatedCape,
+			@SerializedName("animated_cape_url")
+			String animatedCapeUrl,
+			@SerializedName("cape_url")
+			String capeUrl
+		)
+		{
+		}
+		
+		final ResponseData responseData;
 		try(final HttpClient client = clientBuilder.build())
 		{
 			final HttpResponse<String> response =
@@ -56,20 +68,25 @@ public class MinecraftCapesCapeProvider implements CapeProvider
 				return null;
 			}
 			
-			record ResponseData(
-				Boolean animatedCape,
-				Map<String, String> textures
-			)
-			{
-			}
-			
-			final ResponseData responseData = new Gson().fromJson(response.body(), ResponseData.class);
-			
-			return new ResolvedTextureInfo.Base64TextureInfo(
-				responseData.textures().get("cape"),
-				responseData.animatedCape() ? AnimatedSpriteTextureResolver.ID : null
-			);
+			responseData = new Gson().fromJson(response.body(), ResponseData.class);
 		}
+		if(responseData == null)
+		{
+			return null;
+		}
+		
+		final String textureUrl = Boolean.TRUE.equals(responseData.animatedCape())
+			? responseData.animatedCapeUrl()
+			: responseData.capeUrl();
+		if(textureUrl == null)
+		{
+			return null;
+		}
+		
+		return CapeProvider.resolveTextureDefault(
+			clientBuilder,
+			requestBuilder.copy().uri(URI.create(textureUrl)),
+			responseData.animatedCape() ? AnimatedSpriteTextureResolver.ID : null);
 	}
 	
 	@Override

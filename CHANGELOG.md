@@ -1,4 +1,5 @@
 # 4.2.1
+* Fix MinecraftCapes Provider no longer working due to breaking API changes #206
 * Removed Wynntils #204
 
 # 4.2.0
