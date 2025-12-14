@@ -31,7 +31,7 @@ jobs:
       env:
         MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
         MODRINTH_VERSION_TYPE: 'alpha'
-        MODRINTH_CHANGELOG_TEXT: 'Available at https://github.com/litetex-oss/template-placeholder/blob/dev/CHANGELOG.md<br/><i>Please note that this is a SNAPSHOT which might be unstable</i>'
+        MODRINTH_CHANGELOG_TEXT: 'Available at https://github.com/litetex-oss/mcm-cape-provider/blob/dev/CHANGELOG.md<br/><i>Please note that this is a SNAPSHOT which might be unstable</i>'
 
     - name: Upload mod files
       uses: actions/upload-artifact@v6
@@ -62,10 +62,10 @@ jobs:
       uses: Kira-NT/mc-publish@995edadc13559a8b28d0b7e6571229f067ec7659 # v3
       if: ${{ steps.check-for-curseforge.outputs.has }}
       with:
-        curseforge-id: null
+        curseforge-id: 1291862
         curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
         changelog: |
-          Available at https://github.com/litetex-oss/template-placeholder/blob/dev/CHANGELOG.md
+          Available at https://github.com/litetex-oss/mcm-cape-provider/blob/dev/CHANGELOG.md
           Please note that this is a SNAPSHOT which might be unstable
         fail-mode: 'warn'
         version-type: 'alpha'

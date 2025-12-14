@@ -152,7 +152,7 @@ jobs:
       run: ./gradlew clean build modrinth --info --stacktrace
       env:
         MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
-        MODRINTH_CHANGELOG_TEXT: 'Available at https://github.com/litetex-oss/template-placeholder/blob/dev/CHANGELOG.md'
+        MODRINTH_CHANGELOG_TEXT: 'Available at https://github.com/litetex-oss/mcm-cape-provider/blob/dev/CHANGELOG.md'
 
     - name: Upload release assets
       uses: shogo82148/actions-upload-release-asset@v1
@@ -183,10 +183,10 @@ jobs:
       uses: Kira-NT/mc-publish@995edadc13559a8b28d0b7e6571229f067ec7659 # v3
       if: ${{ steps.check-for-curseforge.outputs.has }}
       with:
-        curseforge-id: null
+        curseforge-id: 1291862
         curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
         changelog: |
-          Available at https://github.com/litetex-oss/template-placeholder/blob/dev/CHANGELOG.md
+          Available at https://github.com/litetex-oss/mcm-cape-provider/blob/dev/CHANGELOG.md
         fail-mode: 'warn'
 
   after_release:
