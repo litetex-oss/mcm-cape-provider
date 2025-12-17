@@ -33,6 +33,9 @@ public class Config
 	private Integer playerCacheSize;
 	private Boolean useRealPlayerOnlineValidation;
 	
+	private Integer textureCacheDeleteUnusedDays;
+	private Integer textureCacheMaxSize;
+	
 	public void reset()
 	{
 		this.setCurrentPreviewProviderId(null);
@@ -50,6 +53,9 @@ public class Config
 		this.setLoadThreads(null);
 		this.setPlayerCacheSize(null);
 		this.setUseRealPlayerOnlineValidation(null);
+		
+		this.setTextureCacheDeleteUnusedDays(null);
+		this.setTextureCacheMaxSize(null);
 	}
 	
 	public static Config createDefault()
@@ -209,6 +215,26 @@ public class Config
 	public void setUseRealPlayerOnlineValidation(final Boolean useRealPlayerOnlineValidation)
 	{
 		this.useRealPlayerOnlineValidation = useRealPlayerOnlineValidation;
+	}
+	
+	public Integer getTextureCacheDeleteUnusedDays()
+	{
+		return this.textureCacheDeleteUnusedDays;
+	}
+	
+	public void setTextureCacheDeleteUnusedDays(final Integer textureCacheDeleteUnusedDays)
+	{
+		this.textureCacheDeleteUnusedDays = textureCacheDeleteUnusedDays;
+	}
+	
+	public Integer getTextureCacheMaxSize()
+	{
+		return this.textureCacheMaxSize;
+	}
+	
+	public void setTextureCacheMaxSize(final Integer textureCacheMaxSize)
+	{
+		this.textureCacheMaxSize = textureCacheMaxSize;
 	}
 	
 	// endregion

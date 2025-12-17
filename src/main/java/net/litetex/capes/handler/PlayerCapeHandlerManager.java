@@ -22,10 +22,10 @@ import com.mojang.authlib.GameProfile;
 import net.litetex.capes.Capes;
 import net.litetex.capes.provider.CapeProvider;
 import net.litetex.capes.provider.ratelimit.CapeProviderRateLimits;
-import net.litetex.capes.util.GameProfileUtil;
 import net.litetex.capes.util.collections.DiscardingQueue;
 import net.litetex.capes.util.collections.MaxSizedHashMap;
 import net.minecraft.DefaultUncaughtExceptionHandlerWithName;
+import net.minecraft.client.Minecraft;
 
 
 @SuppressWarnings("checkstyle:MagicNumber")
@@ -174,6 +174,6 @@ public class PlayerCapeHandlerManager
 	private boolean shouldOnlyLoadForSelfAndIsNotSelf(final GameProfile profile)
 	{
 		return this.capes.config().isOnlyLoadForSelf()
-			&& !GameProfileUtil.isSelf(profile);
+			&& !Minecraft.getInstance().isLocalPlayer(profile.id());
 	}
 }

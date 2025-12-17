@@ -66,6 +66,11 @@ public interface CapeProvider
 		return DEFAULT_RATE_LIMIT_REQ_PER_SEC;
 	}
 	
+	default boolean canUseCache()
+	{
+		return false;
+	}
+	
 	static ResolvedTextureInfo.ByteArrayTextureInfo resolveTextureDefault(
 		final HttpClient.Builder clientBuilder,
 		final HttpRequest.Builder requestBuilder,

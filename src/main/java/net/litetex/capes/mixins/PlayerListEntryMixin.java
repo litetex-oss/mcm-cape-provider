@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import com.mojang.authlib.GameProfile;
 
 import net.litetex.capes.Capes;
-import net.litetex.capes.util.GameProfileUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.world.entity.player.PlayerSkin;
 
@@ -25,7 +25,7 @@ public abstract class PlayerListEntryMixin
 		final GameProfile profile,
 		final CallbackInfoReturnable<Supplier<PlayerSkin>> cir)
 	{
-		if(!Capes.instance().config().isOnlyLoadForSelf() || GameProfileUtil.isSelf(profile))
+		if(!Capes.instance().config().isOnlyLoadForSelf() || Minecraft.getInstance().isLocalPlayer(profile.id()))
 		{
 			Capes.instance().textureLoadThrottler().loadIfRequired(profile);
 		}
