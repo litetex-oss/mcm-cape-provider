@@ -1,3 +1,9 @@
+# 4.3.0
+* Implement local caching of cape textures - if the provider supports it #
+  * Currently only supported by MinecraftCapes
+  * Textures are saved inside `.mods/cape-provider/texture-cache` in the game directory
+  * Unused textures are cleaned up automatically
+
 # 4.2.1
 * Fix MinecraftCapes Provider no longer working due to breaking API changes #206
 * Removed Wynntils #204

@@ -46,6 +46,7 @@ public class FabricCapes implements ClientModInitializer
 		
 		final Config config = this.loadConfig();
 		Capes.setInstance(new Capes(
+			FabricLoader.getInstance().getGameDir().resolve(".mods").resolve("cape-provider"),
 			config,
 			this::saveConfig,
 			CapeProviders.findAllProviders(

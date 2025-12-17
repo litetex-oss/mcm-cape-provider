@@ -1,7 +1,6 @@
 package net.litetex.capes.provider;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -15,7 +14,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 
 
-public class MinecraftCapesCapeProvider implements CapeProvider
+public class MinecraftCapesCapeProvider extends CacheableCapeProvider
 {
 	public static final String ID = "minecraftcapes";
 	
@@ -87,10 +86,20 @@ public class MinecraftCapesCapeProvider implements CapeProvider
 			return null;
 		}
 		
-		return CapeProvider.resolveTextureDefault(
+		return this.resolveCacheableTexture(
+			textureUrl,
 			clientBuilder,
-			requestBuilder.copy().uri(URI.create(textureUrl)),
+			requestBuilder,
 			responseData.animatedCape() ? AnimatedSpriteTextureResolver.ID : null);
+	}
+	
+	@Override
+	protected ResolvedTextureInfo.ByteArrayTextureInfo fetchTexture(
+		final HttpClient.Builder clientBuilder,
+		final HttpRequest.Builder requestBuilder,
+		final String textureResolverId) throws IOException, InterruptedException
+	{
+		return CapeProvider.resolveTextureDefault(clientBuilder, requestBuilder, textureResolverId);
 	}
 	
 	@Override

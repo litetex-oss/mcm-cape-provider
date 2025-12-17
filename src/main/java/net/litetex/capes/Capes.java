@@ -1,5 +1,8 @@
 package net.litetex.capes;
 
+import static java.util.Objects.requireNonNullElse;
+
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
@@ -29,6 +32,7 @@ import net.litetex.capes.provider.CapeProvider;
 import net.litetex.capes.provider.CustomProvider;
 import net.litetex.capes.provider.DefaultMinecraftCapeProvider;
 import net.litetex.capes.provider.ModMetadataProvider;
+import net.litetex.capes.texturecache.TextureCache;
 import net.litetex.capes.util.CapeProviderTextureAsset;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -74,10 +78,12 @@ public class Capes
 	
 	private final PlayerCapeHandlerManager playerCapeHandlerManager;
 	private final ProfileTextureLoadThrottler profileTextureLoadThrottler;
+	private final TextureCache textureCache;
 	private boolean shouldRefresh;
 	
 	@SuppressWarnings("checkstyle:MagicNumber")
 	public Capes(
+		final Path modStateDir,
 		final Config config,
 		final Consumer<Config> saveConfigFunc,
 		final Map<String, CapeProvider> allProviders,
@@ -125,6 +131,24 @@ public class Capes
 		this.profileTextureLoadThrottler = new ProfileTextureLoadThrottler(
 			this.playerCapeHandlerManager,
 			this.playerCacheSize());
+		this.textureCache = Optional.of(allProviders.values()
+				.stream()
+				.filter(CapeProvider::canUseCache)
+				.map(CapeProvider::id)
+				.toList())
+			.filter(l -> !l.isEmpty())
+			.map(providerIds -> new TextureCache(
+				modStateDir.resolve("texture-cache"),
+				Duration.ofDays(Math.clamp(
+					requireNonNullElse(config.getTextureCacheDeleteUnusedDays(), 90),
+					1,
+					1_000)),
+				Math.clamp(
+					requireNonNullElse(config.getTextureCacheMaxSize(), 500),
+					1,
+					10_000),
+				providerIds))
+			.orElse(null);
 		
 		final long startMs = System.currentTimeMillis();
 		this.postProcessModProviders();
@@ -286,6 +310,11 @@ public class Capes
 	public PlayerCapeHandlerManager playerCapeHandlerManager()
 	{
 		return this.playerCapeHandlerManager;
+	}
+	
+	public TextureCache textureCache()
+	{
+		return this.textureCache;
 	}
 	
 	public boolean overwriteSkinTextures(
