@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import net.litetex.capes.util.json.JSONSerializer;
 
 
+@SuppressWarnings("PMD.GodClass") // Use IDE regions for easier navigation
 public class TextureCache
 {
 	private static final Logger LOG = LoggerFactory.getLogger(TextureCache.class);
@@ -84,6 +85,8 @@ public class TextureCache
 		this.initTask = CompletableFuture.runAsync(() -> this.doAsyncInit(providerIds));
 	}
 	
+	// region Init
+	
 	private void doAsyncInit(final List<String> providerIds)
 	{
 		final long startMs = System.currentTimeMillis();
@@ -118,59 +121,6 @@ public class TextureCache
 		catch(final Exception ex)
 		{
 			LOG.warn("Failed to read hashes initially", ex);
-		}
-	}
-	
-	private void cleanUpHashesIfRequired()
-	{
-		final Instant now = Instant.now();
-		if(this.nextCleanupExecuteTime.isBefore(now)
-			|| this.hashLastUsed.size() > this.maxTargetedCacheSize)
-		{
-			LOG.debug("Executing cleanup");
-			final Instant deleteBefore = now.minus(this.maxUnusedDuration);
-			this.nextCleanupExecuteTime = now.plus(CLEANUP_INTERVAL);
-			
-			boolean requiresSaving;
-			
-			final long startMs = System.currentTimeMillis();
-			synchronized(this.hashLastUsedLock)
-			{
-				final List<Map.Entry<String, Instant>> entriesToDelete = new ArrayList<>();
-				for(final Map.Entry<String, Instant> entry : this.hashLastUsed.entrySet())
-				{
-					// As the map is ordered: Abort everything else after the first entry that is valid
-					if(!entry.getValue().isBefore(deleteBefore))
-					{
-						break;
-					}
-					entriesToDelete.add(entry);
-				}
-				
-				this.removeAllLastUsedHashesWithoutLock(entriesToDelete.stream());
-				requiresSaving = !entriesToDelete.isEmpty();
-			}
-			
-			final long start2Ms = System.currentTimeMillis();
-			LOG.debug("Cleanup with isBefore took {}ms", start2Ms - startMs);
-			
-			if(this.hashLastUsed.size() > this.maxTargetedCacheSize)
-			{
-				synchronized(this.hashLastUsedLock)
-				{
-					this.removeAllLastUsedHashesWithoutLock(this.hashLastUsed.entrySet()
-						.stream()
-						.limit(this.hashLastUsed.size() - this.targetedCacheSize));
-				}
-				
-				requiresSaving = true;
-				LOG.debug("Cleanup trim to targetedCacheSize took {}ms", System.currentTimeMillis() - start2Ms);
-			}
-			
-			if(requiresSaving)
-			{
-				this.saveIdHashesAsync(false);
-			}
 		}
 	}
 	
@@ -252,6 +202,61 @@ public class TextureCache
 		catch(final Exception ex)
 		{
 			LOG.error("Failed to cleanup providers", ex);
+		}
+	}
+	
+	// endregion
+	
+	private void cleanUpHashesIfRequired()
+	{
+		final Instant now = Instant.now();
+		if(this.nextCleanupExecuteTime.isBefore(now)
+			|| this.hashLastUsed.size() > this.maxTargetedCacheSize)
+		{
+			LOG.debug("Executing cleanup");
+			final Instant deleteBefore = now.minus(this.maxUnusedDuration);
+			this.nextCleanupExecuteTime = now.plus(CLEANUP_INTERVAL);
+			
+			boolean requiresSaving;
+			
+			final long startMs = System.currentTimeMillis();
+			synchronized(this.hashLastUsedLock)
+			{
+				final List<Map.Entry<String, Instant>> entriesToDelete = new ArrayList<>();
+				for(final Map.Entry<String, Instant> entry : this.hashLastUsed.entrySet())
+				{
+					// As the map is ordered: Abort everything else after the first entry that is valid
+					if(!entry.getValue().isBefore(deleteBefore))
+					{
+						break;
+					}
+					entriesToDelete.add(entry);
+				}
+				
+				this.removeAllLastUsedHashesWithoutLock(entriesToDelete.stream());
+				requiresSaving = !entriesToDelete.isEmpty();
+			}
+			
+			final long start2Ms = System.currentTimeMillis();
+			LOG.debug("Cleanup with isBefore took {}ms", start2Ms - startMs);
+			
+			if(this.hashLastUsed.size() > this.maxTargetedCacheSize)
+			{
+				synchronized(this.hashLastUsedLock)
+				{
+					this.removeAllLastUsedHashesWithoutLock(this.hashLastUsed.entrySet()
+						.stream()
+						.limit(this.hashLastUsed.size() - this.targetedCacheSize));
+				}
+				
+				requiresSaving = true;
+				LOG.debug("Cleanup trim to targetedCacheSize took {}ms", System.currentTimeMillis() - start2Ms);
+			}
+			
+			if(requiresSaving)
+			{
+				this.saveIdHashesAsync(false);
+			}
 		}
 	}
 	
@@ -430,6 +435,8 @@ public class TextureCache
 		return this.providerDir.resolve(id + ".json");
 	}
 	
+	// region Serialization and IO
+	
 	private static Path ensureDir(final Path path)
 	{
 		if(!Files.exists(path))
@@ -500,6 +507,8 @@ public class TextureCache
 			return false;
 		}
 	}
+	
+	// endregion
 	
 	record PersistedProvidersIndex(
 		Map<String, Instant> providerRegistered

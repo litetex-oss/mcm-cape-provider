@@ -53,9 +53,9 @@ public abstract class CacheableCapeProvider implements CapeProvider
 			return textureUrl;
 		}
 		
-		final int lastSlash = path.lastIndexOf("/");
+		final int lastSlash = path.lastIndexOf('/');
 		path = lastSlash != -1 && lastSlash < path.length() - 2
-			? path.substring(path.lastIndexOf("/") + 1)
+			? path.substring(path.lastIndexOf('/') + 1)
 			: path;
 		return path.isEmpty()
 			? textureUrl
