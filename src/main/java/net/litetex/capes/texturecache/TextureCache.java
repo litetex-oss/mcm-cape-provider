@@ -110,7 +110,7 @@ public class TextureCache
 			this.hashLastUsed.putAll(
 				tryRead(this.hashesFile, PersistedHashes.class)
 					.map(PersistedHashes::lastUsed)
-					.orElseGet(LinkedHashMap::new)
+					.orElseGet(HashMap::new)
 					.entrySet()
 					.stream()
 					.collect(toLinkedHashMap(Map.Entry::getKey, Map.Entry::getValue)));
@@ -525,7 +525,7 @@ public class TextureCache
 	
 	
 	record PersistedHashes(
-		SequencedMap<String, Instant> lastUsed
+		Map<String, Instant> lastUsed
 	)
 	{
 	}
