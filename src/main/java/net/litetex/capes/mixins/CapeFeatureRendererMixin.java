@@ -4,20 +4,19 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.layers.CapeLayer;
-import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 
 @Mixin(CapeLayer.class)
 public abstract class CapeFeatureRendererMixin
 {
 	@Redirect(method = "submit*", at = @At(value = "INVOKE",
-		target = "Lnet/minecraft/client/renderer/rendertype/RenderTypes;entitySolid("
-			+ "Lnet/minecraft/resources/Identifier;)Lnet/minecraft/client/renderer/rendertype/RenderType;"))
-	private RenderType fixCapeTransparency(final Identifier texture)
+		target = "Lnet/minecraft/client/renderer/RenderType;entitySolid(Lnet/minecraft/resources/ResourceLocation;)"
+			+ "Lnet/minecraft/client/renderer/RenderType;"))
+	private RenderType fixCapeTransparency(final ResourceLocation texture)
 	{
-		return RenderTypes.armorCutoutNoCull(texture);
+		return RenderType.armorCutoutNoCull(texture);
 	}
 }

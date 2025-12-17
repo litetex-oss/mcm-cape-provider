@@ -44,8 +44,8 @@ public class OtherMenuScreen extends MainMenuScreen
 						case ON -> CommonComponents.OPTION_ON;
 						case FROZEN -> Component.translatable(CapesI18NKeys.FROZEN);
 						case OFF -> CommonComponents.OPTION_OFF;
-					},
-					this.config()::getAnimatedCapesHandling)
+					})
+				.withInitialValue(this.config().getAnimatedCapesHandling())
 				.withValues(AnimatedCapesHandling.values())
 				.create(
 					Component.translatable(CapesI18NKeys.ANIMATED_TEXTURES),
@@ -66,8 +66,8 @@ public class OtherMenuScreen extends MainMenuScreen
 						case ON -> CommonComponents.OPTION_ON;
 						case ONLY_LOAD -> Component.translatable(CapesI18NKeys.LOAD);
 						case OFF -> CommonComponents.OPTION_OFF;
-					},
-					this.config()::getModProviderHandling)
+					})
+				.withInitialValue(this.config().getModProviderHandling())
 				.withValues(ModProviderHandling.values())
 				.withTooltip(value -> Tooltip.create(
 					Component.translatable(CapesI18NKeys.LOAD_PROVIDERS)

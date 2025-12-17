@@ -1,8 +1,8 @@
 package net.litetex.capes.menu.preview.render;
 
+import net.minecraft.client.model.ElytraModel;
+import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.model.object.equipment.ElytraModel;
-import net.minecraft.client.model.player.PlayerModel;
 
 
 public record PlayerDisplayGuiModels(

@@ -16,10 +16,10 @@ import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.ClientAsset;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 
 @SuppressWarnings("checkstyle:MagicNumber")
@@ -89,7 +89,7 @@ public class PlayerDisplayGuiElementRenderer extends PictureInPictureRenderer<Pl
 					this.render(
 						models.elytra(),
 						matrixStack,
-						this.bufferSource.getBuffer(RenderTypes.armorCutoutNoCull(id)));
+						this.bufferSource.getBuffer(RenderType.armorCutoutNoCull(id)));
 				});
 		}
 		else if(payload.capeTextureSupplier() != null)
@@ -102,7 +102,7 @@ public class PlayerDisplayGuiElementRenderer extends PictureInPictureRenderer<Pl
 					this.render(
 						models.cape().getChild("body").getChild("cape"),
 						matrixStack,
-						this.bufferSource.getBuffer(RenderTypes.armorCutoutNoCull(id))
+						this.bufferSource.getBuffer(RenderType.armorCutoutNoCull(id))
 					);
 				});
 		}
@@ -111,7 +111,7 @@ public class PlayerDisplayGuiElementRenderer extends PictureInPictureRenderer<Pl
 	protected void extractFromSupplierAndRender(
 		final Supplier<ClientAsset.Texture> supplier,
 		final PoseStack matrixStack,
-		final Consumer<Identifier> renderer)
+		final Consumer<ResourceLocation> renderer)
 	{
 		final ClientAsset.Texture textureAsset = supplier.get();
 		if(textureAsset == null)
@@ -119,7 +119,7 @@ public class PlayerDisplayGuiElementRenderer extends PictureInPictureRenderer<Pl
 			return;
 		}
 		
-		final Identifier id = textureAsset.texturePath();
+		final ResourceLocation id = textureAsset.texturePath();
 		if(id == null)
 		{
 			return;

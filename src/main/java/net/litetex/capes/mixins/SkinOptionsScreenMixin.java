@@ -12,15 +12,15 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.client.gui.screens.options.SkinCustomizationScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 
 @Mixin(SkinCustomizationScreen.class)
 public abstract class SkinOptionsScreenMixin extends OptionsSubScreen implements CorrectHoverParentElement
 {
 	@Unique
-	private static final Identifier CAPE_OPTIONS_ICON_TEXTURE =
-		Identifier.fromNamespaceAndPath(Capes.MOD_ID, "icon/cape_options");
+	private static final ResourceLocation CAPE_OPTIONS_ICON_TEXTURE =
+		ResourceLocation.fromNamespaceAndPath(Capes.MOD_ID, "icon/cape_options");
 	
 	@Unique
 	private SpriteIconButton btnCapeMenu;

@@ -37,7 +37,7 @@ import net.litetex.capes.util.CapeProviderTextureAsset;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.ClientAsset;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.PlayerSkin;
 
 
@@ -48,7 +48,7 @@ public class Capes
 	public static final String MOD_ID = "cape-provider";
 	
 	public static final ClientAsset.Texture DEFAULT_ELYTRA_TEXTURE =
-		new CapeProviderTextureAsset(Identifier.parse("textures/entity/equipment/wings/elytra.png"));
+		new CapeProviderTextureAsset(ResourceLocation.parse("textures/entity/equipment/wings/elytra.png"));
 	
 	public static final Predicate<CapeProvider> EXCLUDE_DEFAULT_MINECRAFT_CP =
 		cp -> DefaultMinecraftCapeProvider.INSTANCE != cp;

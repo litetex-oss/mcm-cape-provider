@@ -1,7 +1,7 @@
 accessWidener v2 named
 accessible method net/minecraft/client/gui/components/AbstractSelectionList repositionEntries ()V
 extendable method net/minecraft/client/gui/components/AbstractSelectionList getFirstEntryY ()I
-accessible field net/minecraft/client/gui/components/PlayerSkinWidget wideModel Lnet/minecraft/client/model/player/PlayerModel;
-accessible field net/minecraft/client/gui/components/PlayerSkinWidget slimModel Lnet/minecraft/client/model/player/PlayerModel;
+accessible field net/minecraft/client/gui/components/PlayerSkinWidget wideModel Lnet/minecraft/client/model/PlayerModel;
+accessible field net/minecraft/client/gui/components/PlayerSkinWidget slimModel Lnet/minecraft/client/model/PlayerModel;
 accessible field net/minecraft/client/gui/components/PlayerSkinWidget rotationX F
 accessible field net/minecraft/client/gui/components/PlayerSkinWidget rotationY F
