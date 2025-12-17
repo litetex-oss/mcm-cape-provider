@@ -2,7 +2,7 @@
 * Fix GSON Map serialization problem
 
 # 4.3.0
-* Implement local caching of cape textures - if the provider supports it #
+* Implement local caching of cape textures - if the provider supports it #205
   * Currently only supported by MinecraftCapes
   * Textures are saved inside `.mods/cape-provider/texture-cache` in the game directory
   * Unused textures are cleaned up automatically
