@@ -116,7 +116,10 @@ public class TextureCache
 					.collect(toLinkedHashMap(Map.Entry::getKey, Map.Entry::getValue)));
 			LOG.debug("Init read hashes took {}ms", System.currentTimeMillis() - startMs);
 			
-			this.cleanUpHashesIfRequired();
+			if(this.cleanUpHashesIfRequired())
+			{
+				this.saveIdHashesAsync();
+			}
 		}
 		catch(final Exception ex)
 		{
@@ -207,57 +210,56 @@ public class TextureCache
 	
 	// endregion
 	
-	private void cleanUpHashesIfRequired()
+	private boolean cleanUpHashesIfRequired()
 	{
 		final Instant now = Instant.now();
-		if(this.nextCleanupExecuteTime.isBefore(now)
-			|| this.hashLastUsed.size() > this.maxTargetedCacheSize)
+		if(!(this.nextCleanupExecuteTime.isBefore(now)
+			|| this.hashLastUsed.size() > this.maxTargetedCacheSize))
 		{
-			LOG.debug("Executing cleanup");
-			final Instant deleteBefore = now.minus(this.maxUnusedDuration);
-			this.nextCleanupExecuteTime = now.plus(CLEANUP_INTERVAL);
+			return false;
+		}
+		
+		LOG.debug("Executing cleanup");
+		this.nextCleanupExecuteTime = now.plus(CLEANUP_INTERVAL);
+		
+		boolean requiresSaving;
+		final Instant deleteBefore = now.minus(this.maxUnusedDuration);
+		
+		final long startMs = System.currentTimeMillis();
+		synchronized(this.hashLastUsedLock)
+		{
+			final List<Map.Entry<String, Instant>> entriesToDelete = new ArrayList<>();
+			for(final Map.Entry<String, Instant> entry : this.hashLastUsed.entrySet())
+			{
+				// As the map is ordered: Abort everything else after the first entry that is valid
+				if(!entry.getValue().isBefore(deleteBefore))
+				{
+					break;
+				}
+				entriesToDelete.add(entry);
+			}
 			
-			boolean requiresSaving;
-			
-			final long startMs = System.currentTimeMillis();
+			this.removeAllLastUsedHashesWithoutLock(entriesToDelete.stream());
+			requiresSaving = !entriesToDelete.isEmpty();
+		}
+		
+		final long start2Ms = System.currentTimeMillis();
+		LOG.debug("Cleanup with isBefore took {}ms", start2Ms - startMs);
+		
+		if(this.hashLastUsed.size() > this.maxTargetedCacheSize)
+		{
 			synchronized(this.hashLastUsedLock)
 			{
-				final List<Map.Entry<String, Instant>> entriesToDelete = new ArrayList<>();
-				for(final Map.Entry<String, Instant> entry : this.hashLastUsed.entrySet())
-				{
-					// As the map is ordered: Abort everything else after the first entry that is valid
-					if(!entry.getValue().isBefore(deleteBefore))
-					{
-						break;
-					}
-					entriesToDelete.add(entry);
-				}
-				
-				this.removeAllLastUsedHashesWithoutLock(entriesToDelete.stream());
-				requiresSaving = !entriesToDelete.isEmpty();
+				this.removeAllLastUsedHashesWithoutLock(this.hashLastUsed.entrySet()
+					.stream()
+					.limit(Math.max(this.hashLastUsed.size() - this.targetedCacheSize, 0)));
 			}
 			
-			final long start2Ms = System.currentTimeMillis();
-			LOG.debug("Cleanup with isBefore took {}ms", start2Ms - startMs);
-			
-			if(this.hashLastUsed.size() > this.maxTargetedCacheSize)
-			{
-				synchronized(this.hashLastUsedLock)
-				{
-					this.removeAllLastUsedHashesWithoutLock(this.hashLastUsed.entrySet()
-						.stream()
-						.limit(this.hashLastUsed.size() - this.targetedCacheSize));
-				}
-				
-				requiresSaving = true;
-				LOG.debug("Cleanup trim to targetedCacheSize took {}ms", System.currentTimeMillis() - start2Ms);
-			}
-			
-			if(requiresSaving)
-			{
-				this.saveIdHashesAsync(false);
-			}
+			requiresSaving = true;
+			LOG.debug("Cleanup trim to targetedCacheSize took {}ms", System.currentTimeMillis() - start2Ms);
 		}
+		
+		return requiresSaving;
 	}
 	
 	private Map<String, String> idHashesForProvider(final String providerId)
@@ -294,20 +296,17 @@ public class TextureCache
 		{
 			this.hashLastUsed.putLast(hash, now);
 		}
-		this.saveIdHashesAsync(true);
+		this.saveIdHashesAsync();
 	}
 	
-	private void saveIdHashesAsync(final boolean doCleanupIfRequired)
+	private void saveIdHashesAsync()
 	{
-		CompletableFuture.runAsync(() -> this.saveIdHashes(doCleanupIfRequired));
+		CompletableFuture.runAsync(this::saveIdHashes);
 	}
 	
-	private void saveIdHashes(final boolean doCleanupIfRequired)
+	private void saveIdHashes()
 	{
-		if(doCleanupIfRequired)
-		{
-			this.cleanUpHashesIfRequired();
-		}
+		this.cleanUpHashesIfRequired();
 		
 		final LinkedHashMap<String, Instant> saveMap;
 		synchronized(this.hashLastUsedLock)
