@@ -5,7 +5,6 @@ import static net.litetex.capes.util.collections.AdvancedCollectors.toLinkedHash
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
@@ -24,7 +23,8 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.litetex.capes.util.json.JSONSerializer;
+import net.litetex.capes.util.io.Persister;
+import net.litetex.capes.util.sync.SynchronizedContainer;
 
 
 @SuppressWarnings("PMD.GodClass") // Use IDE regions for easier navigation
@@ -54,9 +54,9 @@ public class TextureCache
 	
 	// Using an ordered map here that always contains the latest value at the end
 	// This way cleanups can be A LOT (>20x) faster
-	private final SequencedMap<String, Instant> hashLastUsed = new LinkedHashMap<>();
 	// For some reason there is no Collections.synchronizedSequenceMap, so this needs to be done manually
-	private final Object hashLastUsedLock = new Object();
+	private final SynchronizedContainer<SequencedMap<String, Instant>> hashLastUsedSC =
+		new SynchronizedContainer<>(new LinkedHashMap<>());
 	
 	public TextureCache(
 		final Path baseDir,
@@ -106,9 +106,9 @@ public class TextureCache
 		try
 		{
 			final long startMs = System.currentTimeMillis();
-			// Lock not needed here because nobody else is doing stuff during this phase
-			this.hashLastUsed.putAll(
-				tryRead(this.hashesFile, PersistedHashes.class)
+			// Lock not needed here because nobody else is doing stuff during init
+			this.hashLastUsedSC.value().putAll(
+				Persister.tryRead(LOG, this.hashesFile, PersistedHashes.class)
 					.map(PersistedHashes::lastUsed)
 					.orElseGet(HashMap::new)
 					.entrySet()
@@ -136,8 +136,8 @@ public class TextureCache
 	
 	private void removeLastUsedWithoutLock(final String hash)
 	{
-		this.hashLastUsed.remove(hash);
-		tryDelete(this.resolveForHash(hash));
+		this.hashLastUsedSC.value().remove(hash);
+		Persister.tryDelete(LOG, this.resolveForHash(hash));
 	}
 	
 	private CompletableFuture<Void> registerProvider(final String providerId)
@@ -145,18 +145,14 @@ public class TextureCache
 		return CompletableFuture.runAsync(() -> {
 			final long startMs = System.currentTimeMillis();
 			final Map<String, String> validIdHashes =
-				tryRead(this.resolveForProviderId(providerId), PersistedProvider.class)
+				Persister.tryRead(LOG, this.resolveForProviderId(providerId), PersistedProvider.class)
 					.map(PersistedProvider::idHashes)
 					.orElseGet(HashMap::new)
 					.entrySet()
 					.stream()
 					// Filter out unknown texture hashes
-					.filter(e -> {
-						synchronized(this.hashLastUsedLock)
-						{
-							return this.hashLastUsed.containsKey(e.getValue());
-						}
-					})
+					.filter(e -> this.hashLastUsedSC.supplyWithLock(
+						m -> m.containsKey(e.getValue())))
 					.collect(toLinkedHashMap(Map.Entry::getKey, Map.Entry::getValue));
 			
 			this.providerHashes.put(
@@ -180,7 +176,7 @@ public class TextureCache
 			final Path providersIndexFile = this.baseDir.resolve("providers.json");
 			
 			final Map<String, Instant> providerRegistered =
-				tryRead(providersIndexFile, PersistedProvidersIndex.class)
+				Persister.tryRead(LOG, providersIndexFile, PersistedProvidersIndex.class)
 					.map(PersistedProvidersIndex::providerRegistered)
 					.orElseGet(LinkedHashMap::new);
 			
@@ -195,10 +191,10 @@ public class TextureCache
 				.toList() // Collect
 				.forEach(providerId -> {
 					providerRegistered.remove(providerId);
-					tryDelete(this.resolveForProviderId(providerId));
+					Persister.tryDelete(LOG, this.resolveForProviderId(providerId));
 				});
 			
-			trySave(providersIndexFile, new PersistedProvidersIndex(providerRegistered));
+			Persister.trySave(LOG, providersIndexFile, () -> new PersistedProvidersIndex(providerRegistered));
 			
 			LOG.debug("Provider cleanup took {}ms", System.currentTimeMillis() - startMs);
 		}
@@ -214,7 +210,7 @@ public class TextureCache
 	{
 		final Instant now = Instant.now();
 		if(!(this.nextCleanupExecuteTime.isBefore(now)
-			|| this.hashLastUsed.size() > this.maxTargetedCacheSize))
+			|| this.hashLastUsedSC.value().size() > this.maxTargetedCacheSize))
 		{
 			return false;
 		}
@@ -222,14 +218,12 @@ public class TextureCache
 		LOG.debug("Executing cleanup");
 		this.nextCleanupExecuteTime = now.plus(CLEANUP_INTERVAL);
 		
-		boolean requiresSaving;
 		final Instant deleteBefore = now.minus(this.maxUnusedDuration);
 		
 		final long startMs = System.currentTimeMillis();
-		synchronized(this.hashLastUsedLock)
-		{
+		boolean requiresSaving = this.hashLastUsedSC.supplyWithLock(hashLastUsed -> {
 			final List<Map.Entry<String, Instant>> entriesToDelete = new ArrayList<>();
-			for(final Map.Entry<String, Instant> entry : this.hashLastUsed.entrySet())
+			for(final Map.Entry<String, Instant> entry : hashLastUsed.entrySet())
 			{
 				// As the map is ordered: Abort everything else after the first entry that is valid
 				if(!entry.getValue().isBefore(deleteBefore))
@@ -240,20 +234,18 @@ public class TextureCache
 			}
 			
 			this.removeAllLastUsedHashesWithoutLock(entriesToDelete.stream());
-			requiresSaving = !entriesToDelete.isEmpty();
-		}
+			return !entriesToDelete.isEmpty();
+		});
 		
 		final long start2Ms = System.currentTimeMillis();
 		LOG.debug("Cleanup with isBefore took {}ms", start2Ms - startMs);
 		
-		if(this.hashLastUsed.size() > this.maxTargetedCacheSize)
+		if(this.hashLastUsedSC.value().size() > this.maxTargetedCacheSize)
 		{
-			synchronized(this.hashLastUsedLock)
-			{
-				this.removeAllLastUsedHashesWithoutLock(this.hashLastUsed.entrySet()
+			this.hashLastUsedSC.execWithLock(hashLastUsed ->
+				this.removeAllLastUsedHashesWithoutLock(hashLastUsed.entrySet()
 					.stream()
-					.limit(Math.max(this.hashLastUsed.size() - this.targetedCacheSize, 0)));
-			}
+					.limit(Math.max(hashLastUsed.size() - this.targetedCacheSize, 0))));
 			
 			requiresSaving = true;
 			LOG.debug("Cleanup trim to targetedCacheSize took {}ms", System.currentTimeMillis() - start2Ms);
@@ -276,26 +268,19 @@ public class TextureCache
 	
 	private void saveProviderHashesFor(final String providerId, final Map<String, String> idHashes)
 	{
-		trySave(this.resolveForProviderId(providerId), new PersistedProvider(idHashes));
+		Persister.trySave(LOG, this.resolveForProviderId(providerId), () -> new PersistedProvider(idHashes));
 	}
 	
 	private void updateIdHashUseAndSaveAsync(final String hash)
 	{
-		final Instant lastUsed;
-		synchronized(this.hashLastUsedLock)
-		{
-			lastUsed = this.hashLastUsed.get(hash);
-		}
+		final Instant lastUsed = this.hashLastUsedSC.supplyWithLock(m -> m.get(hash));
 		final Instant now = Instant.now();
 		if(lastUsed != null && lastUsed.isAfter(now.minus(SAME_HASH_UPDATE_SUPPRESSION_DURATION)))
 		{
 			// Suppress update
 			return;
 		}
-		synchronized(this.hashLastUsedLock)
-		{
-			this.hashLastUsed.putLast(hash, now);
-		}
+		this.hashLastUsedSC.execWithLock(m -> m.putLast(hash, now));
 		this.saveIdHashesAsync();
 	}
 	
@@ -308,12 +293,8 @@ public class TextureCache
 	{
 		this.cleanUpHashesIfRequired();
 		
-		final LinkedHashMap<String, Instant> saveMap;
-		synchronized(this.hashLastUsedLock)
-		{
-			saveMap = new LinkedHashMap<>(this.hashLastUsed);
-		}
-		trySave(this.hashesFile, new PersistedHashes(saveMap));
+		final LinkedHashMap<String, Instant> saveMap = this.hashLastUsedSC.supplyWithLock(LinkedHashMap::new);
+		Persister.trySave(LOG, this.hashesFile, () -> new PersistedHashes(saveMap));
 	}
 	
 	public Optional<byte[]> loadExistingTexture(final String providerId, final String id)
@@ -450,61 +431,6 @@ public class TextureCache
 			}
 		}
 		return path;
-	}
-	
-	private static <T> Optional<T> tryRead(final Path path, final Class<T> clazz)
-	{
-		try
-		{
-			final long startMs = System.currentTimeMillis();
-			
-			final Optional<T> optContent =
-				Optional.ofNullable(JSONSerializer.GSON.fromJson(Files.readString(path), clazz));
-			
-			LOG.debug("Reading {} took {}ms", path, System.currentTimeMillis() - startMs);
-			return optContent;
-		}
-		catch(final NoSuchFileException nsfe)
-		{
-			return Optional.empty();
-		}
-		catch(final Exception ex)
-		{
-			LOG.warn("Failed to read {}", path, ex);
-			return Optional.empty();
-		}
-	}
-	
-	private static <T> boolean trySave(final Path path, final T value)
-	{
-		try
-		{
-			final long startMs = System.currentTimeMillis();
-			
-			Files.createDirectories(path.getParent());
-			Files.writeString(path, JSONSerializer.GSON.toJson(value));
-			
-			LOG.debug("Saving {} took {}ms", path, System.currentTimeMillis() - startMs);
-			return true;
-		}
-		catch(final Exception ex)
-		{
-			LOG.warn("Failed to save {}", path, ex);
-			return false;
-		}
-	}
-	
-	private static boolean tryDelete(final Path path)
-	{
-		try
-		{
-			return Files.deleteIfExists(path);
-		}
-		catch(final Exception ex)
-		{
-			LOG.warn("Failed to delete {}", path, ex);
-			return false;
-		}
 	}
 	
 	// endregion
