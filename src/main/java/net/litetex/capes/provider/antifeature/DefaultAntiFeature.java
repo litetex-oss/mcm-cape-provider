@@ -8,9 +8,9 @@ public class DefaultAntiFeature implements AntiFeature
 {
 	private final MutableComponent text;
 	
-	public DefaultAntiFeature(final String translateKey)
+	public DefaultAntiFeature(final String text)
 	{
-		this(Component.translatable(translateKey));
+		this(Component.literal(text));
 	}
 	
 	public DefaultAntiFeature(final MutableComponent text)

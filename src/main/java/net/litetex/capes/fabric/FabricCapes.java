@@ -5,6 +5,7 @@ import java.io.UncheckedIOException;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 
@@ -27,7 +28,6 @@ import net.litetex.capes.Capes;
 import net.litetex.capes.config.Config;
 import net.litetex.capes.handler.textures.suppliers.TextureResolvers;
 import net.litetex.capes.menu.preview.render.PlayerDisplayGuiElementRenderer;
-import net.litetex.capes.provider.suppliers.CapeProviders;
 
 
 public class FabricCapes implements ClientModInitializer
@@ -44,33 +44,49 @@ public class FabricCapes implements ClientModInitializer
 	{
 		SpecialGuiElementRegistry.register(ctx -> new PlayerDisplayGuiElementRenderer(ctx.vertexConsumers()));
 		
-		final Config config = this.loadConfig();
+		final Path configDir = FabricLoader.getInstance().getConfigDir().resolve("cape-provider");
+		final Path configFile = configDir.resolve("config.json");
+		
 		Capes.setInstance(new Capes(
 			FabricLoader.getInstance().getGameDir().resolve(".mods").resolve("cape-provider"),
-			config,
-			this::saveConfig,
-			CapeProviders.findAllProviders(
-				config.getCustomProviders(),
-				config.getModProviderHandling().load() ? new FabricModMetadataProviderSupplier() : null),
+			configDir,
+			this.loadConfig(configFile),
+			config -> this.saveConfig(configFile, config),
+			FabricModMetadataProviderSupplier::new,
 			TextureResolvers.findAllResolvers()
 		));
 		
 		LOG.debug("Initialized");
 	}
 	
-	private Path configFilePath()
+	private Config loadConfig(final Path configFile)
 	{
-		return FabricLoader.getInstance().getConfigDir().resolve("cape-provider.json5");
-	}
-	
-	private Config loadConfig()
-	{
-		final Path configFilePath = this.configFilePath();
-		if(Files.exists(configFilePath))
+		boolean configFileExists = Files.exists(configFile);
+		if(!configFileExists)
+		{
+			final Path legacyConfigPath = FabricLoader.getInstance().getConfigDir().resolve("cape-provider.json5");
+			if(Files.exists(legacyConfigPath))
+			{
+				try
+				{
+					Files.createDirectories(configFile.getParent());
+					Files.move(legacyConfigPath, configFile, StandardCopyOption.REPLACE_EXISTING);
+					
+					configFileExists = true;
+					LOG.info("Migrated legacy config file {} -> {}", legacyConfigPath, configFile);
+				}
+				catch(final IOException e)
+				{
+					LOG.warn("Failed to move legacy config file", e);
+				}
+			}
+		}
+		
+		if(configFileExists)
 		{
 			try
 			{
-				return this.gson.fromJson(Files.readString(configFilePath), Config.class);
+				return this.gson.fromJson(Files.readString(configFile), Config.class);
 			}
 			catch(final Exception ex)
 			{
@@ -79,16 +95,17 @@ public class FabricCapes implements ClientModInitializer
 		}
 		
 		final Config defaultConfig = Config.createDefault();
-		this.saveConfig(defaultConfig);
+		this.saveConfig(configFile, defaultConfig);
 		return defaultConfig;
 	}
 	
-	private void saveConfig(final Config config)
+	private void saveConfig(final Path configFile, final Config config)
 	{
 		try
 		{
+			Files.createDirectories(configFile.getParent());
 			Files.writeString(
-				this.configFilePath(),
+				configFile,
 				this.gson.toJson(config));
 		}
 		catch(final IOException ioe)

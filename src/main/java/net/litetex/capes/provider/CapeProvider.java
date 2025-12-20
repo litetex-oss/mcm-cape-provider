@@ -26,6 +26,9 @@ public interface CapeProvider
 	
 	String name();
 	
+	// null -> will not be resolved for current player
+	// empty -> will not create any client- or request-builder
+	// normal string -> will resolve normally
 	String getBaseUrl(GameProfile profile);
 	
 	default ResolvedTextureInfo resolveTexture(

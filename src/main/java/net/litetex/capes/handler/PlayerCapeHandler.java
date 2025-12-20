@@ -85,9 +85,14 @@ public class PlayerCapeHandler
 		
 		try
 		{
-			final HttpClient.Builder clientBuilder = this.createBuilder();
+			final boolean emptyUrl = url.isEmpty();
+			final HttpClient.Builder clientBuilder = emptyUrl
+				? null
+				: this.createBuilder();
 			
-			final HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(URI.create(url))
+			final HttpRequest.Builder requestBuilder = emptyUrl
+				? null
+				: HttpRequest.newBuilder(URI.create(url))
 				.timeout(Duration.ofSeconds(10))
 				.header("User-Agent", "CP");
 			

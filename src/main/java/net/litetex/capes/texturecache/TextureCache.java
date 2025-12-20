@@ -27,7 +27,6 @@ import net.litetex.capes.util.io.Persister;
 import net.litetex.capes.util.sync.SynchronizedContainer;
 
 
-@SuppressWarnings("PMD.GodClass") // Use IDE regions for easier navigation
 public class TextureCache
 {
 	private static final Logger LOG = LoggerFactory.getLogger(TextureCache.class);

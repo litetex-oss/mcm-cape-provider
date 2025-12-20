@@ -54,6 +54,7 @@
     "bettercapes": "*"
   },
   "custom": {
+    "cape": "Contributors",
     "modmenu": {
       "links": {
         "modmenu.github_releases": "https://github.com/litetex-oss/mcm-${id}/releases",
