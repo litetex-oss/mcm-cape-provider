@@ -11,7 +11,6 @@ import net.litetex.capes.Capes;
 import net.litetex.capes.handler.PlayerCapeHandler;
 import net.litetex.capes.handler.PlayerCapeHandlerManager;
 import net.litetex.capes.handler.TextureProvider;
-import net.litetex.capes.i18n.CapesI18NKeys;
 import net.litetex.capes.menu.MainMenuScreen;
 import net.litetex.capes.menu.preview.render.PlayerDisplayGuiPayload;
 import net.litetex.capes.menu.preview.render.PlayerDisplayWidget;
@@ -89,14 +88,14 @@ public class PreviewMenuScreen extends MainMenuScreen
 		final int playerWidgetCenterY = this.playerWidget.getY() + (this.playerWidget.getHeight() / 2);
 		
 		this.addSelfManagedDrawableChild(Button.builder(
-				Component.translatable(CapesI18NKeys.TOGGLE_ELYTRA),
+				Component.literal("Toggle Elytra"),
 				b -> this.viewModel.toggleShowElytra())
 			.pos((this.width / 4) - (buttonW / 2), playerWidgetCenterY - 23)
 			.size(buttonW, 20)
 			.build());
 		
 		this.addSelfManagedDrawableChild(Button.builder(
-				Component.translatable(CapesI18NKeys.TOGGLE_PLAYER),
+				Component.literal("Toggle Player"),
 				b -> this.viewModel.toggleShowBody())
 			.pos((this.width / 4) - (buttonW / 2), playerWidgetCenterY + 2)
 			.size(buttonW, 20)
@@ -110,7 +109,7 @@ public class PreviewMenuScreen extends MainMenuScreen
 		return Capes.instance().getCapeProviderForSelf()
 			.map(CapeProvider::name)
 			.map(Component::literal)
-			.orElseGet(() -> Component.translatable(CapesI18NKeys.ACTIVATED_PROVIDERS));
+			.orElseGet(() -> Component.literal("Activated Providers"));
 	}
 	
 	static class ViewModel

@@ -1,4 +1,4 @@
-package net.litetex.capes.provider;
+package net.litetex.capes.provider.custom.remote;
 
 import java.util.List;
 import java.util.Objects;
@@ -6,38 +6,23 @@ import java.util.Optional;
 
 import com.mojang.authlib.GameProfile;
 
-import net.litetex.capes.config.CustomProviderConfig;
-import net.litetex.capes.handler.textures.AnimatedSpriteTextureResolver;
 import net.litetex.capes.provider.antifeature.AntiFeature;
 import net.litetex.capes.provider.antifeature.AntiFeatures;
 import net.litetex.capes.provider.antifeature.DefaultAntiFeature;
+import net.litetex.capes.provider.custom.BaseCustomProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 
 
-public class CustomProvider implements CapeProvider
+public class RemoteCustomProvider extends BaseCustomProvider<RemoteCustomProviderConfig>
 {
-	private final CustomProviderConfig config;
-	
-	public CustomProvider(final CustomProviderConfig config)
+	public RemoteCustomProvider(final RemoteCustomProviderConfig config)
 	{
-		this.config = config;
+		super(config);
 	}
 	
 	@Override
-	public String id()
-	{
-		return this.config.id();
-	}
-	
-	@Override
-	public String name()
-	{
-		return this.config.name();
-	}
-	
-	@Override
-	public String getBaseUrl(final GameProfile profile)
+	protected String getBaseUrlInternal(final GameProfile profile)
 	{
 		final String idString = profile.id().toString();
 		String uriTemplate = this.config.uriTemplate();
@@ -72,11 +57,6 @@ public class CustomProvider implements CapeProvider
 		if(textureResolverId != null && !textureResolverId.isEmpty())
 		{
 			return textureResolverId;
-		}
-		// Legacy behavior
-		if(Boolean.TRUE.equals(this.config.animated()))
-		{
-			return AnimatedSpriteTextureResolver.ID;
 		}
 		return null;
 	}

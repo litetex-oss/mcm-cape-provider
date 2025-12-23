@@ -7,7 +7,6 @@ import java.util.stream.Stream;
 
 import net.litetex.capes.Capes;
 import net.litetex.capes.config.Config;
-import net.litetex.capes.i18n.CapesI18NKeys;
 import net.litetex.capes.menu.other.OtherMenuScreen;
 import net.litetex.capes.menu.preview.PreviewMenuScreen;
 import net.litetex.capes.menu.provider.ProviderMenuScreen;
@@ -32,7 +31,7 @@ public abstract class MainMenuScreen extends OptionsSubScreen implements Correct
 		final Screen parent,
 		final Options gameOptions)
 	{
-		super(parent, gameOptions, Component.translatable(CapesI18NKeys.CAPE_OPTIONS));
+		super(parent, gameOptions, Component.literal("Cape Options"));
 	}
 	
 	@SuppressWarnings("checkstyle:MagicNumber")
@@ -52,7 +51,7 @@ public abstract class MainMenuScreen extends OptionsSubScreen implements Correct
 		final int offset = (buttonW / 2) + 5;
 		
 		record ButtonBuildData(
-			String translationKey,
+			String text,
 			Supplier<Screen> screenSupplier,
 			int positionDiff,
 			Class<?> clazz
@@ -62,25 +61,25 @@ public abstract class MainMenuScreen extends OptionsSubScreen implements Correct
 		
 		Stream.of(
 				new ButtonBuildData(
-					CapesI18NKeys.PREVIEW,
+					"Preview",
 					() -> new PreviewMenuScreen(this.lastScreen, this.options),
 					-(buttonW / 2),
 					PreviewMenuScreen.class
 				),
 				new ButtonBuildData(
-					CapesI18NKeys.MANAGE_PROVIDERS,
+					"Manage Providers",
 					() -> new ProviderMenuScreen(this.lastScreen, this.options),
 					-(buttonW + offset),
 					ProviderMenuScreen.class),
 				new ButtonBuildData(
-					CapesI18NKeys.OTHER,
+					"Other",
 					() -> new OtherMenuScreen(this.lastScreen, this.options),
 					offset,
 					OtherMenuScreen.class
 				))
 			.forEach(data -> {
 				final Button buttonWidget = this.addSelfManagedDrawableChild(Button.builder(
-						Component.translatable(data.translationKey()),
+						Component.literal(data.text()),
 						b -> this.minecraft.setScreen(data.screenSupplier().get()))
 					.pos((this.width / 2) + data.positionDiff(), 35)
 					.size(buttonW, 20)

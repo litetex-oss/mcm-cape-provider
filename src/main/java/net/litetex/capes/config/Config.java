@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import net.litetex.capes.provider.MinecraftCapesCapeProvider;
-import net.litetex.capes.provider.OptiFineCapeProvider;
+import net.litetex.capes.provider.custom.remote.RemoteCustomProviderConfig;
 
 
 public class Config
@@ -21,9 +21,13 @@ public class Config
 	private boolean onlyLoadForSelf;
 	private boolean enableElytraTexture;
 	private AnimatedCapesHandling animatedCapesHandling = AnimatedCapesHandling.ON;
-	private List<CustomProviderConfig> customProviders = List.of();
-	private ModProviderHandling modProviderHandling = ModProviderHandling.ON;
-	private Map<String, Instant> knownModProviderIdsFirstTimeMissing;
+	private List<RemoteCustomProviderConfig> remoteCustomProviders = List.of();
+	
+	private boolean loadProvidersFromMods = true;
+	private boolean loadSimpleLocalProvidersFromFilesystem = true;
+	private boolean activateExternalProvidersOnInitialLoad = true;
+	
+	private Map<String, Instant> knownAutoActivatingProviderIdsFirstTimeMissing;
 	
 	// Advanced/Debug options
 	private Boolean validateProfile;
@@ -39,13 +43,17 @@ public class Config
 	public void reset()
 	{
 		this.setCurrentPreviewProviderId(null);
-		this.setActiveProviderIds(List.of(MinecraftCapesCapeProvider.ID, OptiFineCapeProvider.ID));
+		this.setActiveProviderIds(List.of(MinecraftCapesCapeProvider.ID));
 		this.setUseDefaultProvider(true);
 		this.setOnlyLoadForSelf(false);
 		this.setEnableElytraTexture(true);
 		this.setAnimatedCapesHandling(AnimatedCapesHandling.ON);
-		this.setModProviderHandling(ModProviderHandling.ON);
-		this.setKnownModProviderIdsFirstTimeMissing(null);
+		
+		this.setLoadProvidersFromMods(true);
+		this.setLoadSimpleLocalProvidersFromFilesystem(true);
+		this.setActivateExternalProvidersOnInitialLoad(true);
+		
+		this.setKnownAutoActivatingProviderIdsFirstTimeMissing(null);
 		
 		this.setValidateProfile(null);
 		this.setLoadThrottleSuppressSec(null);
@@ -127,34 +135,55 @@ public class Config
 		this.animatedCapesHandling = animatedCapesHandling;
 	}
 	
-	public List<CustomProviderConfig> getCustomProviders()
+	public List<RemoteCustomProviderConfig> getRemoteCustomProviders()
 	{
-		return this.customProviders;
+		return this.remoteCustomProviders;
 	}
 	
-	public void setCustomProviders(final List<CustomProviderConfig> customProviders)
+	public void setRemoteCustomProviders(final List<RemoteCustomProviderConfig> remoteCustomProviders)
 	{
-		this.customProviders = customProviders;
+		this.remoteCustomProviders = remoteCustomProviders;
 	}
 	
-	public ModProviderHandling getModProviderHandling()
+	public boolean isLoadProvidersFromMods()
 	{
-		return this.modProviderHandling;
+		return this.loadProvidersFromMods;
 	}
 	
-	public void setModProviderHandling(final ModProviderHandling modProviderHandling)
+	public void setLoadProvidersFromMods(final boolean loadProvidersFromMods)
 	{
-		this.modProviderHandling = modProviderHandling;
+		this.loadProvidersFromMods = loadProvidersFromMods;
 	}
 	
-	public Map<String, Instant> getKnownModProviderIdsFirstTimeMissing()
+	public boolean isLoadSimpleLocalProvidersFromFilesystem()
 	{
-		return this.knownModProviderIdsFirstTimeMissing;
+		return this.loadSimpleLocalProvidersFromFilesystem;
 	}
 	
-	public void setKnownModProviderIdsFirstTimeMissing(final Map<String, Instant> knownModProviderIdsFirstTimeMissing)
+	public void setLoadSimpleLocalProvidersFromFilesystem(final boolean loadSimpleLocalProvidersFromFilesystem)
 	{
-		this.knownModProviderIdsFirstTimeMissing = knownModProviderIdsFirstTimeMissing;
+		this.loadSimpleLocalProvidersFromFilesystem = loadSimpleLocalProvidersFromFilesystem;
+	}
+	
+	public boolean isActivateExternalProvidersOnInitialLoad()
+	{
+		return this.activateExternalProvidersOnInitialLoad;
+	}
+	
+	public void setActivateExternalProvidersOnInitialLoad(final boolean activateExternalProvidersOnInitialLoad)
+	{
+		this.activateExternalProvidersOnInitialLoad = activateExternalProvidersOnInitialLoad;
+	}
+	
+	public Map<String, Instant> getKnownAutoActivatingProviderIdsFirstTimeMissing()
+	{
+		return this.knownAutoActivatingProviderIdsFirstTimeMissing;
+	}
+	
+	public void setKnownAutoActivatingProviderIdsFirstTimeMissing(
+		final Map<String, Instant> knownAutoActivatingProviderIdsFirstTimeMissing)
+	{
+		this.knownAutoActivatingProviderIdsFirstTimeMissing = knownAutoActivatingProviderIdsFirstTimeMissing;
 	}
 	
 	public Boolean isValidateProfile()

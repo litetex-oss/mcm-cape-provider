@@ -4,9 +4,8 @@ import java.util.List;
 
 import net.litetex.capes.Capes;
 import net.litetex.capes.config.AnimatedCapesHandling;
-import net.litetex.capes.config.ModProviderHandling;
-import net.litetex.capes.i18n.CapesI18NKeys;
 import net.litetex.capes.menu.MainMenuScreen;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
@@ -33,7 +32,7 @@ public class OtherMenuScreen extends MainMenuScreen
 		this.list.addSmall(List.of(
 			CycleButton.onOffBuilder(capes.config().isOnlyLoadForSelf())
 				.create(
-					Component.translatable(CapesI18NKeys.ONLY_LOAD_YOUR_CAPE),
+					Component.literal("Only load your cape"),
 					(btn, enabled) -> {
 						this.config().setOnlyLoadForSelf(enabled);
 						capes.saveConfigAndMarkRefresh();
@@ -42,45 +41,54 @@ public class OtherMenuScreen extends MainMenuScreen
 					switch(handling)
 					{
 						case ON -> CommonComponents.OPTION_ON;
-						case FROZEN -> Component.translatable(CapesI18NKeys.FROZEN);
+						case FROZEN -> Component.literal("Frozen");
 						case OFF -> CommonComponents.OPTION_OFF;
 					},
 					this.config()::getAnimatedCapesHandling)
 				.withValues(AnimatedCapesHandling.values())
 				.create(
-					Component.translatable(CapesI18NKeys.ANIMATED_TEXTURES),
+					Component.literal("Animated textures"),
 					(btn, value) -> {
 						this.config().setAnimatedCapesHandling(value);
 						capes.saveConfigAndMarkRefresh();
 					}),
 			CycleButton.onOffBuilder(capes.config().isEnableElytraTexture())
 				.create(
-					Component.translatable(CapesI18NKeys.ELYTRA_TEXTURE),
+					Component.literal("Elytra texture"),
 					(btn, enabled) -> {
 						this.config().setEnableElytraTexture(enabled);
 						capes.saveConfig();
 					}),
-			CycleButton.<ModProviderHandling>builder(handling ->
-					switch(handling)
-					{
-						case ON -> CommonComponents.OPTION_ON;
-						case ONLY_LOAD -> Component.translatable(CapesI18NKeys.LOAD);
-						case OFF -> CommonComponents.OPTION_OFF;
-					},
-					this.config()::getModProviderHandling)
-				.withValues(ModProviderHandling.values())
-				.withTooltip(value -> Tooltip.create(
-					Component.translatable(CapesI18NKeys.LOAD_PROVIDERS)
-						.append(": ")
-						.append(CommonComponents.optionStatus(value.load()))
-						.append("\n")
-						.append(Component.translatable(CapesI18NKeys.ACTIVATE_PROVIDERS_BY_DEFAULT))
-						.append(": ")
-						.append(CommonComponents.optionStatus(value.activateByDefault()))))
+			CycleButton.onOffBuilder(capes.config().isActivateExternalProvidersOnInitialLoad())
+				.withTooltip(value -> Tooltip.create(Component.empty()
+					.append(Component.literal("Should external providers (mods/local) be automatically "
+						+ "activated/enabled when initially loaded?\n"))
+					.append(this.requiresRestartComponent())))
 				.create(
-					Component.translatable(CapesI18NKeys.PROVIDERS_FROM_MODS),
-					(btn, value) -> {
-						this.config().setModProviderHandling(value);
+					Component.literal("Activate external providers"),
+					(btn, enabled) -> {
+						this.config().setActivateExternalProvidersOnInitialLoad(enabled);
+						capes.saveConfig();
+					}),
+			CycleButton.onOffBuilder(capes.config().isLoadProvidersFromMods())
+				.withTooltip(value -> Tooltip.create(Component.empty()
+					.append("Should providers be loaded from other mods?\n")
+					.append(this.requiresRestartComponent())))
+				.create(
+					Component.literal("Load Mod providers"),
+					(btn, enabled) -> {
+						this.config().setLoadProvidersFromMods(enabled);
+						capes.saveConfig();
+					}),
+			CycleButton.onOffBuilder(capes.config().isLoadSimpleLocalProvidersFromFilesystem())
+				.withTooltip(value -> Tooltip.create(Component.empty()
+					.append("Should simple-local providers be loaded from "
+						+ "config/cape-provider or config/cape-provider/simple-custom/...?\n")
+					.append(this.requiresRestartComponent())))
+				.create(
+					Component.literal("Load local providers"),
+					(btn, enabled) -> {
+						this.config().setLoadSimpleLocalProvidersFromFilesystem(enabled);
 						capes.saveConfig();
 					})
 		));
@@ -88,12 +96,17 @@ public class OtherMenuScreen extends MainMenuScreen
 		this.list.addSmall(
 			Button.builder(
 				Component.translatable("controls.reset"), btn -> {
-					this.config().reset();
-					capes.saveConfigAndMarkRefresh();
+					capes.reset();
 					
 					// Recreate screen
 					this.minecraft.setScreen(new OtherMenuScreen(this.lastScreen, this.options));
 				}).build(),
 			null);
+	}
+	
+	private Component requiresRestartComponent()
+	{
+		return Component.literal("\nRequires restart to take effect")
+			.withStyle(ChatFormatting.ITALIC);
 	}
 }

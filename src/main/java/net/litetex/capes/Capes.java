@@ -12,10 +12,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,15 +25,16 @@ import org.slf4j.LoggerFactory;
 import com.mojang.authlib.GameProfile;
 
 import net.litetex.capes.config.Config;
-import net.litetex.capes.config.ModProviderHandling;
 import net.litetex.capes.handler.PlayerCapeHandler;
 import net.litetex.capes.handler.PlayerCapeHandlerManager;
 import net.litetex.capes.handler.ProfileTextureLoadThrottler;
 import net.litetex.capes.handler.textures.TextureResolver;
 import net.litetex.capes.provider.CapeProvider;
-import net.litetex.capes.provider.CustomProvider;
 import net.litetex.capes.provider.DefaultMinecraftCapeProvider;
-import net.litetex.capes.provider.ModMetadataProvider;
+import net.litetex.capes.provider.custom.local.LocalCustomProvider;
+import net.litetex.capes.provider.suppliers.CapeProviders;
+import net.litetex.capes.provider.suppliers.ModMetadataProviderSupplier;
+import net.litetex.capes.provider.suppliers.SimpleFilesystemProviders;
 import net.litetex.capes.texturecache.TextureCache;
 import net.litetex.capes.util.CapeProviderTextureAsset;
 import net.minecraft.client.Minecraft;
@@ -69,6 +72,7 @@ public class Capes
 	private final Consumer<Config> saveConfigFunc;
 	private final Map<String, CapeProvider> allProviders;
 	private final Map<String, TextureResolver> allTextureResolvers;
+	private final Set<CapeProvider> autoActivatingProviders;
 	
 	private final boolean validateProfile;
 	private final Duration loadThrottleSuppressDuration;
@@ -84,19 +88,37 @@ public class Capes
 	@SuppressWarnings("checkstyle:MagicNumber")
 	public Capes(
 		final Path modStateDir,
+		final Path configDir,
 		final Config config,
 		final Consumer<Config> saveConfigFunc,
-		final Map<String, CapeProvider> allProviders,
+		final Supplier<ModMetadataProviderSupplier> modMetadataProviderSupplier,
 		final Map<String, TextureResolver> allTextureResolvers)
 	{
 		this.config = config;
 		this.saveConfigFunc = saveConfigFunc;
-		this.allProviders = allProviders;
 		this.allTextureResolvers = allTextureResolvers;
+		
+		final CompletableFuture<Set<CapeProvider>> cfModMetadataProviders =
+			CompletableFuture.supplyAsync(() -> Optional.ofNullable(config.isLoadProvidersFromMods()
+					? modMetadataProviderSupplier.get()
+					: null)
+				.stream()
+				.flatMap(ModMetadataProviderSupplier::get)
+				.collect(Collectors.toSet()));
+		
+		final CompletableFuture<Set<LocalCustomProvider>> cfSimpleFileSystemProviders =
+			CompletableFuture.supplyAsync(() -> config.isLoadSimpleLocalProvidersFromFilesystem()
+				? SimpleFilesystemProviders.createFsProviders(configDir)
+				: Set.of());
+		
+		this.allProviders = CapeProviders.findAllProviders(
+			config.getRemoteCustomProviders(),
+			cfSimpleFileSystemProviders,
+			cfModMetadataProviders);
 		
 		if(LOG.isDebugEnabled())
 		{
-			LOG.debug("Providers: {}", allProviders.keySet());
+			LOG.debug("Providers: {}", this.allProviders.keySet());
 			LOG.debug("Texture-Resolvers: {}", allTextureResolvers.keySet());
 		}
 		
@@ -113,8 +135,8 @@ public class Capes
 		this.blockedProviderCapeHashes = Optional.ofNullable(this.config().getBlockedProviderCapeHashes())
 			.map(map -> map.entrySet()
 				.stream()
-				.filter(e -> allProviders.containsKey(e.getKey()))
-				.collect(Collectors.toMap(e -> allProviders.get(e.getKey()), Map.Entry::getValue)))
+				.filter(e -> this.allProviders.containsKey(e.getKey()))
+				.collect(Collectors.toMap(e -> this.allProviders.get(e.getKey()), Map.Entry::getValue)))
 			.orElseGet(Map::of);
 		LOG.debug("blockedProviderCapeHashes: {}x", this.blockedProviderCapeHashes.size());
 		
@@ -131,7 +153,7 @@ public class Capes
 		this.profileTextureLoadThrottler = new ProfileTextureLoadThrottler(
 			this.playerCapeHandlerManager,
 			this.playerCacheSize());
-		this.textureCache = Optional.of(allProviders.values()
+		this.textureCache = Optional.of(this.allProviders.values()
 				.stream()
 				.filter(CapeProvider::canUseCache)
 				.map(CapeProvider::id)
@@ -151,31 +173,33 @@ public class Capes
 			.orElse(null);
 		
 		final long startMs = System.currentTimeMillis();
-		this.postProcessModProviders();
-		LOG.debug("Post processing mod providers took {}ms", System.currentTimeMillis() - startMs);
+		this.autoActivatingProviders = Stream.of(cfSimpleFileSystemProviders.join(), cfModMetadataProviders.join())
+			.filter(Objects::nonNull)
+			.flatMap(Collection::stream)
+			.collect(Collectors.toSet());
+		this.postProcessAutoActivatingProviders();
+		LOG.debug("Post processing auto-activating providers took {}ms", System.currentTimeMillis() - startMs);
 	}
 	
-	protected void postProcessModProviders()
+	protected boolean postProcessAutoActivatingProviders()
 	{
-		final ModProviderHandling modProviderHandling = this.config().getModProviderHandling();
-		if(modProviderHandling.activateByDefault())
+		if(this.config().isActivateExternalProvidersOnInitialLoad())
 		{
 			// Works like this:
 			// Mod is present? -> FirstTimeMissing=Instant.MAX
 			// Mod was present during last time? -> FirstTimeMissing=NOW
 			// Remove all mods where FirstTimeMissing is too old
-			final Set<String> providerIdsLoadedByMods = this.getAllProviders().values()
+			final Set<String> providerIdsAutoactivating = this.getAllProviders().values()
 				.stream()
-				.filter(ModMetadataProvider.class::isInstance)
-				.map(ModMetadataProvider.class::cast)
-				.map(CustomProvider::id)
+				.filter(this.autoActivatingProviders::contains)
+				.map(CapeProvider::id)
 				.collect(Collectors.toCollection(LinkedHashSet::new));
 			
 			final Instant nullPlaceholder = Instant.MAX; // GSON doesn't serialize nulls by default
 			final Instant now = Instant.now();
 			final Instant removeOutdated = now.minus(Duration.ofDays(7));
 			final Map<String, Instant> knownProviderIdsFirstTimeMissing =
-				Optional.ofNullable(this.config().getKnownModProviderIdsFirstTimeMissing())
+				Optional.ofNullable(this.config().getKnownAutoActivatingProviderIdsFirstTimeMissing())
 					.map(Map::entrySet)
 					.stream()
 					.flatMap(Collection::stream)
@@ -188,25 +212,27 @@ public class Capes
 			final Set<String> activeProviderIds = Objects.requireNonNullElseGet(
 				this.config().getActiveProviderIds(),
 				LinkedHashSet::new);
-			providerIdsLoadedByMods.stream()
+			providerIdsAutoactivating.stream()
 				.filter(id -> !knownProviderIdsFirstTimeMissing.containsKey(id))
 				.forEach(activeProviderIds::add);
 			this.config().setActiveProviderIds(activeProviderIds);
 			
-			providerIdsLoadedByMods.forEach(id -> knownProviderIdsFirstTimeMissing.put(id, nullPlaceholder));
+			providerIdsAutoactivating.forEach(id -> knownProviderIdsFirstTimeMissing.put(id, nullPlaceholder));
 			
-			this.config().setKnownModProviderIdsFirstTimeMissing(knownProviderIdsFirstTimeMissing);
+			this.config().setKnownAutoActivatingProviderIdsFirstTimeMissing(knownProviderIdsFirstTimeMissing);
 			this.saveConfig();
 			
-			return;
+			return true;
 		}
 		
 		// Reset all known providers due to privacy reasons
-		if(this.config().getKnownModProviderIdsFirstTimeMissing() != null)
+		if(this.config().getKnownAutoActivatingProviderIdsFirstTimeMissing() != null)
 		{
-			this.config().setKnownModProviderIdsFirstTimeMissing(null);
+			this.config().setKnownAutoActivatingProviderIdsFirstTimeMissing(null);
 			this.saveConfig();
+			return true;
 		}
+		return false;
 	}
 	
 	public void saveConfig()
@@ -354,5 +380,14 @@ public class Capes
 			return true;
 		}
 		return false;
+	}
+	
+	public void reset()
+	{
+		this.config.reset();
+		if(!this.postProcessAutoActivatingProviders())
+		{
+			this.saveConfigAndMarkRefresh();
+		}
 	}
 }

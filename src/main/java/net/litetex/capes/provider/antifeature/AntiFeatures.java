@@ -2,21 +2,19 @@ package net.litetex.capes.provider.antifeature;
 
 import java.util.Map;
 
-import net.litetex.capes.i18n.CapesI18NKeys;
-
 
 public final class AntiFeatures
 {
 	public static final AntiFeature BAD_CONNECTION =
-		new DefaultAntiFeature(CapesI18NKeys.ANTI_FEATURE_BAD_CONNECTION);
+		new DefaultAntiFeature("Insecure/Unstable connection to server");
 	public static final AntiFeature PAYMENT_TO_UNLOCK_CAPE =
-		new DefaultAntiFeature(CapesI18NKeys.ANTI_FEATURE_PAYMENT_TO_UNLOCK_CAPE);
+		new DefaultAntiFeature("Requires payment to unlock cape");
 	public static final AntiFeature EXPLICIT =
-		new DefaultAntiFeature(CapesI18NKeys.ANTI_FEATURE_EXPLICIT);
+		new DefaultAntiFeature("Hosts explicit/unsafe/disturbing content");
 	public static final AntiFeature ABANDONED =
-		new DefaultAntiFeature(CapesI18NKeys.ANTI_FEATURE_ABANDONED);
+		new DefaultAntiFeature("Potentially abandoned");
 	public static final AntiFeature OVERWRITES =
-		new DefaultAntiFeature(CapesI18NKeys.ANTI_FEATURE_OVERWRITES);
+		new DefaultAntiFeature("Promotes/Displays a default cape");
 	
 	public static final Map<String, AntiFeature> ALL_DEFAULT = Map.ofEntries(
 		Map.entry("bad_connection", BAD_CONNECTION),

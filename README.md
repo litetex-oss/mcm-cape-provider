@@ -25,11 +25,33 @@ Improved/Reworked version of the ["Capes" mod](https://github.com/CaelTheColher/
 
 ### Creating a custom cape provider
 
-#### As a user
+The mod provides many different ways how a provider can be added.
+
+The following possibilities are sorted by simplicity:
+
+#### Simple Local Provider
+
+> Recommended for:
+> * Users that just want a customizable cape 
+> * Modpacks (using `config/cape-provider/simple-custom`)
+
+The simples way to display a cape is by going into the `config/cape-provider` directory and creating a cape texture file named `cape.png`.
+
+Additionally there are the following optional files:
+* `owners.txt` - Determines which player names or UUIDs will get the cape displayed. If this file is not present then all players will display with the cape.
+* `name.txt` - To override the display name of the provider
+
+You can also add more providers by creating corresponding directories in `config/cape-provider/simple-custom`.<br/>Example: `config/cape-provider/simple-custom/my-super-cool-provider/cape.png`
+
+#### Remote Provider in configuration
+
+> Recommended for:
+> * Users that want to add a custom remote provider
+
 This demo showcases how to apply the capes inside [``custom-cape-demo``](https://github.com/litetex-oss/mcm-cape-provider/tree/dev/custom-cape-demo).
 
-1. Open the config file located in ``config/cape-provider.json5``
-2. In the ``customProviders`` section add the following entry:
+1. Open the config file located in ``config/cape-provider/config.json``
+2. In the ``remoteCustomProviders`` section add the following entry:
     ```jsonc
     {
       "id": "cp1",
@@ -51,31 +73,64 @@ This demo showcases how to apply the capes inside [``custom-cape-demo``](https:/
     </details>
 3. Restart the game and activate the provider
 
-For more details have a look at [CustomProvider](https://github.com/litetex-oss/mcm-cape-provider/tree/dev/src/main/java/net/litetex/capes/provider/CustomProvider.java) and [CustomProviderConfig](https://github.com/litetex-oss/mcm-cape-provider/tree/dev/src/main/java/net/litetex/capes/config/CustomProviderConfig.java)
+For more details have a look at [RemoteCustomProvider](https://github.com/litetex-oss/mcm-cape-provider/tree/dev/src/main/java/net/litetex/capes/provider/custom/remote/RemoteCustomProvider.java) and [RemoteCustomProviderConfig](https://github.com/litetex-oss/mcm-cape-provider/tree/dev/src/main/java/net/litetex/capes/provider/custom/remote/RemoteCustomProviderConfig.java)
 
-##### Maximum size
+NOTE: Texture resolvers can be selected using the `textureResolverId` attribute (see below for details).
 
-Images/Textures should not exceed 10MB otherwise they might be ignored.
+#### via Mods
 
-##### Texture resolvers / Animated textures
+> Recommended for:
+> * Mods
 
-Texture resolvers can be selected using the `textureResolverId` attribute.
-The following resolvers are currently built-in:
-
-| Resolver-ID | Animated | Format | Example | Notes |
-| --- | --- | --- | --- | --- |
-| `default` / null | ❌ | [PNG](https://de.wikipedia.org/wiki/Portable_Network_Graphics) | [uuid.png](https://raw.githubusercontent.com/litetex-oss/mcm-cape-provider/refs/heads/dev/custom-cape-demo/uuid.png) | |
-| `sprite` | ✔ | Stacked [PNG](https://de.wikipedia.org/wiki/Portable_Network_Graphics) | [animated.png](https://raw.githubusercontent.com/litetex-oss/mcm-cape-provider/refs/heads/dev/custom-cape-demo/animated.png) | |
-| `gif` | ✔ | [GIF](https://de.wikipedia.org/wiki/Graphics_Interchange_Format) | [animated.gif](https://raw.githubusercontent.com/litetex-oss/mcm-cape-provider/refs/heads/dev/custom-cape-demo/animated.gif) | _Usage not recommended_<br/>GIFs require more resources when compared to more modern formats like PNG. |
-
-Please note that animated textures can be frozen or completely disabled in the settings.
-
-#### As a developer / Proving capes through mods
-
-If you are a mod developer and want to e.g. display a cape for supporters of your mod, you can provide it using the mod's metadata / ``fabric.mod.json``.
+If you are a mod developer and want to e.g. display a cape for supporters or contributors of your mod, you can provide it using the mod's resources and/or metadata in ``fabric.mod.json``.
 The overall behavior is similar to how [``modmenu``](https://github.com/TerraformersMC/ModMenu?tab=readme-ov-file#fabric-metadata-api) handles this.
 
-Here's a simple implementation:
+##### Local/Simple (Recommended)
+
+This approach requires no network communication and is the recommended approach.
+It works by reading metadata and resources from the `cape` directory.
+
+Here is an example:
+1. Add the following mod metadata:
+    ``fabric.mod.json``
+    ```json5
+    {
+      ...
+      "custom": {
+        "cape": "Contributors"
+      }
+    }
+    ```
+2. Create a `cape` directory inside `resources`
+3. Add the cape texture in `cape/cape.png`
+4. Add the players that should be given the cape in `cape/owners.txt` with their UUIDs or names
+
+<details><summary>Note: There is also a more detailed variant</summary>
+
+``fabric.mod.json``
+```json5
+{
+  "custom": {
+    "cape": {
+      "name-extra": "Contributors",
+      "owners": {
+        // You can also used UUIDs
+        "names": [
+          "Notch"
+        ]
+      }
+    }
+  }
+}
+```
+
+</details>
+
+The mod uses this strategy itself. See the [`fabric.mod.json`](https://github.com/litetex-oss/mcm-cape-provider/tree/dev/src/main/resources/fabric.mod.json) or [`cape` directory](https://github.com/litetex-oss/mcm-cape-provider/tree/dev/src/main/resources/cape) for details.
+
+##### Remote
+
+Here's an example implementation that shows how a remote cape provider can be added:
 
 ``fabric.mod.json``
 ```json5
@@ -108,7 +163,27 @@ Here's a simple implementation:
 
 </details>
 
+#### Programmatic
+
 You can also create a [programmatic cape provider](https://github.com/litetex-oss/mcm-cape-provider/tree/dev/PROGRAMMATIC_PROVIDER.md).
+
+### Further notes
+
+#### Maximum size
+
+Images/Textures should not exceed 10MB. Otherwise they might be ignored.
+
+#### Texture resolvers / Animated textures
+
+The following resolvers are currently built-in:
+
+| Resolver-ID | Animated | Format | Example | Notes |
+| --- | --- | --- | --- | --- |
+| `default` / null | ❌ | [PNG](https://de.wikipedia.org/wiki/Portable_Network_Graphics) | [uuid.png](https://raw.githubusercontent.com/litetex-oss/mcm-cape-provider/refs/heads/dev/custom-cape-demo/uuid.png) | |
+| `sprite` | ✔ | Stacked [PNG](https://de.wikipedia.org/wiki/Portable_Network_Graphics) | [animated.png](https://raw.githubusercontent.com/litetex-oss/mcm-cape-provider/refs/heads/dev/custom-cape-demo/animated.png) | |
+| `gif` | ✔ | [GIF](https://de.wikipedia.org/wiki/Graphics_Interchange_Format) | [animated.gif](https://raw.githubusercontent.com/litetex-oss/mcm-cape-provider/refs/heads/dev/custom-cape-demo/animated.gif) | _Usage not recommended_<br/>GIFs require more resources when compared to more modern formats like PNG. |
+
+Please note that animated textures can be frozen or completely disabled in the settings.
 
 <!-- modrinth_exclude.start -->
 
