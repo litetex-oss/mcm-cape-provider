@@ -44,11 +44,14 @@ jobs:
           !build/libs/*-javadoc.jar
         if-no-files-found: error
 
-    - name: Publish to OSSRH
-      run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository --info --stacktrace
+    - name: Publish to Maven repositories
+      run: ./gradlew publish publishToSonatype closeAndReleaseSonatypeStagingRepository --info --stacktrace
       env:
         MAVEN_GPG_PRIVATE_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
         MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+        MAVEN_PUBLISH_URL: https://maven.pkg.github.com/litetex-oss/central
+        MAVEN_PUBLISH_USERNAME: '' # Not used by GitHub Packages
+        MAVEN_PUBLISH_PASSWORD: ${{ secrets.PACKAGES_CENTRAL_TOKEN }}
         SONATYPE_MAVEN_CENTRAL_PORTAL_USERNAME: ${{ secrets.SONATYPE_MAVEN_CENTRAL_PORTAL_USERNAME }}
         SONATYPE_MAVEN_CENTRAL_PORTAL_TOKEN: ${{ secrets.SONATYPE_MAVEN_CENTRAL_PORTAL_TOKEN }}
 
