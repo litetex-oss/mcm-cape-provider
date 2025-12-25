@@ -1,0 +1,22 @@
+{
+  "options.cape-provider.cape_options": "تتڤن منتل",
+  "options.cape-provider.preview": "ڤراليهت",
+  "options.cape-provider.activated_providers": "ڤڽديا يڠ دأکتيفکن",
+  "options.cape-provider.toggle_elytra": "توݢول ايليترا",
+  "options.cape-provider.toggle_player": "توݢول ڤماٴين",
+  "options.cape-provider.manage_providers": "اوروس ڤڽديا",
+  "options.cape-provider.other": "لاٴين٢",
+  "options.cape-provider.animated_textures": "تيکستور برانيماسي",
+  "options.cape-provider.elytra_texture": "تيکستور ايليترا",
+  "options.cape-provider.frozen": "بکو",
+  "options.cape-provider.only_load_your_cape": "هاڽ موات منتل اندا",
+  "options.cape-provider.providers_from_mods": "ڤڽديا درڤد مود",
+  "options.cape-provider.load": "موات",
+  "options.cape-provider.load_providers": "موات ڤڽديا",
+  "options.cape-provider.activate_providers_by_default": "اکتيفکن ڤڽديا سچارا لالاي",
+  "options.cape-provider.anti_feature.bad_connection": "سامبوڠن تيدق سلامت/تيدق ستابيل کڤلاين",
+  "options.cape-provider.anti_feature.payment_to_unlock_cape": "ممرلوکن بايرن اونتوق ممبوک کونچي منتل",
+  "options.cape-provider.anti_feature.explicit": "مڠنجورکن کاندوڠن ايکسڤليسيت/تيدق سلامت/مڠݢڠݢو",
+  "options.cape-provider.anti_feature.abandoned": "برڤوتينسي تربڠکالاي",
+  "options.cape-provider.anti_feature.overwrite": "مڠݢالقکن/مماڤرکن منتل لالاي"
+}
