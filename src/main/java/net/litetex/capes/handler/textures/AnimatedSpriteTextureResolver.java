@@ -43,7 +43,7 @@ public class AnimatedSpriteTextureResolver implements TextureResolver
 					{
 						for(int y = 0; y < frame.getHeight(); y++)
 						{
-							frame.setPixel(x, y, img.getPixel(x, y + (currentFrame * (img.getWidth() / 2))));
+							frame.setPixelRGBA(x, y, img.getPixelRGBA(x, y + (currentFrame * (img.getWidth() / 2))));
 						}
 					}
 					return frame;

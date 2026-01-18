@@ -87,13 +87,13 @@ public class PlayerCapeHandlerManager
 	
 	public PlayerCapeHandler getProfile(final GameProfile profile)
 	{
-		return this.instances.get(profile.id());
+		return this.instances.get(profile.getId());
 	}
 	
 	// Only use this when required to keep RAM consumption low!
 	public PlayerCapeHandler getOrCreateProfile(final GameProfile profile)
 	{
-		return this.instances.computeIfAbsent(profile.id(), ignored -> new PlayerCapeHandler(this.capes, profile));
+		return this.instances.computeIfAbsent(profile.getId(), ignored -> new PlayerCapeHandler(this.capes, profile));
 	}
 	
 	public void clearCache()
@@ -118,7 +118,7 @@ public class PlayerCapeHandlerManager
 	{
 		if(this.debugEnabled)
 		{
-			LOG.debug("onLoadTexture: {}/{} validate={}", profile.name(), profile.id(), validateProfile);
+			LOG.debug("onLoadTexture: {}/{} validate={}", profile.getName(), profile.getId(), validateProfile);
 		}
 		
 		final Runnable runnable = () -> {
@@ -128,10 +128,10 @@ public class PlayerCapeHandlerManager
 			}
 			catch(final Exception ex)
 			{
-				LOG.warn("Failed to async load texture for {}/{}", profile.name(), profile.id(), ex);
+				LOG.warn("Failed to async load texture for {}/{}", profile.getName(), profile.getId(), ex);
 			}
 		};
-		this.submittedTasks.put(this.loadExecutors.submit(runnable), profile.id());
+		this.submittedTasks.put(this.loadExecutors.submit(runnable), profile.getId());
 	}
 	
 	private void onLoadTextureInternalAsync(
@@ -160,8 +160,8 @@ public class PlayerCapeHandlerManager
 		{
 			optFoundCapeProvider.ifPresentOrElse(
 				cp ->
-					LOG.debug("Loaded cape from {} for {}/{}", cp.id(), profile.name(), profile.id()),
-				() -> LOG.debug("Found no cape for {}/{}", profile.name(), profile.id())
+					LOG.debug("Loaded cape from {} for {}/{}", cp.id(), profile.getName(), profile.getId()),
+				() -> LOG.debug("Found no cape for {}/{}", profile.getName(), profile.getId())
 			);
 		}
 		
@@ -174,6 +174,6 @@ public class PlayerCapeHandlerManager
 	private boolean shouldOnlyLoadForSelfAndIsNotSelf(final GameProfile profile)
 	{
 		return this.capes.config().isOnlyLoadForSelf()
-			&& !Minecraft.getInstance().isLocalPlayer(profile.id());
+			&& !Minecraft.getInstance().isLocalPlayer(profile.getId());
 	}
 }

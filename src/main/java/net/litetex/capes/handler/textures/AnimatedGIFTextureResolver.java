@@ -95,7 +95,7 @@ public class AnimatedGIFTextureResolver implements TextureResolver
 						{
 							for(int y = 0; y < height; y++)
 							{
-								frame.setPixel(x, y, image.getRGB(x, y));
+								frame.setPixelRGBA(x, y, image.getRGB(x, y));
 							}
 						}
 						return new AnimatedNativeImageContainer(frame, imageFrame.delay() * 10);

@@ -24,7 +24,7 @@ public class RemoteCustomProvider extends BaseCustomProvider<RemoteCustomProvide
 	@Override
 	protected String getBaseUrlInternal(final GameProfile profile)
 	{
-		final String idString = profile.id().toString();
+		final String idString = profile.getId().toString();
 		String uriTemplate = this.config.uriTemplate();
 		if(uriTemplate.indexOf('$') != -1)
 		{
@@ -45,7 +45,7 @@ public class RemoteCustomProvider extends BaseCustomProvider<RemoteCustomProvide
 		final GameProfile profile)
 	{
 		return uriTemplate
-			.replace(prefix + "name", profile.name())
+			.replace(prefix + "name", profile.getName())
 			.replace(prefix + "id", idString)
 			.replace(prefix + "idNoHyphen", idString.replace("-", ""));
 	}

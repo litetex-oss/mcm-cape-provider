@@ -21,8 +21,8 @@ public record Owners(
 	
 	public boolean owns(final GameProfile gameProfile)
 	{
-		return this.uuids != null && this.uuids.contains(gameProfile.id())
-			|| this.names != null && this.names.contains(gameProfile.name());
+		return this.uuids != null && this.uuids.contains(gameProfile.getId())
+			|| this.names != null && this.names.contains(gameProfile.getName());
 	}
 	
 	public static Owners fromLines(final Logger logger, final List<String> lines)

@@ -42,7 +42,7 @@ public class DefaultTextureResolver implements TextureResolver
 			{
 				for(int y = 0; y < srcHeight; y++)
 				{
-					imgNew.setPixel(x, y, img.getPixel(x, y));
+					imgNew.setPixelRGBA(x, y, img.getPixelRGBA(x, y));
 				}
 			}
 			

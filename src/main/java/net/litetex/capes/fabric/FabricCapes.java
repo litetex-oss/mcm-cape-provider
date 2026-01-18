@@ -22,12 +22,10 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.rendering.v1.SpecialGuiElementRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.litetex.capes.Capes;
 import net.litetex.capes.config.Config;
 import net.litetex.capes.handler.textures.suppliers.TextureResolvers;
-import net.litetex.capes.menu.preview.render.PlayerDisplayGuiElementRenderer;
 
 
 public class FabricCapes implements ClientModInitializer
@@ -42,8 +40,6 @@ public class FabricCapes implements ClientModInitializer
 	@Override
 	public void onInitializeClient()
 	{
-		SpecialGuiElementRegistry.register(ctx -> new PlayerDisplayGuiElementRenderer(ctx.vertexConsumers()));
-		
 		final Path configDir = FabricLoader.getInstance().getConfigDir().resolve("cape-provider");
 		final Path configFile = configDir.resolve("config.json");
 		

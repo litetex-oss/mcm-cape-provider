@@ -33,7 +33,7 @@ public class MinecraftCapesCapeProvider extends CacheableCapeProvider
 	@Override
 	public String getBaseUrl(final GameProfile profile)
 	{
-		return "https://api.minecraftcapes.net/profile/" + profile.id().toString().replace("-", "");
+		return "https://api.minecraftcapes.net/profile/" + profile.getId().toString().replace("-", "");
 	}
 	
 	@Override
@@ -43,7 +43,7 @@ public class MinecraftCapesCapeProvider extends CacheableCapeProvider
 		final GameProfile profile) throws IOException, InterruptedException
 	{
 		requestBuilder
-			.setHeader("User-Agent", "minecraftcapes-mod/" + SharedConstants.getCurrentVersion().name());
+			.setHeader("User-Agent", "minecraftcapes-mod/" + SharedConstants.getCurrentVersion().getName());
 		
 		record ResponseData(
 			Boolean animatedCape,

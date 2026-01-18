@@ -11,7 +11,6 @@ import net.litetex.capes.menu.other.OtherMenuScreen;
 import net.litetex.capes.menu.preview.PreviewMenuScreen;
 import net.litetex.capes.menu.provider.ProviderMenuScreen;
 import net.litetex.capes.util.CorrectHoverParentElement;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.OptionsList;
@@ -39,8 +38,8 @@ public abstract class MainMenuScreen extends OptionsSubScreen implements Correct
 	protected void addContents()
 	{
 		// The first "row" is used by the buttons for the individual screens
-		this.list = this.layout.addToContents(
-			new HeaderHeightOptionListWidget(this.minecraft, this.width, this, 24));
+		this.list = this.layout.addToContents(new OptionsList(this.minecraft, this.width, this));
+		this.list.headerHeight = 28; // The first "row" is used by the buttons for the individual screens
 		this.addOptions();
 	}
 	
@@ -134,32 +133,5 @@ public abstract class MainMenuScreen extends OptionsSubScreen implements Correct
 	{
 		super.onClose();
 		this.capes().refreshIfMarked();
-	}
-	
-	static class HeaderHeightOptionListWidget extends OptionsList
-	{
-		private final int headerHeight;
-		
-		public HeaderHeightOptionListWidget(
-			final Minecraft client,
-			final int width,
-			final OptionsSubScreen optionsScreen,
-			final int headerHeight)
-		{
-			super(client, width, optionsScreen);
-			this.headerHeight = headerHeight;
-		}
-		
-		@Override
-		protected int getFirstEntryY()
-		{
-			return super.getFirstEntryY() + this.headerHeight;
-		}
-		
-		@Override
-		protected int contentHeight()
-		{
-			return super.contentHeight() + this.headerHeight;
-		}
 	}
 }

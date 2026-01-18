@@ -14,7 +14,7 @@ import com.mojang.authlib.GameProfile;
 import net.litetex.capes.Capes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerInfo;
-import net.minecraft.world.entity.player.PlayerSkin;
+import net.minecraft.client.resources.PlayerSkin;
 
 
 @Mixin(PlayerInfo.class)
@@ -25,7 +25,7 @@ public abstract class PlayerListEntryMixin
 		final GameProfile profile,
 		final CallbackInfoReturnable<Supplier<PlayerSkin>> cir)
 	{
-		if(!Capes.instance().config().isOnlyLoadForSelf() || Minecraft.getInstance().isLocalPlayer(profile.id()))
+		if(!Capes.instance().config().isOnlyLoadForSelf() || Minecraft.getInstance().isLocalPlayer(profile.getId()))
 		{
 			Capes.instance().textureLoadThrottler().loadIfRequired(profile);
 		}

@@ -43,8 +43,8 @@ public class OtherMenuScreen extends MainMenuScreen
 						case ON -> CommonComponents.OPTION_ON;
 						case FROZEN -> Component.literal("Frozen");
 						case OFF -> CommonComponents.OPTION_OFF;
-					},
-					this.config()::getAnimatedCapesHandling)
+					})
+				.withInitialValue(this.config().getAnimatedCapesHandling())
 				.withValues(AnimatedCapesHandling.values())
 				.create(
 					Component.literal("Animated textures"),

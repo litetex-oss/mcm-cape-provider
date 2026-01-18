@@ -30,12 +30,10 @@ import net.litetex.capes.handler.textures.DefaultTextureResolver;
 import net.litetex.capes.handler.textures.TextureResolver;
 import net.litetex.capes.provider.CapeProvider;
 import net.litetex.capes.provider.ResolvedTextureInfo;
-import net.litetex.capes.util.CapeProviderTextureAsset;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.core.ClientAsset;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 
 @SuppressWarnings("checkstyle:MagicNumber")
@@ -59,7 +57,7 @@ public class PlayerCapeHandler
 		return this.optTextureProvider;
 	}
 	
-	public ClientAsset.Texture getCape()
+	public ResourceLocation getCape()
 	{
 		final TextureProvider textureProvider = this.optTextureProvider.orElse(null);
 		if(textureProvider != null)
@@ -128,12 +126,12 @@ public class PlayerCapeHandler
 		}
 		catch(final InterruptedException iex)
 		{
-			LOG.warn("Got interrupted[url='{}',profileId='{}']", url, this.profile.id(), iex);
+			LOG.warn("Got interrupted[url='{}',profileId='{}']", url, this.profile.getId(), iex);
 			Thread.currentThread().interrupt();
 		}
 		catch(final Exception ex)
 		{
-			LOG.warn("Failed to process texture[url='{}',profileId='{}']", url, this.profile.id(), ex);
+			LOG.warn("Failed to process texture[url='{}',profileId='{}']", url, this.profile.getId(), ex);
 		}
 		
 		this.resetCape();
@@ -238,7 +236,7 @@ public class PlayerCapeHandler
 				() -> texturesToRegister.forEach(t ->
 					textureManager.register(
 						t.identifier(),
-						new DynamicTexture(t.identifier()::toString, t.image()))),
+						new DynamicTexture(t.image()))),
 				Minecraft.getInstance())
 			.exceptionally(ex -> {
 				LOG.warn("Failed to register textures", ex);
@@ -251,12 +249,12 @@ public class PlayerCapeHandler
 	}
 	
 	record TextureToRegister(
-		Identifier identifier,
+		ResourceLocation identifier,
 		NativeImage image,
 		int delayMs
 	)
 	{
-		public TextureToRegister(final Identifier identifier, final NativeImage image)
+		public TextureToRegister(final ResourceLocation identifier, final NativeImage image)
 		{
 			this(identifier, image, 100);
 		}
@@ -267,16 +265,16 @@ public class PlayerCapeHandler
 		return this.capes.config().getAnimatedCapesHandling();
 	}
 	
-	static Identifier identifier(final String id)
+	static ResourceLocation identifier(final String id)
 	{
-		return Identifier.fromNamespaceAndPath(Capes.MOD_ID, id);
+		return ResourceLocation.fromNamespaceAndPath(Capes.MOD_ID, id);
 	}
 	
 	// region Getter
 	
 	public UUID uuid()
 	{
-		return this.profile.id();
+		return this.profile.getId();
 	}
 	
 	public boolean hasElytraTexture()
@@ -287,13 +285,8 @@ public class PlayerCapeHandler
 	// endregion
 	
 	
-	record DefaultTextureProvider(CapeProviderTextureAsset texture) implements TextureProvider
+	record DefaultTextureProvider(ResourceLocation texture) implements TextureProvider
 	{
-		DefaultTextureProvider(final Identifier id)
-		{
-			this(new CapeProviderTextureAsset(id));
-		}
-		
 		@Override
 		public boolean dynamicIdentifier()
 		{
@@ -312,7 +305,7 @@ public class PlayerCapeHandler
 		{
 			this.identifiers = identifiers.stream()
 				.map(t -> new IdentifierContainer(
-					new CapeProviderTextureAsset(t.identifier()),
+					t.identifier(),
 					Math.clamp(
 						t.delayMs(),
 						1,
@@ -322,7 +315,7 @@ public class PlayerCapeHandler
 		}
 		
 		@Override
-		public ClientAsset.Texture texture()
+		public ResourceLocation texture()
 		{
 			final long time = System.currentTimeMillis();
 			if(time > this.nextFrameTime)
@@ -345,7 +338,7 @@ public class PlayerCapeHandler
 		}
 		
 		record IdentifierContainer(
-			ClientAsset.Texture identifier,
+			ResourceLocation identifier,
 			int delay)
 		{
 		}

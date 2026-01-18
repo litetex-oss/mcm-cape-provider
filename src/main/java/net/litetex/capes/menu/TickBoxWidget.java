@@ -5,7 +5,6 @@ import java.util.function.BiConsumer;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
 
@@ -60,7 +59,7 @@ public class TickBoxWidget extends AbstractWidget
 	}
 	
 	@Override
-	public void onClick(final MouseButtonEvent click, final boolean bl)
+	public void onClick(final double mouseX, final double mouseY)
 	{
 		this.toggle();
 	}

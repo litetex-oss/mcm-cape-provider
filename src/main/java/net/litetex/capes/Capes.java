@@ -36,12 +36,10 @@ import net.litetex.capes.provider.suppliers.CapeProviders;
 import net.litetex.capes.provider.suppliers.ModMetadataProviderSupplier;
 import net.litetex.capes.provider.suppliers.SimpleFilesystemProviders;
 import net.litetex.capes.texturecache.TextureCache;
-import net.litetex.capes.util.CapeProviderTextureAsset;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.core.ClientAsset;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.player.PlayerSkin;
+import net.minecraft.client.resources.PlayerSkin;
+import net.minecraft.resources.ResourceLocation;
 
 
 public class Capes
@@ -50,8 +48,8 @@ public class Capes
 	
 	public static final String MOD_ID = "cape-provider";
 	
-	public static final ClientAsset.Texture DEFAULT_ELYTRA_TEXTURE =
-		new CapeProviderTextureAsset(Identifier.parse("textures/entity/equipment/wings/elytra.png"));
+	public static final ResourceLocation DEFAULT_ELYTRA_TEXTURE =
+		ResourceLocation.parse("textures/entity/equipment/wings/elytra.png");
 	
 	public static final Predicate<CapeProvider> EXCLUDE_DEFAULT_MINECRAFT_CP =
 		cp -> DefaultMinecraftCapeProvider.INSTANCE != cp;
@@ -351,16 +349,17 @@ public class Capes
 		final PlayerCapeHandler handler = this.playerCapeHandlerManager().getProfile(profile);
 		if(handler != null)
 		{
-			final ClientAsset.Texture capeTexture = handler.getCape();
+			final ResourceLocation capeTexture = handler.getCape();
 			if(capeTexture != null)
 			{
 				final PlayerSkin oldTextures = oldTexureSupplier.get();
-				final ClientAsset.Texture elytraTexture = handler.hasElytraTexture()
+				final ResourceLocation elytraTexture = handler.hasElytraTexture()
 					&& this.config().isEnableElytraTexture()
 					? capeTexture
 					: Capes.DEFAULT_ELYTRA_TEXTURE;
 				applyOverwrittenTextures.accept(new PlayerSkin(
-					oldTextures.body(),
+					oldTextures.texture(),
+					oldTextures.textureUrl(),
 					capeTexture,
 					elytraTexture,
 					oldTextures.model(),
@@ -372,7 +371,8 @@ public class Capes
 		{
 			final PlayerSkin oldTextures = oldTexureSupplier.get();
 			applyOverwrittenTextures.accept(new PlayerSkin(
-				oldTextures.body(),
+				oldTextures.texture(),
+				oldTextures.textureUrl(),
 				null,
 				null,
 				oldTextures.model(),

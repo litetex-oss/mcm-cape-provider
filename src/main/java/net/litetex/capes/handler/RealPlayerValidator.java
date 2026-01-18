@@ -29,7 +29,7 @@ public class RealPlayerValidator
 	
 	public boolean isReal(final GameProfile profile)
 	{
-		return this.cache.computeIfAbsent(profile.id(), ignored -> this.checkReal(profile));
+		return this.cache.computeIfAbsent(profile.getId(), ignored -> this.checkReal(profile));
 	}
 	
 	private boolean checkReal(final GameProfile profile)
@@ -38,8 +38,8 @@ public class RealPlayerValidator
 		
 		LOG.debug(
 			"Determined that {}/{} is {}a real player: {}",
-			profile.name(),
-			profile.id(),
+			profile.getName(),
+			profile.getId(),
 			validityState.isValid() ? "" : "NOT ",
 			validityState.name());
 		
@@ -49,22 +49,22 @@ public class RealPlayerValidator
 	private ValidityState determineIfInvalid(final Minecraft client, final GameProfile profile)
 	{
 		// The current player is always valid
-		if(profile.id().equals(client.getUser().getProfileId()))
+		if(profile.getId().equals(client.getUser().getProfileId()))
 		{
 			return ValidityState.SELF;
 		}
 		// Only valid players have version 4 (random generated)
 		// Some servers report players with different versions,
 		// however these are ignored as the cape provider can't match them
-		if(profile.id().version() != 4)
+		if(profile.getId().version() != 4)
 		{
 			return ValidityState.UUID_INCORRECT_VERSION;
 		}
-		if(!StringUtil.isValidPlayerName(profile.name()))
+		if(!StringUtil.isValidPlayerName(profile.getName()))
 		{
 			return ValidityState.INVALID_NAME;
 		}
-		if(this.useOnlineValidation && !this.isValidSessionProfile(client, profile.id()))
+		if(this.useOnlineValidation && !this.isValidSessionProfile(client, profile.getId()))
 		{
 			return ValidityState.ONLINE_VALIDATION_FAIL;
 		}
@@ -99,7 +99,7 @@ public class RealPlayerValidator
 		{
 			// Check if this is a real player (not a fake one create by a server)
 			// Use secure = false to utilize cache
-			return client.services().sessionService().fetchProfile(id, false) != null;
+			return client.getMinecraftSessionService().fetchProfile(id, false) != null;
 		}
 		catch(final Exception ex)
 		{
