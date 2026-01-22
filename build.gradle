@@ -45,17 +45,6 @@ repositories {
             includeGroup 'com.terraformersmc'
         }
     }
-    exclusiveContent {
-        forRepository {
-            maven {
-                name = "DevAuth"
-                url = "https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1"
-            }
-        }
-        filter {
-            includeGroup 'me.djtheredstoner'
-        }
-    }
     // https://support.modrinth.com/en/articles/8801191-modrinth-maven
     exclusiveContent {
         forRepository {
