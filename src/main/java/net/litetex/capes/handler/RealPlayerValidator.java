@@ -87,7 +87,7 @@ public class RealPlayerValidator
 			this.valid = valid;
 		}
 		
-		public boolean isValid()
+		boolean isValid()
 		{
 			return this.valid;
 		}
