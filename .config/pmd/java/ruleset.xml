@@ -144,7 +144,6 @@
 	<rule ref="category/java/errorprone.xml/CollectionTypeMismatch"/>
 	<rule ref="category/java/errorprone.xml/ComparisonWithNaN"/>
 	<rule ref="category/java/errorprone.xml/DoNotCallGarbageCollectionExplicitly"/>
-	<rule ref="category/java/errorprone.xml/DontImportSun"/>
 	<rule ref="category/java/errorprone.xml/DontUseFloatTypeForLoopIndices"/>
 	<rule ref="category/java/errorprone.xml/EqualsNull"/>
 	<rule ref="category/java/errorprone.xml/IdempotentOperations"/>
@@ -162,6 +161,7 @@
 	<rule ref="category/java/errorprone.xml/SingletonClassReturningNewInstance"/>
 	<rule ref="category/java/errorprone.xml/UnconditionalIfStatement"/>
 	<rule ref="category/java/errorprone.xml/UnnecessaryCaseChange"/>
+	<rule ref="category/java/errorprone.xml/UnsupportedJdkApiUsage"/>
 	<rule ref="category/java/errorprone.xml/UselessPureMethodCall"/>
 
 

@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.15.2'
+    id 'fabric-loom' version '1.15.4'
     id 'maven-publish'
     id 'signing'
     id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
@@ -9,9 +9,9 @@ plugins {
 }
 
 ext {
-    checkstyleVersion = '13.0.0'
+    checkstyleVersion = '13.2.0'
 
-    pmdVersion = '7.20.0'
+    pmdVersion = '7.21.0'
 }
 
 version = project.mod_version
