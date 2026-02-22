@@ -5,3 +5,4 @@ accessible field net/minecraft/client/gui/components/PlayerSkinWidget wideModel 
 accessible field net/minecraft/client/gui/components/PlayerSkinWidget slimModel Lnet/minecraft/client/model/player/PlayerModel;
 accessible field net/minecraft/client/gui/components/PlayerSkinWidget rotationX F
 accessible field net/minecraft/client/gui/components/PlayerSkinWidget rotationY F
+accessible method com/mojang/blaze3d/platform/NativeImage writeToChannel (Ljava/nio/channels/WritableByteChannel;)Z
