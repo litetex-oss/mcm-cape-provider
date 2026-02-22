@@ -256,7 +256,7 @@ public class PlayerCapeHandler
 		int delayMs
 	)
 	{
-		public TextureToRegister(final Identifier identifier, final NativeImage image)
+		TextureToRegister(final Identifier identifier, final NativeImage image)
 		{
 			this(identifier, image, 100);
 		}

@@ -202,7 +202,7 @@ public class ProviderListWidget extends ObjectSelectionList<ProviderListWidget.P
 		private final UpDownIconWidget icoMoveUp;
 		private final UpDownIconWidget icoMoveDown;
 		
-		public ProviderListEntry(
+		ProviderListEntry(
 			final CapeProvider capeProvider,
 			final boolean activated,
 			final Screen parentScreen,
@@ -309,22 +309,22 @@ public class ProviderListWidget extends ObjectSelectionList<ProviderListWidget.P
 				() -> onPositionChange.accept(this, false));
 		}
 		
-		public CapeProvider capeProvider()
+		CapeProvider capeProvider()
 		{
 			return this.capeProvider;
 		}
 		
-		public boolean isActive()
+		boolean isActive()
 		{
 			return this.chbxActive.isTicked();
 		}
 		
-		public void upVisible(final boolean visible)
+		void upVisible(final boolean visible)
 		{
 			this.icoMoveUp.visible = visible;
 		}
 		
-		public void downVisible(final boolean visible)
+		void downVisible(final boolean visible)
 		{
 			this.icoMoveDown.visible = visible;
 		}
@@ -474,7 +474,7 @@ public class ProviderListWidget extends ObjectSelectionList<ProviderListWidget.P
 		private final Runnable onClick;
 		
 		@SuppressWarnings("PMD.ExcessiveParameterList")
-		public UpDownIconWidget(
+		UpDownIconWidget(
 			final int width,
 			final int height,
 			final Identifier texture,
@@ -510,7 +510,7 @@ public class ProviderListWidget extends ObjectSelectionList<ProviderListWidget.P
 			this.click();
 		}
 		
-		public void click()
+		void click()
 		{
 			this.onClick.run();
 		}
@@ -541,7 +541,7 @@ public class ProviderListWidget extends ObjectSelectionList<ProviderListWidget.P
 	
 	static class ClickableTextWidget extends StringWidget
 	{
-		public ClickableTextWidget(final Component message, final Font textRenderer)
+		ClickableTextWidget(final Component message, final Font textRenderer)
 		{
 			super(message, textRenderer);
 		}

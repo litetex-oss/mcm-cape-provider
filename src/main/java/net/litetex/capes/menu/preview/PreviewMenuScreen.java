@@ -131,7 +131,7 @@ public class PreviewMenuScreen extends MainMenuScreen
 		
 		private PlayerDisplayGuiPayload payload;
 		
-		public ViewModel()
+		ViewModel()
 		{
 			this.gameProfile = Minecraft.getInstance().getGameProfile();
 			this.skin = DefaultPlayerSkin.get(this.gameProfile);
@@ -210,19 +210,19 @@ public class PreviewMenuScreen extends MainMenuScreen
 				: () -> null;
 		}
 		
-		public void providerChanged()
+		void providerChanged()
 		{
 			this.refreshActiveCapeProviders();
 			this.updateCapeAndElytraTexture();
 		}
 		
-		public void toggleShowBody()
+		void toggleShowBody()
 		{
 			this.showBody = !this.showBody;
 			this.rebuildPayload();
 		}
 		
-		public void toggleShowElytra()
+		void toggleShowElytra()
 		{
 			this.showElytra = !this.showElytra;
 			this.rebuildPayload();
@@ -238,7 +238,7 @@ public class PreviewMenuScreen extends MainMenuScreen
 			);
 		}
 		
-		public PlayerDisplayGuiPayload getPayload()
+		PlayerDisplayGuiPayload getPayload()
 		{
 			return this.payload;
 		}
@@ -253,12 +253,12 @@ public class PreviewMenuScreen extends MainMenuScreen
 		
 		private float limbAngle;
 		
-		public PlayerLimbAnimator(final int fps)
+		PlayerLimbAnimator(final int fps)
 		{
 			this.msBetweenUpdates = 1000 / fps;
 		}
 		
-		public void animate(final PlayerModel player, final float tickDelta)
+		void animate(final PlayerModel player, final float tickDelta)
 		{
 			if(player == null)
 			{

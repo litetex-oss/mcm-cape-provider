@@ -140,7 +140,7 @@ public abstract class MainMenuScreen extends OptionsSubScreen implements Correct
 	{
 		private final int headerHeight;
 		
-		public HeaderHeightOptionListWidget(
+		HeaderHeightOptionListWidget(
 			final Minecraft client,
 			final int width,
 			final OptionsSubScreen optionsScreen,

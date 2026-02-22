@@ -1,3 +1,8 @@
+# 5.1.0
+* New built-in Cape Provider
+  * [Sneaky Capes](https://modrinth.com/mod/sneaky_capes) #241
+* Updated dependencies / Improved mod compatibility
+
 # 5.0.0
 * Added possibility to add a simple/static local provider
   * Require no network connection

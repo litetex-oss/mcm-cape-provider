@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.14.8'
+    id 'fabric-loom' version '1.15.4'
     id 'maven-publish'
     id 'signing'
     id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
@@ -9,9 +9,9 @@ plugins {
 }
 
 ext {
-    checkstyleVersion = '12.3.0'
+    checkstyleVersion = '13.2.0'
 
-    pmdVersion = '7.19.0'
+    pmdVersion = '7.21.0'
 }
 
 version = project.mod_version
@@ -43,17 +43,6 @@ repositories {
         }
         filter {
             includeGroup 'com.terraformersmc'
-        }
-    }
-    exclusiveContent {
-        forRepository {
-            maven {
-                name = "DevAuth"
-                url = "https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1"
-            }
-        }
-        filter {
-            includeGroup 'me.djtheredstoner'
         }
     }
     // https://support.modrinth.com/en/articles/8801191-modrinth-maven

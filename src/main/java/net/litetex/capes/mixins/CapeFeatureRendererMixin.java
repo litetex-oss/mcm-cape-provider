@@ -13,9 +13,12 @@ import net.minecraft.resources.Identifier;
 @Mixin(CapeLayer.class)
 public abstract class CapeFeatureRendererMixin
 {
-	@Redirect(method = "submit*", at = @At(value = "INVOKE",
-		target = "Lnet/minecraft/client/renderer/rendertype/RenderTypes;entitySolid("
-			+ "Lnet/minecraft/resources/Identifier;)Lnet/minecraft/client/renderer/rendertype/RenderType;"))
+	@Redirect(
+		method = "submit*",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/minecraft/client/renderer/rendertype/RenderTypes;entitySolid("
+				+ "Lnet/minecraft/resources/Identifier;)Lnet/minecraft/client/renderer/rendertype/RenderType;"))
 	private RenderType fixCapeTransparency(final Identifier texture)
 	{
 		return RenderTypes.armorCutoutNoCull(texture);

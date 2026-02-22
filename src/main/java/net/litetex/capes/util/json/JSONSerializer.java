@@ -27,7 +27,7 @@ public final class JSONSerializer
 	
 	static class InstantConverter implements JsonSerializer<Instant>, JsonDeserializer<Instant>
 	{
-		public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_INSTANT;
+		static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_INSTANT;
 		
 		@Override
 		public JsonElement serialize(final Instant src, final Type typeOfSrc, final JsonSerializationContext context)
