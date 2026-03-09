@@ -5,13 +5,13 @@ plugins {
     id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
     id 'checkstyle'
     id 'pmd'
-    id 'com.modrinth.minotaur' version '2.8.10'
+    id 'com.modrinth.minotaur' version '2.9.0'
 }
 
 ext {
-    checkstyleVersion = '13.2.0'
+    checkstyleVersion = '13.3.0'
 
-    pmdVersion = '7.21.0'
+    pmdVersion = '7.22.0'
 }
 
 version = project.mod_version
