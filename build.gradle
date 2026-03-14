@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.15.4'
+    id 'net.fabricmc.fabric-loom' version '1.15.5'
     id 'maven-publish'
     id 'signing'
     id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
@@ -22,7 +22,7 @@ base {
 }
 
 loom {
-    accessWidenerPath = file("src/main/resources/cape-provider.accesswidener")
+    accessWidenerPath = file("src/main/resources/cape-provider.classtweaker")
     log4jConfigs.from(file("src/dev/log4j2.xml"))
 }
 
@@ -68,22 +68,21 @@ dependencies {
             "net.sourceforge.pmd:pmd-java:${pmdVersion}"
 
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings loom.officialMojangMappings()
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
     // Required for rendering the preview
-    modImplementation fabricApi.module("fabric-rendering-v1", project.fabric_api_version)
+    implementation fabricApi.module("fabric-rendering-v1", project.fabric_api_version)
     // Required for loading resources like translations or icons
-    modImplementation fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)
+    implementation fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)
 
-    modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
-    modCompileOnly "maven.modrinth:skinshuffle:${project.skinshuffle_version}"
-    modCompileOnly "maven.modrinth:minecraftcapes:${project.minecraftcapes_version}"
+    // modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
+    // modCompileOnly "maven.modrinth:skinshuffle:${project.skinshuffle_version}"
+    // modCompileOnly "maven.modrinth:minecraftcapes:${project.minecraftcapes_version}"
 
     // Only needed during development
-    modLocalRuntime "com.terraformersmc:modmenu:${project.modmenu_version}"
-    modLocalRuntime "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
-    modLocalRuntime "net.litetex.mcm:dev-auth-neo:1.0.2"
-    modLocalRuntime "maven.modrinth:no-chat-reports:Fabric-1.21.11-v2.17.0"
+    // modLocalRuntime "com.terraformersmc:modmenu:${project.modmenu_version}"
+    localRuntime "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+    localRuntime "net.litetex.mcm:dev-auth-neo:1.0.2"
+    // modLocalRuntime "maven.modrinth:no-chat-reports:Fabric-1.21.11-v2.17.0"
 }
 
 processResources {
@@ -123,7 +122,7 @@ tasks.withType(Pmd).configureEach {
 }
 
 tasks.withType(JavaCompile).configureEach {
-    it.options.release = 21
+    it.options.release = 25
 }
 
 java {
@@ -132,8 +131,8 @@ java {
     withSourcesJar()
     withJavadocJar()
 
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }
 
 javadoc {
@@ -199,7 +198,7 @@ modrinth {
     projectId = project.archivesBaseName
     // Default/empty value is release
     versionType = System.getenv("MODRINTH_VERSION_TYPE")
-    uploadFile = remapJar
+    uploadFile = jar
     additionalFiles = [sourcesJar]
     syncBodyFrom = rootProject.file("README.md").text
     changelog = System.getenv("MODRINTH_CHANGELOG_TEXT")

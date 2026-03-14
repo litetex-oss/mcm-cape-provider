@@ -27,7 +27,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        java: [21]
+        java: [25]
         distribution: [temurin]
 
     steps:
@@ -45,7 +45,7 @@ jobs:
         path: |
           ~/.gradle/caches
           ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-build-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        key: ${{ runner.os }}-gradle-build-${{ hashFiles('**/*.gradle*', '**/gradle.properties', '**/gradle-wrapper.properties') }}
         restore-keys: |
           ${{ runner.os }}-gradle-build-
       
@@ -87,7 +87,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        java: [21]
+        java: [25]
         distribution: [temurin]
 
     steps:
@@ -105,7 +105,7 @@ jobs:
         path: |
           ~/.gradle/caches
           ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-checkstyle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        key: ${{ runner.os }}-gradle-checkstyle-${{ hashFiles('**/*.gradle*', '**/gradle.properties', '**/gradle-wrapper.properties') }}
         restore-keys: |
           ${{ runner.os }}-gradle-checkstyle-
 
@@ -118,7 +118,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        java: [21]
+        java: [25]
         distribution: [temurin]
 
     steps:
@@ -136,7 +136,7 @@ jobs:
         path: |
           ~/.gradle/caches
           ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-pmd-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        key: ${{ runner.os }}-gradle-pmd-${{ hashFiles('**/*.gradle*', '**/gradle.properties', '**/gradle-wrapper.properties') }}
         restore-keys: |
           ${{ runner.os }}-gradle-pmd-
 
