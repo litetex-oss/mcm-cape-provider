@@ -1,3 +1,6 @@
+# 5.2.0
+* Updated to 26.1
+
 # 5.1.0
 * New built-in Cape Provider
   * [Sneaky Capes](https://modrinth.com/mod/sneaky_capes) #241
