@@ -3,7 +3,7 @@ package net.litetex.capes.menu.preview.render;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.PlayerSkinWidget;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.geom.ModelLayers;
@@ -36,7 +36,11 @@ public class PlayerDisplayWidget extends PlayerSkinWidget
 	}
 	
 	@Override
-	protected void renderWidget(final GuiGraphics context, final int mouseX, final int mouseY, final float deltaTicks)
+	protected void extractWidgetRenderState(
+		final GuiGraphicsExtractor graphics,
+		final int mouseX,
+		final int mouseY,
+		final float deltaTicks)
 	{
 		final PlayerDisplayGuiPayload payload = this.payloadSupplier.get();
 		
@@ -48,7 +52,7 @@ public class PlayerDisplayWidget extends PlayerSkinWidget
 		this.preModelRenderAction.accept(models);
 		
 		this.addToDrawContext(
-			context,
+			graphics,
 			models,
 			payload,
 			0.97F * this.getHeight() / 2.125F,
@@ -63,7 +67,7 @@ public class PlayerDisplayWidget extends PlayerSkinWidget
 	
 	@SuppressWarnings("PMD.ExcessiveParameterList") // Derived from MC code
 	public void addToDrawContext(
-		final GuiGraphics context,
+		final GuiGraphicsExtractor graphics,
 		final PlayerDisplayGuiModels models,
 		final PlayerDisplayGuiPayload payload,
 		final float scale,
@@ -75,7 +79,7 @@ public class PlayerDisplayWidget extends PlayerSkinWidget
 		final int x2,
 		final int y2)
 	{
-		context.guiRenderState.submitPicturesInPictureState(new PlayerDisplayGuiElementRenderState(
+		graphics.guiRenderState.addPicturesInPictureState(new PlayerDisplayGuiElementRenderState(
 			models,
 			payload,
 			xRotation,
@@ -86,6 +90,6 @@ public class PlayerDisplayWidget extends PlayerSkinWidget
 			x2,
 			y2,
 			scale,
-			context.scissorStack.peek()));
+			graphics.scissorStack.peek()));
 	}
 }

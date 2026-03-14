@@ -22,7 +22,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.rendering.v1.SpecialGuiElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.PictureInPictureRendererRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.litetex.capes.Capes;
 import net.litetex.capes.config.Config;
@@ -42,7 +42,7 @@ public class FabricCapes implements ClientModInitializer
 	@Override
 	public void onInitializeClient()
 	{
-		SpecialGuiElementRegistry.register(ctx -> new PlayerDisplayGuiElementRenderer(ctx.vertexConsumers()));
+		PictureInPictureRendererRegistry.register(ctx -> new PlayerDisplayGuiElementRenderer(ctx.bufferSource()));
 		
 		final Path configDir = FabricLoader.getInstance().getConfigDir().resolve("cape-provider");
 		final Path configFile = configDir.resolve("config.json");
