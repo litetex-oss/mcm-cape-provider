@@ -195,7 +195,7 @@ Please note that animated textures can be frozen or completely disabled in the s
 Add the following to ``build.gradle``:
 ```groovy
 dependencies {
-    modImplementation 'net.litetex.mcm:cape-provider:<version>'
+    implementation 'net.litetex.mcm:cape-provider:<version>'
     // Further documentation: https://wiki.fabricmc.net/documentation:fabric_loom
 }
 ```

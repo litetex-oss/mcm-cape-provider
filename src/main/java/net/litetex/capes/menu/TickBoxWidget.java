@@ -2,7 +2,7 @@ package net.litetex.capes.menu;
 
 import java.util.function.BiConsumer;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -28,7 +28,11 @@ public class TickBoxWidget extends AbstractWidget
 	}
 	
 	@Override
-	protected void renderWidget(final GuiGraphics context, final int mouseX, final int mouseY, final float delta)
+	protected void extractWidgetRenderState(
+		final GuiGraphicsExtractor graphics,
+		final int mouseX,
+		final int mouseY,
+		final float delta)
 	{
 		final int x = this.getX();
 		final int y = this.getY();
@@ -39,24 +43,24 @@ public class TickBoxWidget extends AbstractWidget
 		
 		if(this.ticked)
 		{
-			context.fill(x + 2, y + 2, xEnd - 2, yEnd - 2, color);
+			graphics.fill(x + 2, y + 2, xEnd - 2, yEnd - 2, color);
 		}
 		
-		this.drawBorder(context, x, y, xEnd, yEnd, color);
+		this.drawBorder(graphics, x, y, xEnd, yEnd, color);
 	}
 	
 	private void drawBorder(
-		final GuiGraphics context,
+		final GuiGraphicsExtractor graphics,
 		final int x1,
 		final int y1,
 		final int x2,
 		final int y2,
 		final int color)
 	{
-		context.fill(x1, y1, x2, y1 + 1, color);
-		context.fill(x1, y2 - 1, x2, y2, color);
-		context.fill(x1, y1, x1 + 1, y2, color);
-		context.fill(x2 - 1, y1, x2, y2, color);
+		graphics.fill(x1, y1, x2, y1 + 1, color);
+		graphics.fill(x1, y2 - 1, x2, y2, color);
+		graphics.fill(x1, y1, x1 + 1, y2, color);
+		graphics.fill(x2 - 1, y1, x2, y2, color);
 	}
 	
 	@Override

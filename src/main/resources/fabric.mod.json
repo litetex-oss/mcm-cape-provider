@@ -34,7 +34,7 @@
   "mixins": [
     "cape-provider.mixins.json"
   ],
-  "accessWidener": "cape-provider.accesswidener",
+  "accessWidener": "cape-provider.classtweaker",
   "requires": {
     "fabric-api": "*"
   },

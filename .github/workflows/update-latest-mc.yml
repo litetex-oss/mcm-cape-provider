@@ -2,7 +2,7 @@ name: Update to latest MC version
 
 on:
   schedule:
-    - cron: '47 1 * * *'
+    - cron: '57 16 * * 1-5'
   workflow_dispatch:
 
 permissions:
