@@ -87,7 +87,7 @@ The overall behavior is similar to how [``modmenu``](https://github.com/Terrafor
 
 ##### Local/Simple (Recommended)
 
-This approach requires no network communication and is the recommended approach.
+This approach requires no network communication and is the recommended way.
 It works by reading metadata and resources from the `cape` directory.
 
 Here is an example:
