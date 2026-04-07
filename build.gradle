@@ -1,5 +1,5 @@
 plugins {
-    id 'net.fabricmc.fabric-loom' version '1.15.5'
+    id 'net.fabricmc.fabric-loom' version '1.16.1'
     id 'maven-publish'
     id 'signing'
     id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
@@ -210,6 +210,7 @@ modrinth {
 }
 
 signing {
+    required { System.getenv("MAVEN_GPG_PRIVATE_KEY") != null }
     def signingKey = System.getenv("MAVEN_GPG_PRIVATE_KEY")
     def signingPassword = System.getenv("MAVEN_GPG_PASSPHRASE")
     useInMemoryPgpKeys(signingKey, signingPassword)
