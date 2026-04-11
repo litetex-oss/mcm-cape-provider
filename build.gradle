@@ -75,14 +75,14 @@ dependencies {
     implementation fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)
 
     compileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
-//    modCompileOnly "maven.modrinth:skinshuffle:${project.skinshuffle_version}"
-//    modCompileOnly "maven.modrinth:minecraftcapes:${project.minecraftcapes_version}"
+    compileOnly "maven.modrinth:skinshuffle:${project.skinshuffle_version}"
+    compileOnly "maven.modrinth:minecraftcapes:${project.minecraftcapes_version}"
 
     // Only needed during development
     localRuntime "com.terraformersmc:modmenu:${project.modmenu_version}"
     localRuntime "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
     localRuntime "net.litetex.mcm:dev-auth-neo:1.1.0"
-//    modLocalRuntime "maven.modrinth:no-chat-reports:Fabric-1.21.11-v2.17.0"
+    localRuntime "maven.modrinth:no-chat-reports:Fabric-26.1-v2.19.0"
 }
 
 processResources {

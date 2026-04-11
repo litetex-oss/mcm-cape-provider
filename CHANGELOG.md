@@ -1,3 +1,6 @@
+# 5.3.1
+* Improve compatibility with other mods
+
 # 5.3.0
 * Reworked configuration UI
   * Combined "Providers" and "Preview" into one UI
