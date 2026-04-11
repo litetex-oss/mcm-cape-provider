@@ -27,7 +27,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.litetex.capes.Capes;
 import net.litetex.capes.config.Config;
 import net.litetex.capes.handler.textures.suppliers.TextureResolvers;
-import net.litetex.capes.menu.preview.render.PlayerDisplayGuiElementRenderer;
+import net.litetex.capes.menu.provider.preview.render.PlayerDisplayGuiElementRenderer;
 
 
 public class FabricCapes implements ClientModInitializer

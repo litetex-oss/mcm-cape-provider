@@ -4,7 +4,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
 import net.litetex.capes.Capes;
-import net.litetex.capes.menu.preview.PreviewMenuScreen;
+import net.litetex.capes.menu.provider.ProviderMenuScreen;
 import net.litetex.capes.util.CorrectHoverParentElement;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.components.SpriteIconButton;
@@ -43,7 +43,7 @@ public abstract class SkinOptionsScreenMixin extends OptionsSubScreen implements
 		// Else it's rendered behind other elements
 		this.btnCapeMenu = this.addRenderableWidget(SpriteIconButton.builder(
 				Component.empty(),
-				ignored -> this.minecraft.setScreen(new PreviewMenuScreen(
+				ignored -> this.minecraft.setScreen(new ProviderMenuScreen(
 					this,
 					this.options)),
 				true)

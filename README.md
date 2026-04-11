@@ -21,7 +21,7 @@ Improved/Reworked version of the ["Capes" mod](https://github.com/CaelTheColher/
 * Written only in Java (no Kotlin needed)
 * Various fixes and improvements
 
-<img align="right" src="https://raw.githubusercontent.com/litetex-oss/mcm-cape-provider/refs/heads/dev/assets/config-preview2.jpg" width=240 />
+<img align="right" src="https://raw.githubusercontent.com/litetex-oss/mcm-cape-provider/refs/heads/dev/assets/config-2.avif" width=360 />
 
 ### Creating a custom cape provider
 
@@ -87,7 +87,7 @@ The overall behavior is similar to how [``modmenu``](https://github.com/Terrafor
 
 ##### Local/Simple (Recommended)
 
-This approach requires no network communication and is the recommended approach.
+This approach requires no network communication and is the recommended way.
 It works by reading metadata and resources from the `cape` directory.
 
 Here is an example:

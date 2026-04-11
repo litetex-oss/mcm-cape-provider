@@ -147,22 +147,27 @@ public class PlayerCapeHandlerManager
 		}
 		
 		final PlayerCapeHandler handler = this.getOrCreateProfile(profile);
-		handler.resetCape();
-		
-		final Optional<CapeProvider> optFoundCapeProvider = capeProviders.stream()
-			.filter(cp -> {
-				this.capeProviderRateLimits.waitForRateLimit(cp);
-				return handler.trySetCape(cp);
-			})
-			.findFirst();
-		
-		if(LOG.isDebugEnabled())
+		// Synchronize here to ensure that when the same handler is interacted with multiple times
+		// (e.g. in the preview screen) nothing gets mixed up
+		synchronized(handler)
 		{
-			optFoundCapeProvider.ifPresentOrElse(
-				cp ->
-					LOG.debug("Loaded cape from {} for {}/{}", cp.id(), profile.name(), profile.id()),
-				() -> LOG.debug("Found no cape for {}/{}", profile.name(), profile.id())
-			);
+			handler.resetCape();
+			
+			final Optional<CapeProvider> optFoundCapeProvider = capeProviders.stream()
+				.filter(cp -> {
+					this.capeProviderRateLimits.waitForRateLimit(cp);
+					return handler.trySetCape(cp);
+				})
+				.findFirst();
+			
+			if(LOG.isDebugEnabled())
+			{
+				optFoundCapeProvider.ifPresentOrElse(
+					cp ->
+						LOG.debug("Loaded cape from {} for {}/{}", cp.id(), profile.name(), profile.id()),
+					() -> LOG.debug("Found no cape for {}/{}", profile.name(), profile.id())
+				);
+			}
 		}
 		
 		if(onAfterLoaded != null)

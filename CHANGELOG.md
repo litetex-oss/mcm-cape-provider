@@ -1,3 +1,9 @@
+# 5.3.0
+* Reworked configuration UI
+  * Combined "Providers" and "Preview" into one UI
+  * You can now view Preview the provider by clicking it and get the preview displayed on the left
+  * Renamed "Others" configuration tab to "Advanced"
+
 # 5.2.0
 * Updated to 26.1
 

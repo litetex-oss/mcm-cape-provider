@@ -1,4 +1,4 @@
-package net.litetex.capes.menu;
+package net.litetex.capes.menu.provider;
 
 import java.util.function.BiConsumer;
 

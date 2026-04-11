@@ -1,4 +1,4 @@
-package net.litetex.capes.menu.preview.render;
+package net.litetex.capes.menu.provider.preview.render;
 
 import java.util.function.Supplier;
 

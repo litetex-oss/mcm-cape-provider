@@ -283,12 +283,6 @@ public class Capes
 		return this.allTextureResolvers;
 	}
 	
-	public Optional<CapeProvider> getCapeProviderForSelf()
-	{
-		return Optional.ofNullable(this.config.getCurrentPreviewProviderId())
-			.map(this.allProviders::get);
-	}
-	
 	public List<CapeProvider> activeCapeProviders()
 	{
 		return this.config.getActiveProviderIds().stream()

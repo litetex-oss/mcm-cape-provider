@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -13,7 +14,6 @@ import org.lwjgl.glfw.GLFW;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 
 import net.litetex.capes.Capes;
-import net.litetex.capes.menu.TickBoxWidget;
 import net.litetex.capes.provider.CapeProvider;
 import net.litetex.capes.provider.DefaultMinecraftCapeProvider;
 import net.litetex.capes.provider.antifeature.AntiFeature;
@@ -47,15 +47,18 @@ public class ProviderListWidget extends ObjectSelectionList<ProviderListWidget.P
 	private static final int ITEM_HEIGHT = 21;
 	
 	private final Screen parent;
+	private final Consumer<CapeProvider> onCapeProviderSelectionChanged;
 	
 	public ProviderListWidget(
 		final Minecraft client,
 		final int width,
 		final int height,
-		final Screen parent)
+		final Screen parent,
+		final Consumer<CapeProvider> onCapeProviderSelectionChanged)
 	{
 		super(client, width, height, 0, ITEM_HEIGHT);
 		this.parent = parent;
+		this.onCapeProviderSelectionChanged = onCapeProviderSelectionChanged;
 		
 		this.load();
 	}
@@ -93,6 +96,13 @@ public class ProviderListWidget extends ObjectSelectionList<ProviderListWidget.P
 		final ProviderListEntry last = children.getLast();
 		last.upVisible(false);
 		last.downVisible(false);
+	}
+	
+	@Override
+	public void setSelected(final ProviderListWidget.ProviderListEntry selected)
+	{
+		super.setSelected(selected);
+		this.onCapeProviderSelectionChanged.accept(selected != null ? selected.capeProvider() : null);
 	}
 	
 	@Override
