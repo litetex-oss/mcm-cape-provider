@@ -67,7 +67,7 @@ public class AdvancedMenuScreen extends OptionsSubScreen
 						+ "activated/enabled when initially loaded?\n"))
 					.append(this.requiresRestartComponent())))
 				.create(
-					Component.literal("Activate external providers"),
+					Component.literal("Activate ext. providers"),
 					(_, enabled) -> {
 						config.setActivateExternalProvidersOnInitialLoad(enabled);
 						capes.saveConfig();
@@ -78,7 +78,7 @@ public class AdvancedMenuScreen extends OptionsSubScreen
 					.append(this.requiresRestartComponent())))
 				.create(
 					Component.literal("Load Mod providers"),
-					(btn, enabled) -> {
+					(_, enabled) -> {
 						config.setLoadProvidersFromMods(enabled);
 						capes.saveConfig();
 					}),
