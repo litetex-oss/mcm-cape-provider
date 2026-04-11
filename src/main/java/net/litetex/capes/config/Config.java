@@ -14,7 +14,6 @@ import net.litetex.capes.provider.custom.remote.RemoteCustomProviderConfig;
 
 public class Config
 {
-	private String currentPreviewProviderId;
 	// NOTE: Default/Minecraft is always active
 	private Set<String> activeProviderIds;
 	private boolean useDefaultProvider = true;
@@ -42,7 +41,6 @@ public class Config
 	
 	public void reset()
 	{
-		this.setCurrentPreviewProviderId(null);
 		this.setActiveProviderIds(List.of(MinecraftCapesCapeProvider.ID));
 		this.setUseDefaultProvider(true);
 		this.setOnlyLoadForSelf(false);
@@ -74,16 +72,6 @@ public class Config
 	}
 	
 	// region Get/Set
-	
-	public String getCurrentPreviewProviderId()
-	{
-		return this.currentPreviewProviderId;
-	}
-	
-	public void setCurrentPreviewProviderId(final String currentPreviewProviderId)
-	{
-		this.currentPreviewProviderId = currentPreviewProviderId;
-	}
 	
 	public Set<String> getActiveProviderIds()
 	{
