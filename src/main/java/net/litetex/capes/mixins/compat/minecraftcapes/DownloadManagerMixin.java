@@ -1,7 +1,5 @@
 package net.litetex.capes.mixins.compat.minecraftcapes;
 
-import java.util.UUID;
-
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
@@ -14,11 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class DownloadManagerMixin
 {
 	@Inject(method = "prepareDownload*", at = @At("HEAD"), cancellable = true, remap = false, require = 0)
-	private static void prepareDownload(
-		final UUID playerUUID,
-		final String playerName,
-		final boolean doRefresh,
-		final CallbackInfo ci)
+	private static void prepareDownload(final CallbackInfo ci)
 	{
 		ci.cancel();
 	}
