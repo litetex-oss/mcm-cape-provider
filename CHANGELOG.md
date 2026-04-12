@@ -4,7 +4,7 @@
 # 5.3.0
 * Reworked configuration UI
   * Combined "Providers" and "Preview" into one UI
-  * You can now view Preview the provider by clicking it and get the preview displayed on the left
+  * You can now preview the provider by clicking it and get the preview displayed on the left
   * Renamed "Others" configuration tab to "Advanced"
 
 # 5.2.0
@@ -117,10 +117,10 @@
 * Improved load balancing with cape providers
   * Providers are now rate limited
     * the default is 20 req/s
-    * can be overwriten per provider using ``rateLimitedReqPerSec``
+    * can be overwritten per provider using ``rateLimitedReqPerSec``
   * If there are too many pending cape load tasks the oldest ones will now be automatically discarded
 * Limited amount of tracked players to prevent running out of memory
-* Now compatibile with ``SkinShuffle``
+* Now compatible with ``SkinShuffle``
 * Now targeting 1.21.8
 
 # 2.1.0

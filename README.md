@@ -35,7 +35,7 @@ The following possibilities are sorted by simplicity:
 > * Users that just want a customizable cape 
 > * Modpacks (using `config/cape-provider/simple-custom`)
 
-The simples way to display a cape is by going into the `config/cape-provider` directory and creating a cape texture file named `cape.png`.
+The simplest way to display a cape is by going into the `config/cape-provider` directory and creating a cape texture file named `cape.png`.
 
 Additionally there are the following optional files:
 * `owners.txt` - Determines which player names or UUIDs will get the cape displayed. If this file is not present then all players will display with the cape.
