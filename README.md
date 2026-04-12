@@ -21,9 +21,9 @@ Improved/Reworked version of the ["Capes" mod](https://github.com/CaelTheColher/
 * Written only in Java (no Kotlin needed)
 * Various fixes and improvements
 
-<img align="right" src="https://raw.githubusercontent.com/litetex-oss/mcm-cape-provider/refs/heads/dev/assets/config-2.avif" width=360 />
-
 ### Creating a custom cape provider
+
+<img align="right" src="https://raw.githubusercontent.com/litetex-oss/mcm-cape-provider/refs/heads/dev/assets/config-2.avif" width=360 />
 
 The mod provides many different ways how a provider can be added.
 
