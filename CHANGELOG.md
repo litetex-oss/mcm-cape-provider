@@ -1,3 +1,6 @@
+# 5.3.2
+* Animated capes from "minecraftcapes" are now displayed correctly
+
 # 5.3.1
 * Improve compatibility with other mods
 
