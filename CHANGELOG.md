@@ -1,3 +1,6 @@
+# 5.4.0
+* Cape Providers supplied by mods now display a link to the mods website
+
 # 5.3.2
 * Animated capes from "minecraftcapes" are now displayed correctly
 

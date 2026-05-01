@@ -1,7 +1,7 @@
 package net.litetex.capes.provider;
 
 import org.apache.commons.codec.binary.Base64;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 
 public interface ResolvedTextureInfo

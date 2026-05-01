@@ -1,6 +1,6 @@
 package net.litetex.capes.provider.custom;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 
 public interface BaseCustomProviderConfig
