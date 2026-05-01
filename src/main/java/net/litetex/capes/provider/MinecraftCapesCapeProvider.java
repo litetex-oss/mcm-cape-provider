@@ -47,8 +47,6 @@ public class MinecraftCapesCapeProvider extends CacheableCapeProvider
 		
 		record ResponseData(
 			Boolean animatedCape,
-			@SerializedName("animated_cape_url")
-			String animatedCapeUrl,
 			@SerializedName("cape_url")
 			String capeUrl
 		)
@@ -78,16 +76,13 @@ public class MinecraftCapesCapeProvider extends CacheableCapeProvider
 			return null;
 		}
 		
-		final String textureUrl = Boolean.TRUE.equals(responseData.animatedCape())
-			? responseData.animatedCapeUrl()
-			: responseData.capeUrl();
-		if(textureUrl == null)
+		if(responseData.capeUrl() == null)
 		{
 			return null;
 		}
 		
 		return this.resolveCacheableTexture(
-			textureUrl,
+			responseData.capeUrl(),
 			clientBuilder,
 			requestBuilder,
 			responseData.animatedCape() ? AnimatedSpriteTextureResolver.ID : null);
