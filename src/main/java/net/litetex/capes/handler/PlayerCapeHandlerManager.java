@@ -13,7 +13,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +69,7 @@ public class PlayerCapeHandlerManager
 					private static final AtomicInteger COUNTER = new AtomicInteger(0);
 					
 					@Override
-					public Thread newThread(@NotNull final Runnable r)
+					public Thread newThread(@NonNull final Runnable r)
 					{
 						final Thread thread = new Thread(r);
 						thread.setName("Cape-" + COUNTER.getAndIncrement());

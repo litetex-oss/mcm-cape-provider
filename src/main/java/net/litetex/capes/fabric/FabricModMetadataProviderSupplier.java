@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,7 +74,12 @@ public class FabricModMetadataProviderSupplier implements ModMetadataProviderSup
 		if(cape.getType() == CustomValue.CvType.BOOLEAN
 			|| capeIsString && !cape.getAsString().startsWith("http"))
 		{
-			return this.createLocal(id, name + NameExtraFormatter.format(cape.getAsString()), null, mc);
+			return this.createLocal(
+				id,
+				name + NameExtraFormatter.format(cape.getAsString()),
+				this.resolveHomepageFromModMetadata(metadata),
+				null,
+				mc);
 		}
 		else if(capeIsString)
 		{
@@ -108,9 +114,14 @@ public class FabricModMetadataProviderSupplier implements ModMetadataProviderSup
 			.findFirst()
 			.map(CustomValue::getAsString)
 			.orElse(null);
+		
+		final String homepage = Optional.ofNullable(capeObj.get("homepage"))
+			.map(CustomValue::getAsString)
+			.orElseGet(() -> this.resolveHomepageFromModMetadata(metadata));
+		
 		if(url == null)
 		{
-			return this.createLocal(id, name, owners, mc);
+			return this.createLocal(id, name, homepage, owners, mc);
 		}
 		
 		return new RemoteCustomProviderConfig(
@@ -122,15 +133,7 @@ public class FabricModMetadataProviderSupplier implements ModMetadataProviderSup
 			Optional.ofNullable(capeObj.get("changeCapeUrl"))
 				.map(CustomValue::getAsString)
 				.orElse(null),
-			Optional.ofNullable(capeObj.get("homepage"))
-				.map(CustomValue::getAsString)
-				.orElseGet(() -> {
-					final ContactInformation contact = metadata.getContact();
-					return contact.get("homepage")
-						.or(() -> contact.get("sources"))
-						.or(() -> contact.get("issues"))
-						.orElse(null);
-				}),
+			homepage,
 			null,
 			Optional.ofNullable(capeObj.get("rateLimitedReqPerSec"))
 				.map(CustomValue::getAsNumber)
@@ -142,6 +145,7 @@ public class FabricModMetadataProviderSupplier implements ModMetadataProviderSup
 	private LocalCustomProviderConfig createLocal(
 		final String id,
 		final String name,
+		@Nullable final String homepage,
 		final Owners owners,
 		final ModContainer mc)
 	{
@@ -164,8 +168,18 @@ public class FabricModMetadataProviderSupplier implements ModMetadataProviderSup
 			.map(capeTexture -> new LocalCustomProviderConfig(
 				id,
 				name,
+				homepage,
 				this.resolveLocalOwners(owners, mc),
 				capeTexture))
+			.orElse(null);
+	}
+	
+	private String resolveHomepageFromModMetadata(final ModMetadata metadata)
+	{
+		final ContactInformation contact = metadata.getContact();
+		return contact.get("homepage")
+			.or(() -> contact.get("sources"))
+			.or(() -> contact.get("issues"))
 			.orElse(null);
 	}
 	

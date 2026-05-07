@@ -3,7 +3,7 @@ package net.litetex.capes.provider.custom.remote;
 import java.util.List;
 import java.util.Objects;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.litetex.capes.provider.custom.BaseCustomProviderConfig;
 import net.litetex.capes.provider.custom.Owners;
@@ -12,6 +12,7 @@ import net.litetex.capes.provider.custom.Owners;
 public record RemoteCustomProviderConfig(
 	String id,
 	String name,
+	@Nullable
 	Owners owners,
 	String uriTemplate,
 	@Nullable

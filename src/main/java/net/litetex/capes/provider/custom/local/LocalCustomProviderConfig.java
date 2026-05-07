@@ -2,6 +2,8 @@ package net.litetex.capes.provider.custom.local;
 
 import java.util.Objects;
 
+import org.jspecify.annotations.Nullable;
+
 import net.litetex.capes.provider.custom.BaseCustomProviderConfig;
 import net.litetex.capes.provider.custom.Owners;
 
@@ -9,6 +11,9 @@ import net.litetex.capes.provider.custom.Owners;
 public record LocalCustomProviderConfig(
 	String id,
 	String name,
+	@Nullable
+	String homepage,
+	@Nullable
 	Owners owners,
 	byte[] capeTexture
 ) implements BaseCustomProviderConfig

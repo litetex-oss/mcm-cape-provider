@@ -23,6 +23,12 @@ public class LocalCustomProvider extends BaseCustomProvider<LocalCustomProviderC
 	}
 	
 	@Override
+	public String homepageUrl()
+	{
+		return this.config.homepage();
+	}
+	
+	@Override
 	public ResolvedTextureInfo resolveTexture(
 		final HttpClient.Builder clientBuilder,
 		final HttpRequest.Builder requestBuilder,

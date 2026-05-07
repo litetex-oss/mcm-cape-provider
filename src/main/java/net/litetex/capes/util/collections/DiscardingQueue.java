@@ -3,7 +3,7 @@ package net.litetex.capes.util.collections;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Consumer;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 
 public class DiscardingQueue<E> extends LinkedBlockingQueue<E>
@@ -17,7 +17,7 @@ public class DiscardingQueue<E> extends LinkedBlockingQueue<E>
 	}
 	
 	@Override
-	public boolean offer(@NotNull final E e)
+	public boolean offer(@NonNull final E e)
 	{
 		if (this.remainingCapacity() == 0)
 		{

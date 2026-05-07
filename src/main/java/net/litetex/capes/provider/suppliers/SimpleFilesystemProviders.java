@@ -94,6 +94,7 @@ public final class SimpleFilesystemProviders
 		return new LocalCustomProviderConfig(
 			id,
 			getNameOverride(path).orElse(name) + " (Local)",
+			null,
 			getOwners(path),
 			capeTexture
 		);

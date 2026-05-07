@@ -16,7 +16,7 @@
     }
   ],
   "contact": {
-    "homepage": "https://github.com/litetex-oss/mcm-${id}",
+    "homepage": "https://modrinth.com/mod/${id}",
     "sources": "https://github.com/litetex-oss/mcm-${id}",
     "issues": "https://github.com/litetex-oss/mcm-${id}/issues"
   },
