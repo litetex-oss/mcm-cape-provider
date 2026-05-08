@@ -22,7 +22,7 @@ base {
 }
 
 loom {
-    accessWidenerPath = file("src/main/resources/template-placeholder.classtweaker")
+    accessWidenerPath = file("src/main/resources/cape-provider.classtweaker")
     log4jConfigs.from(file("src/dev/log4j2.xml"))
 }
 
@@ -33,6 +33,34 @@ configurations.checkstyle {
     }
 }
 
+repositories {
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Terraformers"
+                url = "https://maven.terraformersmc.com/"
+            }
+        }
+        filter {
+            includeGroup 'com.terraformersmc'
+        }
+    }
+    // https://support.modrinth.com/en/articles/8801191-modrinth-maven
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup 'maven.modrinth'
+        }
+    }
+    // Fallback (fixes Renovate)
+    mavenCentral()
+}
+
 dependencies {
     checkstyle "com.puppycrawl.tools:checkstyle:${checkstyleVersion}"
 
@@ -41,6 +69,20 @@ dependencies {
 
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    // Required for rendering the preview
+    implementation fabricApi.module("fabric-rendering-v1", project.fabric_api_version)
+    // Required for loading resources like translations or icons
+    implementation fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)
+
+    compileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
+    compileOnly "maven.modrinth:skinshuffle:${project.skinshuffle_version}"
+    compileOnly "maven.modrinth:minecraftcapes:${project.minecraftcapes_version}"
+
+    // Only needed during development
+    localRuntime "com.terraformersmc:modmenu:${project.modmenu_version}"
+    localRuntime "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+    localRuntime "net.litetex.mcm:dev-auth-neo:1.1.0"
+    localRuntime "maven.modrinth:no-chat-reports:Fabric-26.1-v2.19.0"
 }
 
 processResources {
@@ -51,7 +93,9 @@ processResources {
                 "desc": project.mod_desc,
                 "license_spdx_id": project.mod_license_spdx_id,
                 "minecraft_version": project.minecraft_version,
-                "loader_version": project.loader_version
+                "loader_version": project.loader_version,
+                "fabric_api_version": project.fabric_api_version,
+                "modmenu_version": project.modmenu_version
     }
 }
 
@@ -158,6 +202,11 @@ modrinth {
     additionalFiles = [sourcesJar]
     syncBodyFrom = rootProject.file("README.md").text
     changelog = System.getenv("MODRINTH_CHANGELOG_TEXT")
+    dependencies {
+        required.project 'fabric-api'
+        optional.project 'modmenu'
+        incompatible.project 'capes'
+    }
 }
 
 signing {
