@@ -14,7 +14,7 @@ import net.minecraft.util.Mth;
 
 // See PlayerSkinWidget
 @SuppressWarnings({"checkstyle:VisibilityModifier", "checkstyle:MagicNumber"})
-abstract class SimplifiedPlayerSkinWidget extends AbstractWidget
+public abstract class SimplifiedPlayerSkinWidget extends AbstractWidget
 {
 	public float rotationX = -5.0F;
 	public float rotationY = 30.0F;
