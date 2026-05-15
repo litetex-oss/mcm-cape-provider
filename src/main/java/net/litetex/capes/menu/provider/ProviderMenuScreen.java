@@ -25,6 +25,7 @@ import net.minecraft.network.chat.Component;
 public class ProviderMenuScreen extends OptionsSubScreen
 {
 	private static final int DEFAULT_SPACING = 4;
+	public static final String CAPE_OPTIONS = "Cape Options";
 	
 	// NOTE: This screen uses "self-manged" drawable children
 	// aka widgets that are not directly attached to a layout and therefore "free floating" inside the screen
@@ -43,7 +44,7 @@ public class ProviderMenuScreen extends OptionsSubScreen
 		final Screen parent,
 		final Options gameOptions)
 	{
-		super(parent, gameOptions, Component.literal("Cape Options"));
+		super(parent, gameOptions, Component.literal(CAPE_OPTIONS));
 		
 		final PlayerLimbAnimator playerLimbAnimator = new PlayerLimbAnimator(60);
 		this.playerWidget = new PlayerDisplayWidget(
