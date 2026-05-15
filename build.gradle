@@ -79,10 +79,10 @@ dependencies {
     compileOnly "maven.modrinth:minecraftcapes:${project.minecraftcapes_version}"
 
     // Only needed during development
-    localRuntime "com.terraformersmc:modmenu:${project.modmenu_version}"
+//    localRuntime "com.terraformersmc:modmenu:${project.modmenu_version}"
     localRuntime "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
     localRuntime "net.litetex.mcm:dev-auth-neo:1.1.1"
-    localRuntime "maven.modrinth:no-chat-reports:Fabric-26.1-v2.19.0"
+//    localRuntime "maven.modrinth:no-chat-reports:Fabric-26.1-v2.19.0"
 }
 
 processResources {
