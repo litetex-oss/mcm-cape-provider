@@ -113,7 +113,7 @@ public class ProviderMenuScreen extends OptionsSubScreen
 		
 		footerLayout.addChild(Button.builder(
 				Component.literal("Advanced"),
-				_ -> this.minecraft.setScreen(new AdvancedMenuScreen(this, this.options)))
+				_ -> this.minecraft.setScreenAndShow(new AdvancedMenuScreen(this, this.options)))
 			.build());
 		footerLayout.addChild(Button.builder(
 				CommonComponents.GUI_DONE,
