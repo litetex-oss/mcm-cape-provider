@@ -1,3 +1,6 @@
+# 5.5.0
+* Updated to 26.2
+
 # 5.4.0
 * Cape Providers supplied by mods now display a link to the mods website
 

@@ -5,7 +5,7 @@ import java.util.List;
 
 import net.litetex.capes.Capes;
 import net.litetex.capes.menu.advanced.AdvancedMenuScreen;
-import net.litetex.capes.menu.provider.preview.PlayerLimbAnimator;
+import net.litetex.capes.menu.provider.preview.PlayerAnimator;
 import net.litetex.capes.menu.provider.preview.ViewModel;
 import net.litetex.capes.menu.provider.preview.render.PlayerDisplayWidget;
 import net.minecraft.client.Minecraft;
@@ -46,13 +46,13 @@ public class ProviderMenuScreen extends OptionsSubScreen
 	{
 		super(parent, gameOptions, Component.literal(CAPE_OPTIONS));
 		
-		final PlayerLimbAnimator playerLimbAnimator = new PlayerLimbAnimator(60);
+		final PlayerAnimator playerAnimator = new PlayerAnimator(60);
 		this.playerWidget = new PlayerDisplayWidget(
 			120,
 			120,
 			Minecraft.getInstance().getEntityModels(),
 			this.viewModel::getPayload,
-			models -> playerLimbAnimator.animate(models.player(), 1));
+			playerAnimator::animate);
 		this.playerWidget.rotationY = 185; // Default view = from behind, facing the cape/elytra
 	}
 	
