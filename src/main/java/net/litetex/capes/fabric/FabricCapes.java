@@ -42,7 +42,7 @@ public class FabricCapes implements ClientModInitializer
 	@Override
 	public void onInitializeClient()
 	{
-		PictureInPictureRendererRegistry.register(ctx -> new PlayerDisplayGuiElementRenderer(ctx.bufferSource()));
+		PictureInPictureRendererRegistry.register(_ -> new PlayerDisplayGuiElementRenderer());
 		
 		final Path configDir = FabricLoader.getInstance().getConfigDir().resolve("cape-provider");
 		final Path configFile = configDir.resolve("config.json");

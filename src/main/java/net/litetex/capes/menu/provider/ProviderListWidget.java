@@ -243,14 +243,7 @@ public class ProviderListWidget extends ObjectSelectionList<ProviderListWidget.P
 			
 			this.txtName.active = hasHomePageUrl;
 			this.onTxtClick = hasHomePageUrl
-				? () -> client.setScreen(new ConfirmLinkScreen(
-				open -> {
-					if(open)
-					{
-						Util.getPlatform().openUri(homepageUrl);
-					}
-					client.setScreen(parentScreen);
-				}, homepageUrl, true))
+				? () -> openUrl(client, parentScreen, homepageUrl)
 				: null;
 			
 			final List<AntiFeature> antiFeatures = capeProvider.antiFeatures();
@@ -259,7 +252,7 @@ public class ProviderListWidget extends ObjectSelectionList<ProviderListWidget.P
 				ITEM_HEIGHT - 4,
 				ITEM_HEIGHT - 4,
 				WARNING_BUTTON_TEXTURES,
-				btn -> {
+				_ -> {
 				},
 				CommonComponents.EMPTY)
 				: null;
@@ -275,18 +268,8 @@ public class ProviderListWidget extends ObjectSelectionList<ProviderListWidget.P
 			this.btnEditCape = capeProvider.hasChangeCapeUrl()
 				? Button
 				.builder(
-					Component.literal("Edit cape"), btn ->
-					{
-						final String link = capeProvider.changeCapeUrl(client);
-						client.setScreen(new ConfirmLinkScreen(
-							open -> {
-								if(open)
-								{
-									Util.getPlatform().openUri(link);
-								}
-								client.setScreen(parentScreen);
-							}, link, true));
-					})
+					Component.literal("Edit cape"),
+					_ -> openUrl(client, parentScreen, capeProvider.changeCapeUrl(client)))
 				.size(BTN_EDIT_CAPE_WIDTH, ITEM_HEIGHT - 4)
 				.build()
 				: null;
@@ -317,6 +300,21 @@ public class ProviderListWidget extends ObjectSelectionList<ProviderListWidget.P
 				14,
 				20,
 				() -> onPositionChange.accept(this, false));
+		}
+		
+		static void openUrl(
+			final Minecraft client,
+			final Screen screenAfterAction,
+			final String url)
+		{
+			client.setScreenAndShow(new ConfirmLinkScreen(
+				open -> {
+					if(open)
+					{
+						Util.getPlatform().openUri(url);
+					}
+					client.setScreenAndShow(screenAfterAction);
+				}, url, true));
 		}
 		
 		CapeProvider capeProvider()
