@@ -3,8 +3,6 @@ package net.litetex.capes.menu.provider.preview.render;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import org.joml.Matrix4fStack;
-
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -44,24 +42,19 @@ public class PlayerDisplayGuiElementRenderer extends PictureInPictureRenderer<Pl
 	{
 		Minecraft.getInstance().gameRenderer.lighting().setupFor(Lighting.Entry.PLAYER_SKIN);
 		
-		final int windowScaleFactor = Minecraft.getInstance().getWindow().getGuiScale();
-		
-		final Matrix4fStack viewStack = RenderSystem.getModelViewStack();
-		viewStack.pushMatrix();
-		final float scale = skinState.scale() * windowScaleFactor;
-		// MC-308168 Rotation is not working
-		viewStack.rotateAround(
-			Axis.XP.rotationDegrees(skinState.xRotation()),
+		final int guiScale = Minecraft.getInstance().gameRenderer.gameRenderState().windowRenderState.guiScale;
+		final float scale = skinState.scale() * guiScale;
+		RenderSystem.getModelViewStack().rotateAround(
+			Axis.XP.rotationDegrees(skinState.rotationX()),
 			0.0F,
-			scale * -skinState.yPivot(),
-			0.0F
-		);
-		modelStack.mulPose(Axis.YP.rotationDegrees(-skinState.yRotation()));
+			scale * -skinState.pivotY(),
+			0.0F);
+		
+		modelStack.mulPose(Axis.YP.rotationDegrees(-skinState.rotationY()));
 		modelStack.translate(0.0F, -1.6010001F, 0.0F);
 		
 		this.renderParts(skinState.payload(), skinState.models(), modelStack, submitNodeCollector);
 		
-		viewStack.popMatrix();
 	}
 	
 	protected void renderParts(
