@@ -4,21 +4,25 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.components.PlayerSkinWidget;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.object.equipment.ElytraModel;
+import net.minecraft.client.model.player.PlayerModel;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 
 
 @SuppressWarnings("checkstyle:MagicNumber")
-public class PlayerDisplayWidget extends PlayerSkinWidget
+public class PlayerDisplayWidget extends SimplifiedPlayerSkinWidget
 {
 	private final Supplier<PlayerDisplayGuiPayload> payloadSupplier;
 	private final Consumer<PlayerDisplayGuiModels> preModelRenderAction;
 	
+	private final PlayerModel slimModel;
+	private final PlayerModel wideModel;
 	private final ElytraModel elytraEntityModel;
 	private final ModelPart capeModel;
+	private final AvatarRenderState avatarRenderState;
 	
 	public PlayerDisplayWidget(
 		final int width,
@@ -27,12 +31,20 @@ public class PlayerDisplayWidget extends PlayerSkinWidget
 		final Supplier<PlayerDisplayGuiPayload> payloadSupplier,
 		final Consumer<PlayerDisplayGuiModels> preModelRenderAction)
 	{
-		super(width, height, entityModels, null);
+		super(width, height);
 		this.payloadSupplier = payloadSupplier;
 		this.preModelRenderAction = preModelRenderAction;
 		
+		this.slimModel = new PlayerModel(entityModels.bakeLayer(ModelLayers.PLAYER_SLIM), true);
+		this.wideModel = new PlayerModel(entityModels.bakeLayer(ModelLayers.PLAYER), false);
 		this.elytraEntityModel = new ElytraModel(entityModels.bakeLayer(ModelLayers.ELYTRA));
 		this.capeModel = entityModels.bakeLayer(ModelLayers.PLAYER_CAPE);
+		
+		this.avatarRenderState = new AvatarRenderState();
+		this.avatarRenderState.walkAnimationSpeed = 0.1f;
+		// Based on ElytraAnimationState
+		this.avatarRenderState.elytraRotX = (float)(Math.PI / 12);
+		this.avatarRenderState.elytraRotZ = (float)(-Math.PI / 12);
 	}
 	
 	@Override
@@ -47,7 +59,8 @@ public class PlayerDisplayWidget extends PlayerSkinWidget
 		final PlayerDisplayGuiModels models = new PlayerDisplayGuiModels(
 			payload.slim() ? this.slimModel : this.wideModel,
 			this.elytraEntityModel,
-			this.capeModel
+			this.capeModel,
+			this.avatarRenderState
 		);
 		this.preModelRenderAction.accept(models);
 		
