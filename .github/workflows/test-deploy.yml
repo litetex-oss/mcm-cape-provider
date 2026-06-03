@@ -26,12 +26,25 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-gradle-build-
 
+    - name: Create changelog
+      run: |
+        version=$(grep -Po 'mod_version=\K.*' gradle.properties)
+        version=${version%-SNAPSHOT}
+
+        echo "_Please note that this is a SNAPSHOT which might be unstable_" > current-changelog.txt
+        echo "" >> current-changelog.txt
+        awk -v ver="$version" '/^# / { if (p) { exit }; if ($2 == ver) { p=1; next } } p' CHANGELOG.md >> current-changelog.txt
+        echo "" >> current-changelog.txt
+        echo "[Full changelog](https://github.com/litetex-oss/mcm-cape-provider/blob/dev/CHANGELOG.md)" >> current-changelog.txt
+
+        cat current-changelog.txt
+
     - name: Build and publish
       run: ./gradlew clean build modrinth --info --stacktrace
       env:
         MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
-        MODRINTH_VERSION_TYPE: 'alpha'
-        MODRINTH_CHANGELOG_TEXT: 'Available at https://github.com/litetex-oss/mcm-cape-provider/blob/dev/CHANGELOG.md<br/><i>Please note that this is a SNAPSHOT which might be unstable</i>'
+        MODRINTH_VERSION_TYPE: alpha
+        MODRINTH_CHANGELOG_FILE: current-changelog.txt
 
     - name: Upload mod files
       uses: actions/upload-artifact@v7
@@ -67,8 +80,6 @@ jobs:
       with:
         curseforge-id: 1291862
         curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
-        changelog: |
-          Available at https://github.com/litetex-oss/mcm-cape-provider/blob/dev/CHANGELOG.md
-          Please note that this is a SNAPSHOT which might be unstable
+        changelog-file: current-changelog.txt
         fail-mode: 'warn'
         version-type: 'alpha'
