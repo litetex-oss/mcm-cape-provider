@@ -21,6 +21,8 @@ public final class JSONSerializer
 		.setPrettyPrinting()
 		.create();
 	
+	public static final Gson DEFAULT_GSON = new Gson();
+	
 	private JSONSerializer()
 	{
 	}

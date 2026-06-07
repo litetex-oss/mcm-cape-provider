@@ -4,13 +4,39 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
 import net.litetex.capes.Capes;
 import net.litetex.capes.texturecache.TextureCache;
+import net.litetex.capes.util.json.JSONSerializer;
 
 
 public abstract class CacheableCapeProvider implements CapeProvider
 {
+	protected <T> T downloadJSON(
+		final HttpClient.Builder clientBuilder,
+		final HttpRequest.Builder requestBuilder,
+		final Class<T> clazz) throws IOException, InterruptedException
+	{
+		try(final HttpClient client = clientBuilder.build())
+		{
+			final HttpResponse<String> response =
+				client.send(
+					requestBuilder.copy()
+						.setHeader("Accept", "application/json")
+						.GET()
+						.build(),
+					HttpResponse.BodyHandlers.ofString());
+			
+			if(response.statusCode() / 100 != 2)
+			{
+				return null;
+			}
+			
+			return JSONSerializer.DEFAULT_GSON.fromJson(response.body(), clazz);
+		}
+	}
+	
 	protected ResolvedTextureInfo.ByteArrayTextureInfo resolveCacheableTexture(
 		final String textureUrl,
 		final HttpClient.Builder clientBuilder,
@@ -37,10 +63,13 @@ public abstract class CacheableCapeProvider implements CapeProvider
 		return textureInfo;
 	}
 	
-	protected abstract ResolvedTextureInfo.ByteArrayTextureInfo fetchTexture(
+	protected ResolvedTextureInfo.ByteArrayTextureInfo fetchTexture(
 		final HttpClient.Builder clientBuilder,
 		final HttpRequest.Builder requestBuilder,
-		final String textureResolverId) throws IOException, InterruptedException;
+		final String textureResolverId) throws IOException, InterruptedException
+	{
+		return CapeProvider.resolveTextureDefault(clientBuilder, requestBuilder, textureResolverId);
+	}
 	
 	protected String extractTextureId(final URI textureUri, final String textureUrl)
 	{
