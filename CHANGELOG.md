@@ -1,5 +1,5 @@
 # 5.4.1
-* Updated / Fixed Cosmetica provider #324
+* Fixed / Updated Cosmetica provider to v2 #324
 
 # 5.4.0
 * Cape Providers supplied by mods now display a link to the mods website
