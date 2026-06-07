@@ -3,9 +3,7 @@ package net.litetex.capes.provider;
 import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 
-import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.mojang.authlib.GameProfile;
 
@@ -53,30 +51,8 @@ public class MinecraftCapesCapeProvider extends CacheableCapeProvider
 		{
 		}
 		
-		final ResponseData responseData;
-		try(final HttpClient client = clientBuilder.build())
-		{
-			final HttpResponse<String> response =
-				client.send(
-					requestBuilder.copy()
-						.setHeader("Accept", "application/json")
-						.GET()
-						.build(),
-					HttpResponse.BodyHandlers.ofString());
-			
-			if(response.statusCode() / 100 != 2)
-			{
-				return null;
-			}
-			
-			responseData = new Gson().fromJson(response.body(), ResponseData.class);
-		}
-		if(responseData == null)
-		{
-			return null;
-		}
-		
-		if(responseData.capeUrl() == null)
+		final ResponseData responseData = this.downloadJSON(clientBuilder, requestBuilder, ResponseData.class);
+		if(responseData == null || responseData.capeUrl() == null)
 		{
 			return null;
 		}
@@ -86,15 +62,6 @@ public class MinecraftCapesCapeProvider extends CacheableCapeProvider
 			clientBuilder,
 			requestBuilder,
 			responseData.animatedCape() ? AnimatedSpriteTextureResolver.ID : null);
-	}
-	
-	@Override
-	protected ResolvedTextureInfo.ByteArrayTextureInfo fetchTexture(
-		final HttpClient.Builder clientBuilder,
-		final HttpRequest.Builder requestBuilder,
-		final String textureResolverId) throws IOException, InterruptedException
-	{
-		return CapeProvider.resolveTextureDefault(clientBuilder, requestBuilder, textureResolverId);
 	}
 	
 	@Override

@@ -148,11 +148,21 @@ jobs:
         git config --global user.name "GitHub Actions"
         git pull
 
+    - name: Create changelog
+      run: |
+        version=$(grep -Po 'mod_version=\K.*' gradle.properties)
+
+        awk -v ver="$version" '/^# / { if (p) { exit }; if ($2 == ver) { p=1; next } } p' CHANGELOG.md > current-changelog.txt
+        echo "" >> current-changelog.txt
+        echo "[Full changelog](https://github.com/litetex-oss/mcm-cape-provider/blob/dev/CHANGELOG.md)" >> current-changelog.txt
+
+        cat current-changelog.txt
+
     - name: Build and publish
       run: ./gradlew clean build modrinth --info --stacktrace
       env:
         MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
-        MODRINTH_CHANGELOG_TEXT: 'Available at https://github.com/litetex-oss/mcm-cape-provider/blob/dev/CHANGELOG.md'
+        MODRINTH_CHANGELOG_FILE: current-changelog.txt
 
     - name: Upload release assets
       uses: shogo82148/actions-upload-release-asset@v1
@@ -188,8 +198,7 @@ jobs:
       with:
         curseforge-id: 1291862
         curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
-        changelog: |
-          Available at https://github.com/litetex-oss/mcm-cape-provider/blob/dev/CHANGELOG.md
+        changelog-file: current-changelog.txt
         fail-mode: 'warn'
 
   after_release:

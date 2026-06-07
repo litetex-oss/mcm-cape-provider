@@ -42,11 +42,12 @@ public abstract class SkinOptionsScreenMixin extends OptionsSubScreen implements
 		// It's important that this is added after all other elements have been added
 		// Else it's rendered behind other elements
 		this.btnCapeMenu = this.addRenderableWidget(SpriteIconButton.builder(
-				Component.empty(),
+				Component.literal(ProviderMenuScreen.CAPE_OPTIONS),
 				ignored -> this.minecraft.setScreen(new ProviderMenuScreen(
 					this,
 					this.options)),
 				true)
+			.withTootip()
 			.size(20, 20)
 			.sprite(CAPE_OPTIONS_ICON_TEXTURE, 16, 16)
 			.build());

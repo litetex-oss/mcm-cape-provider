@@ -13,6 +13,7 @@
 	<!-- About: Formatting -->
 	<!-- Some lines (e.g. description, examples and CDATA) have to start without any indents or this will result in incorrect formatting -->
 
+	<rule ref="category/java/bestpractices.xml/AssertStatementInTest"/>
 	<rule ref="category/java/bestpractices.xml/AvoidPrintStackTrace"/>
 	<rule ref="category/java/bestpractices.xml/AvoidUsingHardCodedIP"/>
 	<rule ref="category/java/bestpractices.xml/ConstantsInInterface"/>
@@ -43,8 +44,10 @@
 	<rule ref="category/java/codestyle.xml/LambdaCanBeMethodReference"/>
 	<rule ref="category/java/codestyle.xml/NoPackage"/>
 	<rule ref="category/java/codestyle.xml/PrematureDeclaration"/>
+	<rule ref="category/java/codestyle.xml/UnnecessaryBlock"/>
 	<rule ref="category/java/codestyle.xml/UnnecessarySemicolon"/>
 	<rule ref="category/java/codestyle.xml/VariableCanBeInlined"/>
+	<rule ref="category/java/codestyle.xml/VariableDeclarationUsageDistance"/>
 
 	<rule ref="category/java/design.xml">
 		<!-- Sometimes abstract classes have just fields -->
@@ -152,6 +155,7 @@
 	<rule ref="category/java/errorprone.xml/InstantiationToGetClass"/>
 	<rule ref="category/java/errorprone.xml/InvalidLogMessageFormat"/>
 	<rule ref="category/java/errorprone.xml/JumbledIncrementer"/>
+	<rule ref="category/java/errorprone.xml/JUnitJupiterTestNoPrivateModifier"/>
 	<rule ref="category/java/errorprone.xml/MisplacedNullCheck"/>
 	<rule ref="category/java/errorprone.xml/MoreThanOneLogger"/>
 	<rule ref="category/java/errorprone.xml/NonStaticInitializer"/>
