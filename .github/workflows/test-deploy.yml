@@ -35,7 +35,7 @@ jobs:
         echo "" >> current-changelog.txt
         awk -v ver="$version" '/^# / { if (p) { exit }; if ($2 == ver) { p=1; next } } p' CHANGELOG.md >> current-changelog.txt
         echo "" >> current-changelog.txt
-        echo "[Full changelog](https://github.com/litetex-oss/mcm-cape-provider/blob/dev/CHANGELOG.md)" >> current-changelog.txt
+        echo "[Full changelog](https://github.com/litetex-oss/${{ github.event.repository.name }}/blob/dev/CHANGELOG.md)" >> current-changelog.txt
 
         cat current-changelog.txt
 
