@@ -146,6 +146,8 @@ public class PlayerCapeHandlerManager
 			return;
 		}
 		
+		final long startMs = this.debugEnabled ? System.currentTimeMillis() : 0;
+		
 		final PlayerCapeHandler handler = this.getOrCreateProfile(profile);
 		// Synchronize here to ensure that when the same handler is interacted with multiple times
 		// (e.g. in the preview screen) nothing gets mixed up
@@ -160,12 +162,22 @@ public class PlayerCapeHandlerManager
 				})
 				.findFirst();
 			
-			if(LOG.isDebugEnabled())
+			if(this.debugEnabled)
 			{
+				final long tookMs = System.currentTimeMillis() - startMs;
 				optFoundCapeProvider.ifPresentOrElse(
 					cp ->
-						LOG.debug("Loaded cape from {} for {}/{}", cp.id(), profile.name(), profile.id()),
-					() -> LOG.debug("Found no cape for {}/{}", profile.name(), profile.id())
+						LOG.debug(
+							"Loaded cape from {} for {}/{}, took {}ms",
+							cp.id(),
+							profile.name(),
+							profile.id(),
+							tookMs),
+					() -> LOG.debug(
+						"Found no cape for {}/{}, took {}ms",
+						profile.name(),
+						profile.id(),
+						tookMs)
 				);
 			}
 		}
