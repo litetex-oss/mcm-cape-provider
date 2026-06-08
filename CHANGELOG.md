@@ -1,3 +1,9 @@
+# 5.4.2
+* Cosmetica
+  * Use optimized cape endpoint
+  * Correct "Edit Cape" link
+* Minor optimizations
+
 # 5.4.1
 * Fixed / Updated Cosmetica provider to v2 #324
 

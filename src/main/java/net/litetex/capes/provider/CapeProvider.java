@@ -19,6 +19,7 @@ import net.minecraft.client.Minecraft;
 public interface CapeProvider
 {
 	double DEFAULT_RATE_LIMIT_REQ_PER_SEC = 20;
+	double NO_RATE_LIMIT_REQ_PER_SEC = -1;
 	
 	int DEFAULT_MAX_DOWNLOAD_BYTES = 10_000_000; // 10 MB
 	

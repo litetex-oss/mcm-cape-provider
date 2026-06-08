@@ -164,7 +164,7 @@ public class SneakyCapesCapeProvider implements CapeProvider
 	@Override
 	public double rateLimitedReqPerSec()
 	{
-		return -1;
+		return NO_RATE_LIMIT_REQ_PER_SEC;
 	}
 	
 	@Override

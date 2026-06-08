@@ -2,10 +2,7 @@
 <Configuration status="WARN">
 	<Loggers>
 		<Logger level="${sys:net.litetex.log.level:-debug}" name="net.litetex" additivity="false">
-			<AppenderRef ref="DebugFile"/>
 			<AppenderRef ref="SysOut"/>
-			<AppenderRef ref="LatestFile"/>
-			<AppenderRef ref="ServerGuiConsole"/>
 		</Logger>
 	</Loggers>
 </Configuration>
