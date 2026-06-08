@@ -1,10 +1,9 @@
 package net.litetex.capes.provider.ratelimit;
 
 import java.time.Duration;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +17,7 @@ public class CapeProviderRateLimits
 {
 	private static final Logger LOG = LoggerFactory.getLogger(CapeProviderRateLimits.class);
 	
-	private final Map<CapeProvider, Optional<RateLimiter>> limiters = Collections.synchronizedMap(new HashMap<>());
+	private final Map<CapeProvider, Optional<RateLimiter>> limiters = new ConcurrentHashMap<>();
 	
 	public void waitForRateLimit(final CapeProvider capeProvider)
 	{
