@@ -32,7 +32,7 @@ public class CosmeticaProvider extends CacheableCapeProvider
 	@Override
 	public String getBaseUrl(final GameProfile profile)
 	{
-		return "https://api.cloaks.gg/players/" + profile.id().toString();
+		return "https://api.cloaks.gg/users/" + profile.id().toString() + "/cape";
 	}
 	
 	@Override
@@ -49,29 +49,15 @@ public class CosmeticaProvider extends CacheableCapeProvider
 		{
 		}
 		
-		record OutfitResponseData(
-			CloakResponseData cloak
-		)
-		{
-		}
-		
-		record UserResponseData(
-			OutfitResponseData outfit
-		)
-		{
-		}
-		
 		record ResponseData(
-			UserResponseData user
+			CloakResponseData cloak
 		)
 		{
 		}
 		
 		final Optional<CloakResponseData> optCloakResponseData = Optional.ofNullable(
 				this.downloadJSON(clientBuilder, requestBuilder, ResponseData.class))
-			.map(ResponseData::user)
-			.map(UserResponseData::outfit)
-			.map(OutfitResponseData::cloak);
+			.map(ResponseData::cloak);
 		
 		if(optCloakResponseData.isEmpty())
 		{
@@ -100,7 +86,7 @@ public class CosmeticaProvider extends CacheableCapeProvider
 	@Override
 	public String changeCapeUrl(final Minecraft client)
 	{
-		return "https://login.cosmetica.cc";
+		return "https://cosmetica.cc/login";
 	}
 	
 	@Override
