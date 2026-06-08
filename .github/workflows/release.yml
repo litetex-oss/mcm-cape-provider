@@ -154,7 +154,7 @@ jobs:
 
         awk -v ver="$version" '/^# / { if (p) { exit }; if ($2 == ver) { p=1; next } } p' CHANGELOG.md > current-changelog.txt
         echo "" >> current-changelog.txt
-        echo "[Full changelog](https://github.com/litetex-oss/template-placeholder/blob/dev/CHANGELOG.md)" >> current-changelog.txt
+        echo "[Full changelog](https://github.com/litetex-oss/mcm-cape-provider/blob/dev/CHANGELOG.md)" >> current-changelog.txt
 
         cat current-changelog.txt
 
@@ -196,7 +196,7 @@ jobs:
       uses: Kira-NT/mc-publish@995edadc13559a8b28d0b7e6571229f067ec7659 # v3
       if: ${{ steps.check-for-curseforge.outputs.has }}
       with:
-        curseforge-id: null
+        curseforge-id: 1291862
         curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
         changelog-file: current-changelog.txt
         fail-mode: 'warn'
