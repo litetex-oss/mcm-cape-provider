@@ -10,7 +10,10 @@ import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 
 
-@Mixin(CapeLayer.class)
+@Mixin(
+	value = CapeLayer.class,
+	priority = 974 // Prevent priority conflict with other mods
+)
 public abstract class CapeFeatureRendererMixin
 {
 	@Redirect(
@@ -18,7 +21,9 @@ public abstract class CapeFeatureRendererMixin
 		at = @At(
 			value = "INVOKE",
 			target = "Lnet/minecraft/client/renderer/rendertype/RenderTypes;entitySolid("
-				+ "Lnet/minecraft/resources/Identifier;)Lnet/minecraft/client/renderer/rendertype/RenderType;"))
+				+ "Lnet/minecraft/resources/Identifier;)Lnet/minecraft/client/renderer/rendertype/RenderType;"),
+		require = 0 // Might already be set by another mod -> Do not require
+	)
 	private RenderType fixCapeTransparency(final Identifier texture)
 	{
 		return RenderTypes.armorCutoutNoCull(texture);
