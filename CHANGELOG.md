@@ -1,3 +1,6 @@
+# 5.4.3
+* Improved compatibility with other mods #332
+
 # 5.4.2
 * Cosmetica
   * Use optimized cape endpoint

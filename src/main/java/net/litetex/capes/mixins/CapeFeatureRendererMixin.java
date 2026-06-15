@@ -10,7 +10,10 @@ import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 
 
-@Mixin(CapeLayer.class)
+@Mixin(
+	value = CapeLayer.class,
+	priority = 974 // Prevent priority conflict with other mods
+)
 public abstract class CapeFeatureRendererMixin
 {
 	@Redirect(
