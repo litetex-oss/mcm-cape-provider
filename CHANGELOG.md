@@ -1,3 +1,6 @@
+# 5.5.0
+* Updated to 26.2
+
 # 5.4.3
 * Improved compatibility with other mods #332
 

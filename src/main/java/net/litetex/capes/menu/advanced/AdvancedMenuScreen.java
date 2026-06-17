@@ -101,7 +101,7 @@ public class AdvancedMenuScreen extends OptionsSubScreen
 					capes.reset();
 					
 					// Recreate screen
-					this.minecraft.setScreen(new AdvancedMenuScreen(this.lastScreen, this.options));
+					this.minecraft.setScreenAndShow(new AdvancedMenuScreen(this.lastScreen, this.options));
 				}).build(),
 			null);
 	}
