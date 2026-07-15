@@ -76,7 +76,7 @@ jobs:
         CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
 
     - name: Publish to CurseForge
-      uses: Kira-NT/mc-publish@995edadc13559a8b28d0b7e6571229f067ec7659 # v3
+      uses: Kira-NT/mc-publish@52307b03863581dec6b652b83e597aec02ebb075 # v3
       if: ${{ steps.check-for-curseforge.outputs.has }}
       with:
         curseforge-id: 1291862
