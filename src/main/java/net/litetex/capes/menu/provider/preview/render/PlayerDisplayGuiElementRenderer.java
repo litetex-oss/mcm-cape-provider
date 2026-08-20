@@ -72,8 +72,7 @@ public class PlayerDisplayGuiElementRenderer extends PictureInPictureRenderer<Pl
 				payload.bodyTexture().texturePath(),
 				LIGHT,
 				OverlayTexture.NO_OVERLAY,
-				0,
-				null
+				0
 			);
 		}
 		
@@ -91,8 +90,7 @@ public class PlayerDisplayGuiElementRenderer extends PictureInPictureRenderer<Pl
 						RenderTypes.armorCutoutNoCull(id),
 						LIGHT,
 						OverlayTexture.NO_OVERLAY,
-						0,
-						null
+						0
 					);
 				});
 		}
