@@ -9,8 +9,6 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import org.lwjgl.glfw.GLFW;
-
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 
 import net.litetex.capes.Capes;
@@ -435,20 +433,20 @@ public class ProviderListWidget extends ObjectSelectionList<ProviderListWidget.P
 		@Override
 		public boolean keyPressed(final KeyEvent input)
 		{
-			final int keyCode = input.input();
-			if(GLFW.GLFW_KEY_SPACE == keyCode || GLFW.GLFW_KEY_ENTER == keyCode)
+			if(input.isSelection())
 			{
 				this.chbxActive.toggle();
 				return true;
 			}
-			if(GLFW.GLFW_MOD_SHIFT == input.modifiers())
+			
+			if(input.hasShiftDown())
 			{
-				if(GLFW.GLFW_KEY_UP == keyCode && this.icoMoveUp.visible)
+				if(input.isUp() && this.icoMoveUp.visible)
 				{
 					this.icoMoveUp.click();
 					return true;
 				}
-				else if(GLFW.GLFW_KEY_DOWN == keyCode && this.icoMoveDown.visible)
+				else if(input.isDown() && this.icoMoveDown.visible)
 				{
 					this.icoMoveDown.click();
 					return true;
