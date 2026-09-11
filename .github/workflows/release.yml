@@ -196,7 +196,7 @@ jobs:
       uses: Kira-NT/mc-publish@52307b03863581dec6b652b83e597aec02ebb075 # v3
       if: ${{ steps.check-for-curseforge.outputs.has }}
       with:
-        curseforge-id: null
+        curseforge-id: 1291862
         curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
         changelog-file: current-changelog.txt
         fail-mode: 'warn'
