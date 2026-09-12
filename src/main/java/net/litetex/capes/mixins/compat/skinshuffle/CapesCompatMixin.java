@@ -6,6 +6,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.mojang.authlib.GameProfile;
 
 import net.litetex.capes.Capes;
@@ -17,16 +19,17 @@ import net.minecraft.world.entity.player.PlayerSkin;
 @Mixin(targets = "dev/imb11/skinshuffle/compat/CapesCompat", remap = false)
 public abstract class CapesCompatMixin
 {
-	@Inject(method = "loadTextures", at = @At("HEAD"), cancellable = true, remap = false, require = 0)
-	private static void loadTextures(
+	@WrapMethod(
+		method = "loadTextures",
+		order = 942,
+		remap = false,
+		require = 0)
+	private static PlayerSkin loadTextures(
 		final GameProfile profile,
-		final PlayerSkin oldTextures,
-		final CallbackInfoReturnable<PlayerSkin> cir)
+		final PlayerSkin textures,
+		final Operation<PlayerSkin> original)
 	{
-		if(!Capes.instance().overwriteSkinTextures(profile, () -> oldTextures, cir::setReturnValue))
-		{
-			cir.setReturnValue(oldTextures);
-		}
+		return Capes.instance().applySkinTexture(profile, textures);
 	}
 	
 	@Inject(method = "getID", at = @At("HEAD"), cancellable = true, remap = false, require = 0)

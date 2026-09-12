@@ -337,10 +337,9 @@ public class Capes
 		return this.textureCache;
 	}
 	
-	public boolean overwriteSkinTextures(
+	public PlayerSkin applySkinTexture(
 		final GameProfile profile,
-		final Supplier<PlayerSkin> oldTexureSupplier,
-		final Consumer<PlayerSkin> applyOverwrittenTextures)
+		final PlayerSkin originalTexture)
 	{
 		final PlayerCapeHandler handler = this.playerCapeHandlerManager().getProfile(profile);
 		if(handler != null)
@@ -348,32 +347,28 @@ public class Capes
 			final ClientAsset.Texture capeTexture = handler.getCape();
 			if(capeTexture != null)
 			{
-				final PlayerSkin oldTextures = oldTexureSupplier.get();
 				final ClientAsset.Texture elytraTexture = handler.hasElytraTexture()
 					&& this.config().isEnableElytraTexture()
 					? capeTexture
 					: Capes.DEFAULT_ELYTRA_TEXTURE;
-				applyOverwrittenTextures.accept(new PlayerSkin(
-					oldTextures.body(),
+				return new PlayerSkin(
+					originalTexture.body(),
 					capeTexture,
 					elytraTexture,
-					oldTextures.model(),
-					oldTextures.secure()));
-				return true;
+					originalTexture.model(),
+					originalTexture.secure());
 			}
 		}
 		if(!this.isUseDefaultProvider())
 		{
-			final PlayerSkin oldTextures = oldTexureSupplier.get();
-			applyOverwrittenTextures.accept(new PlayerSkin(
-				oldTextures.body(),
+			return new PlayerSkin(
+				originalTexture.body(),
 				null,
 				null,
-				oldTextures.model(),
-				oldTextures.secure()));
-			return true;
+				originalTexture.model(),
+				originalTexture.secure());
 		}
-		return false;
+		return originalTexture;
 	}
 	
 	public void reset()
