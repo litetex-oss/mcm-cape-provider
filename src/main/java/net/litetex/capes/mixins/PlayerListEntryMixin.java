@@ -9,6 +9,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.mojang.authlib.GameProfile;
 
 import net.litetex.capes.Capes;
@@ -31,14 +33,13 @@ public abstract class PlayerListEntryMixin
 		}
 	}
 	
-	@Inject(
+	@WrapMethod(
 		method = "getSkin",
-		at = @At("TAIL"),
-		order = 1001, // Slightly later to suppress actions of other mods if present
-		cancellable = true)
-	private void getCapeTexture(final CallbackInfoReturnable<PlayerSkin> cir)
+		order = 1042 // suppress actions of other mods if present
+	)
+	private PlayerSkin getSkin(final Operation<PlayerSkin> original)
 	{
-		Capes.instance().overwriteSkinTextures(this.profile, cir::getReturnValue, cir::setReturnValue);
+		return Capes.instance().applySkinTexture(this.profile, original.call());
 	}
 	
 	@Shadow

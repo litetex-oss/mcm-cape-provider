@@ -10,7 +10,7 @@
     "CapeFeatureRendererMixin",
     "PlayerListEntryMixin",
     "SkinOptionsScreenMixin",
-    "compat.minecraftcapes.DownloadManagerMixin",
+    "compat.minecraftcapes.MinecraftCapesConfigMixin",
     "compat.skinshuffle.CapesCompatMixin"
   ],
   "injectors": {

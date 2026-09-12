@@ -292,8 +292,8 @@ public class TextureCache
 	{
 		this.cleanUpHashesIfRequired();
 		
-		final LinkedHashMap<String, Instant> saveMap = this.hashLastUsedSC.supplyWithLock(LinkedHashMap::new);
-		Persister.trySave(LOG, this.hashesFile, () -> new PersistedHashes(saveMap));
+		final LinkedHashMap<String, Instant> toSave = this.hashLastUsedSC.supplyWithLock(LinkedHashMap::new);
+		Persister.trySave(LOG, this.hashesFile, () -> new PersistedHashes(toSave));
 	}
 	
 	public Optional<byte[]> loadExistingTexture(final String providerId, final String id)
