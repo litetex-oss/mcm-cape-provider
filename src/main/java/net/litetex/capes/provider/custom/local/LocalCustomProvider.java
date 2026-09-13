@@ -1,5 +1,6 @@
 package net.litetex.capes.provider.custom.local;
 
+import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 
@@ -23,9 +24,9 @@ public class LocalCustomProvider extends BaseCustomProvider<LocalCustomProviderC
 	}
 	
 	@Override
-	public String homepageUrl()
+	public URI homepageUri()
 	{
-		return this.config.homepage();
+		return this.convertToURI(this.config.homepage());
 	}
 	
 	@Override

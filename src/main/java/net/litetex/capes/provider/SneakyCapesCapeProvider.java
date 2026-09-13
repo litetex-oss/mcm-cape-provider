@@ -1,6 +1,7 @@
 package net.litetex.capes.provider;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.util.List;
@@ -174,15 +175,15 @@ public class SneakyCapesCapeProvider implements CapeProvider
 	}
 	
 	@Override
-	public String changeCapeUrl(final Minecraft client)
+	public URI changeCapeUri(final Minecraft client)
 	{
-		return "https://penguinspy.neocities.org/projects/loom/";
+		return URI.create("https://penguinspy.neocities.org/projects/loom/");
 	}
 	
 	@Override
-	public String homepageUrl()
+	public URI homepageUri()
 	{
-		return "https://modrinth.com/mod/sneaky_capes";
+		return URI.create("https://modrinth.com/mod/sneaky_capes");
 	}
 	
 	record MarkerPixelInfo(
