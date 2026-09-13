@@ -50,7 +50,7 @@ public class PlayerDisplayGuiElementRenderer extends PictureInPictureRenderer<Pl
 			scale * -skinState.pivotY(),
 			0.0F);
 		
-		modelStack.mulPose(Axis.YP.rotationDegrees(-skinState.rotationY()));
+		modelStack.rotateDegrees(Axis.XP, -skinState.rotationY());
 		modelStack.translate(0.0F, -1.6010001F, 0.0F);
 		
 		this.renderParts(skinState.payload(), skinState.models(), modelStack, submitNodeCollector);
@@ -99,7 +99,7 @@ public class PlayerDisplayGuiElementRenderer extends PictureInPictureRenderer<Pl
 			this.extractFromSupplierAndRender(
 				payload.capeTextureSupplier(), id ->
 				{
-					modelStack.mulPose(Axis.XP.rotationDegrees(6.0f));
+					modelStack.rotateDegrees(Axis.XP, 6.0f);
 					
 					submitNodeCollector.submitModelPart(
 						models.cape().getChild("body").getChild("cape"),

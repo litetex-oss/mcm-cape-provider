@@ -1,6 +1,7 @@
 package net.litetex.capes.provider;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.util.List;
@@ -84,15 +85,15 @@ public class CosmeticaProvider extends CacheableCapeProvider
 	}
 	
 	@Override
-	public String changeCapeUrl(final Minecraft client)
+	public URI changeCapeUri(final Minecraft client)
 	{
-		return "https://cosmetica.cc/login";
+		return URI.create("https://cosmetica.cc/login");
 	}
 	
 	@Override
-	public String homepageUrl()
+	public URI homepageUri()
 	{
-		return "https://cosmetica.cc/";
+		return URI.create("https://cosmetica.cc/");
 	}
 	
 	@Override

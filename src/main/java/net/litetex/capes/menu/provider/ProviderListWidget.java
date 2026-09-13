@@ -1,5 +1,6 @@
 package net.litetex.capes.menu.provider;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import com.mojang.blaze3d.Blaze3D;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 
 import net.litetex.capes.Capes;
@@ -36,7 +38,6 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.Util;
 
 
 @SuppressWarnings("checkstyle:MagicNumber")
@@ -227,21 +228,21 @@ public class ProviderListWidget extends ObjectSelectionList<ProviderListWidget.P
 				false,
 				(w, ticked) -> onActiveChanged.accept(this, ticked));
 			
-			final String homepageUrl = capeProvider.homepageUrl();
-			final boolean hasHomePageUrl = homepageUrl != null;
+			final URI homepageUri = capeProvider.homepageUri();
+			final boolean hasHomePageUri = homepageUri != null;
 			
 			this.nameTextSupplier = () ->
-				formatMutableTextIf(Component.literal(this.capeProvider.name()), hasHomePageUrl, ChatFormatting.BLUE);
-			final BiFunction<Component, Font, StringWidget> widgetFunc = hasHomePageUrl
+				formatMutableTextIf(Component.literal(this.capeProvider.name()), hasHomePageUri, ChatFormatting.BLUE);
+			final BiFunction<Component, Font, StringWidget> widgetFunc = hasHomePageUri
 				? ClickableTextWidget::new
 				: StringWidget::new;
 			this.txtName = widgetFunc.apply(
 				this.nameTextSupplier.get(),
 				Minecraft.getInstance().font);
 			
-			this.txtName.active = hasHomePageUrl;
-			this.onTxtClick = hasHomePageUrl
-				? () -> openUrl(client, parentScreen, homepageUrl)
+			this.txtName.active = hasHomePageUri;
+			this.onTxtClick = hasHomePageUri
+				? () -> openUri(client, parentScreen, homepageUri)
 				: null;
 			
 			final List<AntiFeature> antiFeatures = capeProvider.antiFeatures();
@@ -267,7 +268,7 @@ public class ProviderListWidget extends ObjectSelectionList<ProviderListWidget.P
 				? Button
 				.builder(
 					Component.literal("Edit cape"),
-					_ -> openUrl(client, parentScreen, capeProvider.changeCapeUrl(client)))
+					_ -> openUri(client, parentScreen, capeProvider.changeCapeUri(client)))
 				.size(BTN_EDIT_CAPE_WIDTH, ITEM_HEIGHT - 4)
 				.build()
 				: null;
@@ -300,19 +301,19 @@ public class ProviderListWidget extends ObjectSelectionList<ProviderListWidget.P
 				() -> onPositionChange.accept(this, false));
 		}
 		
-		static void openUrl(
+		static void openUri(
 			final Minecraft client,
 			final Screen screenAfterAction,
-			final String url)
+			final URI uri)
 		{
 			client.setScreenAndShow(new ConfirmLinkScreen(
 				open -> {
 					if(open)
 					{
-						Util.getPlatform().openUri(url);
+						Blaze3D.openUri(uri);
 					}
 					client.setScreenAndShow(screenAfterAction);
-				}, url, true));
+				}, uri, true));
 		}
 		
 		CapeProvider capeProvider()

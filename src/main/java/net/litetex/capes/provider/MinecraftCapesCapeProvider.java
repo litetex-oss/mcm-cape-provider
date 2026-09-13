@@ -1,6 +1,7 @@
 package net.litetex.capes.provider;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 
@@ -71,14 +72,14 @@ public class MinecraftCapesCapeProvider extends CacheableCapeProvider
 	}
 	
 	@Override
-	public String changeCapeUrl(final Minecraft client)
+	public URI changeCapeUri(final Minecraft client)
 	{
-		return this.homepageUrl();
+		return this.homepageUri();
 	}
 	
 	@Override
-	public String homepageUrl()
+	public URI homepageUri()
 	{
-		return "https://minecraftcapes.net";
+		return URI.create("https://minecraftcapes.net");
 	}
 }
