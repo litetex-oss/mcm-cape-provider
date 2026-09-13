@@ -1,5 +1,6 @@
 package net.litetex.capes.provider.custom.remote;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -68,15 +69,15 @@ public class RemoteCustomProvider extends BaseCustomProvider<RemoteCustomProvide
 	}
 	
 	@Override
-	public String changeCapeUrl(final Minecraft client)
+	public URI changeCapeUri(final Minecraft client)
 	{
-		return this.config.changeCapeUrl();
+		return this.convertToURI(this.config.changeCapeUrl());
 	}
 	
 	@Override
-	public String homepageUrl()
+	public URI homepageUri()
 	{
-		return this.config.homepage();
+		return this.convertToURI(this.config.homepage());
 	}
 	
 	@Override

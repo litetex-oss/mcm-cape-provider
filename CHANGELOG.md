@@ -1,3 +1,6 @@
+# 5.6.0
+* Updated to 26.3
+
 # 5.5.1
 * Improved compatibility with `minecraftcapes` #367
 

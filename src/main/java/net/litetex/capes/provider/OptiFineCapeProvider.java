@@ -1,6 +1,7 @@
 package net.litetex.capes.provider;
 
 import java.math.BigInteger;
+import java.net.URI;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -46,7 +47,7 @@ public class OptiFineCapeProvider implements CapeProvider
 	}
 	
 	@Override
-	public String changeCapeUrl(final Minecraft client)
+	public URI changeCapeUri(final Minecraft client)
 	{
 		try
 		{
@@ -58,10 +59,10 @@ public class OptiFineCapeProvider implements CapeProvider
 			final UUID id = client.getGameProfile().id();
 			
 			client.services().sessionService().joinServer(id, client.getUser().getAccessToken(), serverId);
-			return "https://optifine.net/capeChange?"
+			return URI.create("https://optifine.net/capeChange?"
 				+ "u=" + id.toString().replace("-", "")
 				+ "&n=" + client.getUser().getName()
-				+ "&s=" + serverId;
+				+ "&s=" + serverId);
 		}
 		catch(final Exception ex)
 		{
@@ -71,9 +72,9 @@ public class OptiFineCapeProvider implements CapeProvider
 	}
 	
 	@Override
-	public String homepageUrl()
+	public URI homepageUri()
 	{
-		return "https://optifine.net/home";
+		return URI.create("https://optifine.net/home");
 	}
 	
 	@Override

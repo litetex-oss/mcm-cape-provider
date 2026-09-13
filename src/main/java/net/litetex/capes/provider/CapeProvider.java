@@ -2,6 +2,7 @@ package net.litetex.capes.provider;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -50,12 +51,12 @@ public interface CapeProvider
 		return false;
 	}
 	
-	default String changeCapeUrl(final Minecraft client)
+	default URI changeCapeUri(final Minecraft client)
 	{
 		return null;
 	}
 	
-	default String homepageUrl()
+	default URI homepageUri()
 	{
 		return null;
 	}
@@ -106,6 +107,23 @@ public interface CapeProvider
 				}
 				return byteArrayTextureInfo;
 			}
+		}
+	}
+	
+	default URI convertToURI(final String url)
+	{
+		if(url == null)
+		{
+			return null;
+		}
+		
+		try
+		{
+			return URI.create(url);
+		}
+		catch(Exception _)
+		{
+			return null;
 		}
 	}
 }
