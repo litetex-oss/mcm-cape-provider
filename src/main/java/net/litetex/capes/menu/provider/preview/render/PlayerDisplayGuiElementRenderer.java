@@ -50,7 +50,7 @@ public class PlayerDisplayGuiElementRenderer extends PictureInPictureRenderer<Pl
 			scale * -skinState.pivotY(),
 			0.0F);
 		
-		modelStack.rotateDegrees(Axis.XP, -skinState.rotationY());
+		modelStack.rotateDegrees(Axis.YP, -skinState.rotationY());
 		modelStack.translate(0.0F, -1.6010001F, 0.0F);
 		
 		this.renderParts(skinState.payload(), skinState.models(), modelStack, submitNodeCollector);
