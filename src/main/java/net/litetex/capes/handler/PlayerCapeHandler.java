@@ -145,7 +145,7 @@ public class PlayerCapeHandler
 		final HttpClient.Builder clientBuilder = HttpClient.newBuilder()
 			.connectTimeout(Duration.ofSeconds(10));
 		final Proxy proxy = Minecraft.getInstance().getProxy();
-		if(proxy != null)
+		if(proxy != Proxy.NO_PROXY)
 		{
 			clientBuilder.proxy(new ProxySelector()
 			{
