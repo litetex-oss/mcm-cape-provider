@@ -81,4 +81,5 @@ jobs:
         curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
         changelog-file: current-changelog.txt
         fail-mode: 'warn'
+        game-version-filter: 'none' # https://github.com/Kira-NT/mc-publish/issues/178
         version-type: 'alpha'

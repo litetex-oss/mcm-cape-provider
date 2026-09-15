@@ -1,3 +1,7 @@
+# 5.6.1
+* Fix releases to CurseForge
+* Improve how proxy is applied
+
 # 5.6.0
 * Updated to 26.3
 

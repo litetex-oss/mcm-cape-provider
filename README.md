@@ -165,7 +165,7 @@ Here's an example implementation that shows how a remote cape provider can be ad
 
 #### Programmatic
 
-You can also create a [programmatic cape provider](https://github.com/litetex-oss/mcm-cape-provider/tree/dev/PROGRAMMATIC_PROVIDER.md).
+You can also create a [programmatic cape provider](https://github.com/litetex-oss/mcm-cape-provider/tree/dev/docs/PROGRAMMATIC_PROVIDER.md).
 
 ### Further notes
 
