@@ -32,10 +32,10 @@ You should have the following things installed:
   * Ensure that the JDK/Java-Version is correct
 
 
-## Releasing [![Build](https://img.shields.io/github/actions/workflow/status/litetex-oss/template-placeholder/release.yml?branch=master)](https://github.com/litetex-oss/template-placeholder/actions/workflows/release.yml)
+## Releasing [![Build](https://img.shields.io/github/actions/workflow/status/litetex-oss/mcm-cape-provider/release.yml?branch=master)](https://github.com/litetex-oss/mcm-cape-provider/actions/workflows/release.yml)
 
 Before releasing:
-* Consider doing a [test-deployment](https://github.com/litetex-oss/template-placeholder/actions/workflows/test-deploy.yml?query=branch%3Adev) before actually releasing.
+* Consider doing a [test-deployment](https://github.com/litetex-oss/mcm-cape-provider/actions/workflows/test-deploy.yml?query=branch%3Adev) before actually releasing.
 * Check the [changelog](CHANGELOG.md)
 
 If ``dev`` is ready for release, create a pull request to the ``master``-Branch and merge the changes
