@@ -4,7 +4,7 @@ plugins {
     id 'signing'
     id 'checkstyle'
     id 'pmd'
-    id 'com.modrinth.minotaur' version '2.9.0'
+    id 'com.modrinth.minotaur' version '2.10.0'
 }
 
 ext {
