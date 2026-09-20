@@ -14,31 +14,9 @@ We also encourage you to read the [contribution instructions by GitHub](https://
 
 ## Developing
 
-### Software Requirements
-You should have the following things installed:
-* Git
-* Java 25 - should be as unmodified as possible (Recommended: [Eclipse Adoptium](https://adoptium.net/temurin/releases/))
-* Gradle (Note that the [Gradle Wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html) is shipped with the repo)
-
-### Recommended setup
-* Install ``IntelliJ`` (Community Edition is sufficient)
-  * Install the following plugins:
-    * [Save Actions](https://plugins.jetbrains.com/plugin/22113) - Provides save actions, like running the formatter or adding ``final`` to fields
-    * [SonarLint](https://plugins.jetbrains.com/plugin/7973-sonarlint) - CodeStyle/CodeAnalysis
-    * [Checkstyle-IDEA](https://plugins.jetbrains.com/plugin/1065-checkstyle-idea) - CodeStyle/CodeAnalysis
-    * [Minecraft Development](https://plugins.jetbrains.com/plugin/8327-minecraft-development) (recommended) - For better mod development
-  * Import the project
-  * Ensure that everything is encoded in ``UTF-8``
-  * Ensure that the JDK/Java-Version is correct
+Project specific development instructions can be found in [DEVELOPING.md](./DEVELOPING.md)
 
 
-## Releasing [![Build](https://img.shields.io/github/actions/workflow/status/litetex-oss/mcm-cape-provider/release.yml?branch=master)](https://github.com/litetex-oss/mcm-cape-provider/actions/workflows/release.yml)
+## On AI use
 
-Before releasing:
-* Consider doing a [test-deployment](https://github.com/litetex-oss/mcm-cape-provider/actions/workflows/test-deploy.yml?query=branch%3Adev) before actually releasing.
-* Check the [changelog](CHANGELOG.md)
-
-If ``dev`` is ready for release, create a pull request to the ``master``-Branch and merge the changes
-
-When the release is finished do the following:
-* Merge the auto-generated PR (with the incremented version number) back into ``dev``
+The use of any form of AI/LLM generated content is not allowed.
