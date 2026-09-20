@@ -5,7 +5,6 @@ import java.io.UncheckedIOException;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 
@@ -61,28 +60,7 @@ public class FabricCapes implements ClientModInitializer
 	
 	private Config loadConfig(final Path configFile)
 	{
-		boolean configFileExists = Files.exists(configFile);
-		if(!configFileExists)
-		{
-			final Path legacyConfigPath = FabricLoader.getInstance().getConfigDir().resolve("cape-provider.json5");
-			if(Files.exists(legacyConfigPath))
-			{
-				try
-				{
-					Files.createDirectories(configFile.getParent());
-					Files.move(legacyConfigPath, configFile, StandardCopyOption.REPLACE_EXISTING);
-					
-					configFileExists = true;
-					LOG.info("Migrated legacy config file {} -> {}", legacyConfigPath, configFile);
-				}
-				catch(final IOException e)
-				{
-					LOG.warn("Failed to move legacy config file", e);
-				}
-			}
-		}
-		
-		if(configFileExists)
+		if(Files.exists(configFile))
 		{
 			try
 			{

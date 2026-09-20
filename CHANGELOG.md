@@ -1,3 +1,6 @@
+# 5.6.2
+* Removed legacy config file migration
+
 # 5.6.1
 * Fix releases to CurseForge
 * Improve how proxy is applied
