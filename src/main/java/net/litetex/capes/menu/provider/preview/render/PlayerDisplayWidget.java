@@ -1,0 +1,108 @@
+package net.litetex.capes.menu.provider.preview.render;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.model.geom.EntityModelSet;
+import net.minecraft.client.model.geom.ModelLayers;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.object.equipment.ElytraModel;
+import net.minecraft.client.model.player.PlayerModel;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+
+
+@SuppressWarnings("checkstyle:MagicNumber")
+public class PlayerDisplayWidget extends SimplifiedPlayerSkinWidget
+{
+	private final Supplier<PlayerDisplayGuiPayload> payloadSupplier;
+	private final Consumer<PlayerDisplayGuiModels> preModelRenderAction;
+	
+	private final PlayerModel slimModel;
+	private final PlayerModel wideModel;
+	private final ElytraModel elytraEntityModel;
+	private final ModelPart capeModel;
+	private final AvatarRenderState avatarRenderState;
+	
+	public PlayerDisplayWidget(
+		final int width,
+		final int height,
+		final EntityModelSet entityModels,
+		final Supplier<PlayerDisplayGuiPayload> payloadSupplier,
+		final Consumer<PlayerDisplayGuiModels> preModelRenderAction)
+	{
+		super(width, height);
+		this.payloadSupplier = payloadSupplier;
+		this.preModelRenderAction = preModelRenderAction;
+		
+		this.slimModel = new PlayerModel(entityModels.bakeLayer(ModelLayers.PLAYER_SLIM), true);
+		this.wideModel = new PlayerModel(entityModels.bakeLayer(ModelLayers.PLAYER), false);
+		this.elytraEntityModel = new ElytraModel(entityModels.bakeLayer(ModelLayers.ELYTRA));
+		this.capeModel = entityModels.bakeLayer(ModelLayers.PLAYER_CAPE);
+		
+		this.avatarRenderState = new AvatarRenderState();
+		this.avatarRenderState.walkAnimationSpeed = 0.1f;
+		// Based on ElytraAnimationState
+		this.avatarRenderState.elytraRotX = (float)(Math.PI / 12);
+		this.avatarRenderState.elytraRotZ = (float)(-Math.PI / 12);
+	}
+	
+	@Override
+	protected void extractWidgetRenderState(
+		final GuiGraphicsExtractor graphics,
+		final int mouseX,
+		final int mouseY,
+		final float deltaTicks)
+	{
+		final PlayerDisplayGuiPayload payload = this.payloadSupplier.get();
+		
+		final PlayerDisplayGuiModels models = new PlayerDisplayGuiModels(
+			payload.slim() ? this.slimModel : this.wideModel,
+			this.elytraEntityModel,
+			this.capeModel,
+			this.avatarRenderState
+		);
+		this.preModelRenderAction.accept(models);
+		
+		this.addToDrawContext(
+			graphics,
+			models,
+			payload,
+			0.97F * this.getHeight() / 2.125F,
+			this.rotationX,
+			this.rotationY,
+			-1.0625F,
+			this.getX(),
+			this.getY(),
+			this.getRight(),
+			this.getBottom());
+	}
+	
+	@SuppressWarnings("PMD.ExcessiveParameterList") // Derived from MC code
+	public void addToDrawContext(
+		final GuiGraphicsExtractor graphics,
+		final PlayerDisplayGuiModels models,
+		final PlayerDisplayGuiPayload payload,
+		final float scale,
+		final float xRotation,
+		final float yRotation,
+		final float yPivot,
+		final int x1,
+		final int y1,
+		final int x2,
+		final int y2)
+	{
+		graphics.guiRenderState.addPicturesInPictureState(new PlayerDisplayGuiElementRenderState(
+			models,
+			payload,
+			xRotation,
+			yRotation,
+			yPivot,
+			x1,
+			y1,
+			x2,
+			y2,
+			scale,
+			graphics.scissorStack.peek()));
+	}
+}
