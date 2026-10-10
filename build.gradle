@@ -1,5 +1,5 @@
 plugins {
-    id 'net.fabricmc.fabric-loom' version '1.18.2'
+    id 'net.fabricmc.fabric-loom' version '1.18.3'
     id 'maven-publish'
     id 'signing'
     id 'checkstyle'
@@ -23,6 +23,9 @@ base {
 loom {
     accessWidenerPath = file("src/main/resources/cape-provider.classtweaker")
     log4jConfigs.from(file("src/dev/log4j2.xml"))
+    runs.configureEach {
+        preferGradleTask = false
+    }
 }
 
 // https://github.com/gradle/gradle/issues/27035
