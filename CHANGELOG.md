@@ -1,5 +1,5 @@
 # 5.6.2
-* Fix built-in Laby Mod provider by changing it's download url
+* Fix built-in LabyMod provider by changing it's download url
 * Removed legacy config file migration
 
 # 5.6.1
