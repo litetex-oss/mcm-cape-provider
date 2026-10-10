@@ -32,22 +32,23 @@ jobs:
 
     steps:
     - uses: actions/checkout@v7
-      
-    - name: Set up JDK
-      uses: actions/setup-java@v6
-      with:
-        distribution: ${{ matrix.distribution }}
-        java-version: ${{ matrix.java }}
 
-    - name: Cache Gradle
-      uses: actions/cache@v6
-      with:
-        path: |
-          ~/.gradle/caches
-          ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-build-${{ hashFiles('**/*.gradle*', '**/gradle.properties', '**/gradle-wrapper.properties') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-build-
+    - parallel:
+      - name: Set up JDK
+        uses: actions/setup-java@v6
+        with:
+          distribution: ${{ matrix.distribution }}
+          java-version: ${{ matrix.java }}
+
+      - name: Cache Gradle
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-build-${{ hashFiles('**/*.gradle*', '**/gradle.properties', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-build-
       
     - name: Build
       run: ./gradlew build --info --stacktrace
@@ -93,21 +94,22 @@ jobs:
     steps:
     - uses: actions/checkout@v7
 
-    - name: Set up JDK
-      uses: actions/setup-java@v6
-      with:
-        distribution: ${{ matrix.distribution }}
-        java-version: ${{ matrix.java }}
+    - parallel:
+      - name: Set up JDK
+        uses: actions/setup-java@v6
+        with:
+          distribution: ${{ matrix.distribution }}
+          java-version: ${{ matrix.java }}
 
-    - name: Cache Gradle
-      uses: actions/cache@v6
-      with:
-        path: |
-          ~/.gradle/caches
-          ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-checkstyle-${{ hashFiles('**/*.gradle*', '**/gradle.properties', '**/gradle-wrapper.properties') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-checkstyle-
+      - name: Cache Gradle
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-checkstyle-${{ hashFiles('**/*.gradle*', '**/gradle.properties', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-checkstyle-
 
     - name: Run Checkstyle
       run: ./gradlew checkstyleMain checkstyleTest -PcheckstyleEnabled=true
@@ -123,22 +125,23 @@ jobs:
 
     steps:
     - uses: actions/checkout@v7
-      
-    - name: Set up JDK
-      uses: actions/setup-java@v6
-      with:
-        distribution: ${{ matrix.distribution }}
-        java-version: ${{ matrix.java }}
 
-    - name: Cache Gradle
-      uses: actions/cache@v6
-      with:
-        path: |
-          ~/.gradle/caches
-          ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-pmd-${{ hashFiles('**/*.gradle*', '**/gradle.properties', '**/gradle-wrapper.properties') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-pmd-
+    - parallel:
+      - name: Set up JDK
+        uses: actions/setup-java@v6
+        with:
+          distribution: ${{ matrix.distribution }}
+          java-version: ${{ matrix.java }}
+
+      - name: Cache Gradle
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-pmd-${{ hashFiles('**/*.gradle*', '**/gradle.properties', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-pmd-
 
     - name: Run PMD
       run: ./gradlew pmdMain pmdTest -PpmdEnabled --stacktrace
