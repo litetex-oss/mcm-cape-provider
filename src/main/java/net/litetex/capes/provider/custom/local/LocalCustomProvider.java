@@ -35,7 +35,7 @@ public class LocalCustomProvider extends BaseCustomProvider<LocalCustomProviderC
 		final HttpRequest.Builder requestBuilder,
 		final GameProfile profile)
 	{
-		return new ResolvedTextureInfo.ByteArrayTextureInfo(this.config.capeTexture());
+		return new ResolvedTextureInfo.ByteArrayTextureInfo(this.config.capeTexture(), this.config.textureResolverId());
 	}
 	
 	@Override
