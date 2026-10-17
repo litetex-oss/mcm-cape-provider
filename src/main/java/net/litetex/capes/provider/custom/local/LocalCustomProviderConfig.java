@@ -15,7 +15,9 @@ public record LocalCustomProviderConfig(
 	String homepage,
 	@Nullable
 	Owners owners,
-	byte[] capeTexture
+	byte[] capeTexture,
+	@Nullable
+	String textureResolverId
 ) implements BaseCustomProviderConfig
 {
 	public LocalCustomProviderConfig
@@ -27,5 +29,15 @@ public record LocalCustomProviderConfig(
 		{
 			throw new IllegalArgumentException("empty cape texture");
 		}
+	}
+	
+	public LocalCustomProviderConfig(
+		final String id,
+		final String name,
+		final String homepage,
+		final Owners owners,
+		final byte[] capeTexture)
+	{
+		this(id, name, homepage, owners, capeTexture, null);
 	}
 }

@@ -26,7 +26,15 @@ public final class SimpleFilesystemProviders
 	private static final Logger LOG = LoggerFactory.getLogger(SimpleFilesystemProviders.class);
 	
 	public static final String CAPE_FILE_NAME = "cape.png";
+	public static final String CAPE_GIF_FILE_NAME = "cape.gif";
 	public static final String OWNER_FILE_NAME = "owners.txt";
+	
+	/**
+	 * Resolver id of {@link net.litetex.capes.handler.textures.AnimatedGIFTextureResolver},
+	 * used for {@link #CAPE_GIF_FILE_NAME}. Kept in sync with
+	 * {@code TextureResolver#id()} of that resolver.
+	 */
+	private static final String GIF_RESOLVER_ID = "gif";
 	
 	public static Set<LocalCustomProvider> createFsProviders(final Path modConfigDir)
 	{
@@ -74,7 +82,12 @@ public final class SimpleFilesystemProviders
 		final String name,
 		final Path path)
 	{
-		final Path capeFile = path.resolve(CAPE_FILE_NAME);
+		final Path pngFile = path.resolve(CAPE_FILE_NAME);
+		final Path gifFile = path.resolve(CAPE_GIF_FILE_NAME);
+		
+		// cape.png keeps priority, so existing setups are unaffected
+		final boolean animated = !Files.exists(pngFile) && Files.exists(gifFile);
+		final Path capeFile = animated ? gifFile : pngFile;
 		if(!Files.exists(capeFile))
 		{
 			return null;
@@ -96,7 +109,8 @@ public final class SimpleFilesystemProviders
 			getNameOverride(path).orElse(name) + " (Local)",
 			null,
 			getOwners(path),
-			capeTexture
+			capeTexture,
+			animated ? GIF_RESOLVER_ID : null
 		);
 	}
 	

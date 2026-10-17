@@ -37,6 +37,8 @@ The following possibilities are sorted by simplicity:
 
 The simplest way to display a cape is by going into the `config/cape-provider` directory and creating a cape texture file named `cape.png`.
 
+For an animated cape, name the file `cape.gif` instead. It is picked up by the `gif` texture resolver, which honours the per-frame delays stored in the file. If both `cape.png` and `cape.gif` are present, `cape.png` wins, so existing setups are unaffected.
+
 Additionally there are the following optional files:
 * `owners.txt` - Determines which player names or UUIDs will get the cape displayed. If this file is not present then all players will display with the cape.
 * `name.txt` - To override the display name of the provider
@@ -182,6 +184,8 @@ The following resolvers are currently built-in:
 | `default` / null | ❌ | [PNG](https://de.wikipedia.org/wiki/Portable_Network_Graphics) | [uuid.png](https://raw.githubusercontent.com/litetex-oss/mcm-cape-provider/refs/heads/dev/custom-cape-demo/uuid.png) | |
 | `sprite` | ✔ | Stacked [PNG](https://de.wikipedia.org/wiki/Portable_Network_Graphics) | [animated.png](https://raw.githubusercontent.com/litetex-oss/mcm-cape-provider/refs/heads/dev/custom-cape-demo/animated.png) | |
 | `gif` | ✔ | [GIF](https://de.wikipedia.org/wiki/Graphics_Interchange_Format) | [animated.gif](https://raw.githubusercontent.com/litetex-oss/mcm-cape-provider/refs/heads/dev/custom-cape-demo/animated.gif) | _Usage not recommended_<br/>GIFs require more resources when compared to more modern formats like PNG. |
+
+The **Simple Local Provider** selects its resolver from the file name: `cape.png` uses `default`, `cape.gif` uses `gif`. All other providers have to select it explicitly via the `textureResolverId` attribute.
 
 Please note that animated textures can be frozen or completely disabled in the settings.
 
