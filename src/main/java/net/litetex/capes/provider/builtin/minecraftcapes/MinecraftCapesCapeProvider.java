@@ -1,4 +1,4 @@
-package net.litetex.capes.provider;
+package net.litetex.capes.provider.builtin.minecraftcapes;
 
 import java.io.IOException;
 import java.net.URI;
@@ -9,6 +9,8 @@ import com.google.gson.annotations.SerializedName;
 import com.mojang.authlib.GameProfile;
 
 import net.litetex.capes.handler.textures.AnimatedSpriteTextureResolver;
+import net.litetex.capes.provider.CacheableCapeProvider;
+import net.litetex.capes.provider.ResolvedTextureInfo;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 

@@ -1,4 +1,4 @@
-package net.litetex.capes.provider;
+package net.litetex.capes.provider.builtin.cosmetica;
 
 import java.io.IOException;
 import java.net.URI;
@@ -11,6 +11,8 @@ import com.google.gson.annotations.SerializedName;
 import com.mojang.authlib.GameProfile;
 
 import net.litetex.capes.handler.textures.AnimatedSpriteTextureResolver;
+import net.litetex.capes.provider.CacheableCapeProvider;
+import net.litetex.capes.provider.ResolvedTextureInfo;
 import net.litetex.capes.provider.antifeature.AntiFeature;
 import net.litetex.capes.provider.antifeature.AntiFeatures;
 import net.minecraft.client.Minecraft;

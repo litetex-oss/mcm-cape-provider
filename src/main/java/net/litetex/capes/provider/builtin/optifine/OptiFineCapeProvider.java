@@ -1,4 +1,4 @@
-package net.litetex.capes.provider;
+package net.litetex.capes.provider.builtin.optifine;
 
 import java.math.BigInteger;
 import java.net.URI;
@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import com.mojang.authlib.GameProfile;
 
+import net.litetex.capes.provider.CapeProvider;
 import net.litetex.capes.provider.antifeature.AntiFeature;
 import net.litetex.capes.provider.antifeature.AntiFeatures;
 import net.minecraft.client.Minecraft;

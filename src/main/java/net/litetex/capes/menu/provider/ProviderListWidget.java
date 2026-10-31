@@ -119,7 +119,7 @@ public class ProviderListWidget extends ObjectSelectionList<ProviderListWidget.P
 			capeProvider,
 			active,
 			this.parent,
-			(self, a) -> this.save(),
+			(_, _) -> this.save(),
 			this::onPositionChanged);
 	}
 	
@@ -264,11 +264,19 @@ public class ProviderListWidget extends ObjectSelectionList<ProviderListWidget.P
 					.orElseThrow()));
 			}
 			
-			this.btnEditCape = capeProvider.hasChangeCapeUrl()
+			final boolean hasChangeCapeUrl = capeProvider.hasChangeCapeUrl();
+			this.btnEditCape = hasChangeCapeUrl || capeProvider.hasChangeCapeScreen()
 				? Button
 				.builder(
 					Component.literal("Edit cape"),
-					_ -> openUri(client, parentScreen, capeProvider.changeCapeUri(client)))
+					_ -> {
+						if(hasChangeCapeUrl)
+						{
+							openUri(client, parentScreen, capeProvider.changeCapeUri(client));
+							return;
+						}
+						client.setScreenAndShow(capeProvider.changeCapeScreen(client, parentScreen));
+					})
 				.size(BTN_EDIT_CAPE_WIDTH, ITEM_HEIGHT - 4)
 				.build()
 				: null;
