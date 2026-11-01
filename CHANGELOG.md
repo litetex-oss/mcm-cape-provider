@@ -1,3 +1,9 @@
+# 6.0.0
+* Sneaky Capes
+  * Added basic built-in editor #314
+  * Enable by default
+  * Fix transparency
+
 # 5.6.2
 * Fix built-in LabyMod provider by changing it's download url
 * Removed legacy config file migration

@@ -1,10 +1,9 @@
-package net.litetex.capes.provider;
+package net.litetex.capes.provider.builtin.sneakycapes;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -15,7 +14,13 @@ import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.platform.NativeImage;
 
+import net.litetex.capes.provider.CapeProvider;
+import net.litetex.capes.provider.ResolvedTextureInfo;
+import net.litetex.capes.provider.builtin.sneakycapes.menu.SneakyCapesEditScreen;
+import net.litetex.capes.provider.builtin.sneakycapes.pixels.SneakyCapesCopyPixels;
+import net.litetex.capes.provider.builtin.sneakycapes.pixels.SneakyCapesMarkerPixels;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.world.entity.player.PlayerSkin;
 
@@ -24,19 +29,15 @@ import net.minecraft.world.entity.player.PlayerSkin;
 // https://codeberg.org/Penguin_Spy/sneaky_capes/src/commit/43f597ecdf32e0e2cd46bdecefb85ebf0a847df8/src/main/java/dev/penguinspy/sneaky_capes/mixin/PlayerSkinManagerMixin.java
 public class SneakyCapesCapeProvider implements CapeProvider
 {
-	static final List<MarkerPixelInfo> MARKER_PIXELS = List.of(
-		new MarkerPixelInfo(60, 48, 0xFFFFF42F),
-		new MarkerPixelInfo(60, 49, 0xFFFFFFFF),
-		new MarkerPixelInfo(60, 50, 0xFF9C59D1),
-		new MarkerPixelInfo(60, 51, 0xFF292929)
-	);
+	public static final String ID = "sneaky-capes";
+	
 	static final int CAPE_WIDTH = 64;
 	static final int CAPE_HEIGHT = 32;
 	
 	@Override
 	public String id()
 	{
-		return "sneaky-capes";
+		return ID;
 	}
 	
 	@Override
@@ -70,9 +71,7 @@ public class SneakyCapesCapeProvider implements CapeProvider
 		
 		final PlayerSkin playerSkin = optPlayerSkin.orElseThrow();
 		
-		// Do not use getTexture as it tries to register a new texture if it was not found!
-		// This can be the case when the skin was not found (e.g. when using one of the default skins)!
-		if(!(client.getTextureManager().byPath.get(playerSkin.body().id())
+		if(!(TextureManagerReader.getTextureSafe(client.getTextureManager(), playerSkin.body().id())
 			instanceof final DynamicTexture dynamicTexture))
 		{
 			return null;
@@ -88,7 +87,7 @@ public class SneakyCapesCapeProvider implements CapeProvider
 		if(bodyImg.getWidth() != 64
 			|| bodyImg.getHeight() != 64
 			// Markers must be present
-			|| !this.markersPresent(bodyImg))
+			|| !SneakyCapesMarkerPixels.markersPresent(bodyImg))
 		{
 			return null;
 		}
@@ -100,58 +99,12 @@ public class SneakyCapesCapeProvider implements CapeProvider
 		}
 	}
 	
-	private boolean markersPresent(final NativeImage img)
-	{
-		return MARKER_PIXELS.stream()
-			.allMatch(marker -> img.getPixel(marker.x(), marker.y()) == marker.rgba());
-	}
-	
 	@SuppressWarnings("checkstyle:MagicNumber")
 	private NativeImage extractCapeTextureFromUnusedBitsInBodyTexture(final NativeImage body)
 	{
 		final NativeImage cape = new NativeImage(CAPE_WIDTH, CAPE_HEIGHT, true);
 		
-		// copy cape from skin
-		// front
-		body.copyRect(cape, 56, 16, 1, 1, 8, 16, false, false);
-		body.copyRect(cape, 62, 0, 9, 1, 2, 8, false, false);
-		body.copyRect(cape, 60, 0, 9, 9, 2, 8, false, false);
-		// back
-		body.copyRect(cape, 56, 32, 12, 1, 8, 16, false, false);
-		body.copyRect(cape, 58, 0, 20, 1, 2, 8, false, false);
-		body.copyRect(cape, 56, 0, 20, 9, 2, 8, false, false);
-		// left edge
-		body.copyRect(cape, 39, 0, 0, 1, 1, 8, false, false);
-		body.copyRect(cape, 38, 0, 0, 9, 1, 8, false, false);
-		// right edge
-		body.copyRect(cape, 37, 0, 11, 1, 1, 8, false, false);
-		body.copyRect(cape, 36, 0, 11, 9, 1, 8, false, false);
-		// top edge
-		body.copyRect(cape, 0, 48, 1, 0, 4, 1, false, false);
-		body.copyRect(cape, 12, 48, 5, 0, 6, 1, false, false);
-		// bottom edge
-		body.copyRect(cape, 0, 49, 11, 0, 4, 1, false, false);
-		body.copyRect(cape, 12, 49, 15, 0, 6, 1, false, false);
-		
-		// copy elytra from skin
-		// front  (10x20)
-		body.copyRect(cape, 0, 0, 36, 2, 8, 8, false, false);
-		body.copyRect(cape, 24, 0, 44, 2, 2, 8, false, false);
-		body.copyRect(cape, 26, 0, 36, 10, 10, 8, false, false);
-		body.copyRect(cape, 44, 48, 36, 18, 8, 4, false, false);
-		body.copyRect(cape, 62, 48, 44, 18, 2, 4, false, false);
-		// inside edge (2x12)
-		body.copyRect(cape, 18, 48, 34, 2, 2, 4, false, false);
-		body.copyRect(cape, 28, 48, 34, 6, 2, 4, false, false);
-		body.copyRect(cape, 30, 48, 34, 10, 2, 4, false, false);
-		// outside edge (1x12)
-		body.copyRect(cape, 32, 48, 22, 10, 1, 4, false, false);
-		body.copyRect(cape, 33, 48, 22, 14, 1, 4, false, false);
-		body.copyRect(cape, 34, 48, 22, 18, 1, 4, false, false);
-		// top edge (4x2)
-		body.copyRect(cape, 0, 50, 30, 0, 4, 2, false, false);
-		// bottom edge (6x2)
-		body.copyRect(cape, 12, 50, 34, 0, 6, 2, false, false);
+		SneakyCapesCopyPixels.bodyToCape(body, cape);
 		
 		return cape;
 	}
@@ -169,28 +122,20 @@ public class SneakyCapesCapeProvider implements CapeProvider
 	}
 	
 	@Override
-	public boolean hasChangeCapeUrl()
+	public boolean hasChangeCapeScreen()
 	{
 		return true;
 	}
 	
 	@Override
-	public URI changeCapeUri(final Minecraft client)
+	public Screen changeCapeScreen(final Minecraft client, final Screen lastScreen)
 	{
-		return URI.create("https://penguinspy.neocities.org/projects/loom/");
+		return new SneakyCapesEditScreen(client, lastScreen);
 	}
 	
 	@Override
 	public URI homepageUri()
 	{
 		return URI.create("https://modrinth.com/mod/sneaky_capes");
-	}
-	
-	record MarkerPixelInfo(
-		int x,
-		int y,
-		int rgba
-	)
-	{
 	}
 }

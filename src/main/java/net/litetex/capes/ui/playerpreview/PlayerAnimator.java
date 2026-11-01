@@ -1,6 +1,6 @@
-package net.litetex.capes.menu.provider.preview;
+package net.litetex.capes.ui.playerpreview;
 
-import net.litetex.capes.menu.provider.preview.render.PlayerDisplayGuiModels;
+import net.litetex.capes.ui.playerpreview.render.PlayerDisplayGuiModels;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 
 

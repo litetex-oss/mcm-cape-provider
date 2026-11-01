@@ -15,6 +15,7 @@ import com.mojang.authlib.GameProfile;
 
 import net.litetex.capes.provider.antifeature.AntiFeature;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 
 
 public interface CapeProvider
@@ -52,6 +53,16 @@ public interface CapeProvider
 	}
 	
 	default URI changeCapeUri(final Minecraft client)
+	{
+		return null;
+	}
+	
+	default boolean hasChangeCapeScreen()
+	{
+		return false;
+	}
+	
+	default Screen changeCapeScreen(final Minecraft client, final Screen lastScreen)
 	{
 		return null;
 	}

@@ -1,4 +1,4 @@
-package net.litetex.capes.menu.provider.preview.render;
+package net.litetex.capes.ui.playerpreview.render;
 
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.object.equipment.ElytraModel;
