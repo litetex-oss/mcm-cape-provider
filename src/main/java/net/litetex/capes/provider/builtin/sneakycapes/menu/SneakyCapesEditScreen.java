@@ -19,6 +19,7 @@ import com.mojang.blaze3d.Blaze3D;
 import com.mojang.blaze3d.platform.NativeImage;
 
 import net.litetex.capes.Capes;
+import net.litetex.capes.provider.builtin.sneakycapes.TextureManagerReader;
 import net.litetex.capes.provider.builtin.sneakycapes.pixels.SneakyCapesCopyPixels;
 import net.litetex.capes.provider.builtin.sneakycapes.pixels.SneakyCapesMarkerPixels;
 import net.litetex.capes.ui.playerpreview.PreviewPlayerScreen;
@@ -177,8 +178,9 @@ public class SneakyCapesEditScreen extends PreviewPlayerScreen<ViewModel>
 		this.lblSaveResult.setMessage(Component.empty());
 		
 		// Find the native image of the body
-		final AbstractTexture texture =
-			this.minecraft.getTextureManager().getTexture(this.viewModel.skin().body().texturePath());
+		final AbstractTexture texture = TextureManagerReader.getTextureSafe(
+			this.minecraft.getTextureManager(),
+			this.viewModel.skin().body().texturePath());
 		if(!(texture instanceof final DynamicTexture dynamicBodyTexture))
 		{
 			LOG.warn("Failed to find body texture - was: {}", texture);

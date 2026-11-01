@@ -1,6 +1,8 @@
 # 6.0.0
-* Added basic built-in editor for Sneaky Capes #314
-* Enable Sneaky Capes by default
+* Sneaky Capes
+  * Added basic built-in editor #314
+  * Enable by default
+  * Fix transparency
 
 # 5.6.2
 * Fix built-in LabyMod provider by changing it's download url

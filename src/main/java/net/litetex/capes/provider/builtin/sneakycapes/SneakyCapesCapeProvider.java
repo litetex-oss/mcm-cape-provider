@@ -71,9 +71,7 @@ public class SneakyCapesCapeProvider implements CapeProvider
 		
 		final PlayerSkin playerSkin = optPlayerSkin.orElseThrow();
 		
-		// Do not use getTexture as it tries to register a new texture if it was not found!
-		// This can be the case when the skin was not found (e.g. when using one of the default skins)!
-		if(!(client.getTextureManager().byPath.get(playerSkin.body().id())
+		if(!(TextureManagerReader.getTextureSafe(client.getTextureManager(), playerSkin.body().id())
 			instanceof final DynamicTexture dynamicTexture))
 		{
 			return null;
