@@ -12,6 +12,6 @@ public class ModMenuCompatibility implements ModMenuApi
 	@Override
 	public ConfigScreenFactory<?> getModConfigScreenFactory()
 	{
-		return s -> new ProviderMenuScreen(s, Minecraft.getInstance().options);
+		return s -> new ProviderMenuScreen(Minecraft.getInstance(), s);
 	}
 }
