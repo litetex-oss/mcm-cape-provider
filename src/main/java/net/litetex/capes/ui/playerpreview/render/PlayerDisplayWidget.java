@@ -48,11 +48,7 @@ public class PlayerDisplayWidget extends SimplifiedPlayerSkinWidget
 	}
 	
 	@Override
-	protected void extractWidgetRenderState(
-		final GuiGraphicsExtractor graphics,
-		final int mouseX,
-		final int mouseY,
-		final float deltaTicks)
+	protected void extractWidgetRenderState(final GuiGraphicsExtractor graphics)
 	{
 		final PlayerDisplayGuiPayload payload = this.payloadSupplier.get();
 		
