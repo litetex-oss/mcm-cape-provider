@@ -26,6 +26,7 @@ import net.litetex.capes.ui.playerpreview.PreviewPlayerScreen;
 import net.litetex.capes.util.CapeProviderTextureAsset;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.AbstractScrollArea;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.MultiLineTextWidget;
@@ -123,7 +124,10 @@ public class SneakyCapesEditScreen extends PreviewPlayerScreen<ViewModel>
 			this.minecraft,
 			this.contentLayout,
 			this.layout.getContentHeight(),
-			ScrollableLayout.ReserveStrategy.RIGHT);
+			AbstractScrollArea.defaultSettings(10),
+			DEFAULT_SPACING,
+			ScrollableLayout.ReserveStrategy.BOTH,
+			null);
 		this.scrollableLayout.visitWidgets(this::addSelfManagedDrawableChild);
 		this.scrollableLayout.setPosition(DEFAULT_SPACING, contentY);
 		this.scrollableLayout.arrangeElements();
