@@ -83,7 +83,7 @@ public class LabyModProvider implements CapeProvider
 	public List<AntiFeature> antiFeatures()
 	{
 		return List.of(
-			AntiFeatures.PAYMENT_TO_UNLOCK_CAPE, // https://labymod.net/en/shop#cosmetics
+			AntiFeatures.PAYMENT_TO_UNLOCK, // https://labymod.net/en/shop#cosmetics
 			AntiFeatures.EXPLICIT, // https://laby.net/cloaks contains content that violates EULA
 			AntiFeatures.OVERWRITES
 		);

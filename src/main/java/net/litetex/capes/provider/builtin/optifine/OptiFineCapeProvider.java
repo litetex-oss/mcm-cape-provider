@@ -82,7 +82,7 @@ public class OptiFineCapeProvider implements CapeProvider
 	public List<AntiFeature> antiFeatures()
 	{
 		return List.of(
-			AntiFeatures.PAYMENT_TO_UNLOCK_CAPE, // https://optifine.net/donate
+			AntiFeatures.PAYMENT_TO_UNLOCK, // https://optifine.net/donate
 			AntiFeatures.BAD_CONNECTION
 		);
 	}
