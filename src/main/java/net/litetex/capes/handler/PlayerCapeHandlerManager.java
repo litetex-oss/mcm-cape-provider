@@ -47,6 +47,7 @@ public class PlayerCapeHandlerManager
 	private final Map<Future<?>, UUID> submittedTasks = Collections.synchronizedMap(new WeakHashMap<>());
 	private final CapeProviderRateLimits capeProviderRateLimits = new CapeProviderRateLimits();
 	
+	@SuppressWarnings("PMD.CollectionTypeMismatch")
 	public PlayerCapeHandlerManager(final Capes capes)
 	{
 		this.capes = capes;
@@ -65,9 +66,8 @@ public class PlayerCapeHandlerManager
 				0L,
 				TimeUnit.MILLISECONDS,
 				new DiscardingQueue<>(
-					loadExecutorWorkQueueSize, r -> {
-					LOG.warn("Overloaded - Discarded loading task for {}", this.submittedTasks.get(r));
-				}),
+					loadExecutorWorkQueueSize, r ->
+					LOG.warn("Overloaded - Discarded loading task for {}", this.submittedTasks.get(r))),
 				new ThreadFactory()
 				{
 					private static final AtomicInteger COUNTER = new AtomicInteger(0);

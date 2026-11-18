@@ -53,7 +53,7 @@ public abstract class SkinTextureDownloaderMixin
 				img.getWidth() * img.getHeight()))
 			{
 				img.writeToChannel(channel);
-				textureAccess.cp$setImageData(channel.array());
+				textureAccess.cpSetImageData(channel.array());
 			}
 			catch(final IOException ioe)
 			{

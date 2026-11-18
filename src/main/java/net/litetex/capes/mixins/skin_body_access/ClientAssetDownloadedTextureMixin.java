@@ -14,13 +14,13 @@ public abstract class ClientAssetDownloadedTextureMixin implements ClientAssetDo
 	private byte[] imageData;
 	
 	@Override
-	public void cp$setImageData(final byte[] data)
+	public void cpSetImageData(final byte[] data)
 	{
 		this.imageData = data;
 	}
 	
 	@Override
-	public byte[] cp$getImageData()
+	public byte[] cpGetImageData()
 	{
 		return this.imageData;
 	}

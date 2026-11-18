@@ -7,16 +7,16 @@ import net.minecraft.world.entity.player.PlayerSkin;
 
 public interface ClientAssetDownloadedTextureAccess
 {
-	void cp$setImageData(byte[] data);
+	void cpSetImageData(byte[] data);
 	
 	@Nullable
-	byte[] cp$getImageData();
+	byte[] cpGetImageData();
 	
 	@Nullable
 	static byte[] extractBodyImageData(final PlayerSkin playerSkin)
 	{
 		return playerSkin.body() instanceof final ClientAssetDownloadedTextureAccess clientAssetDownloadedTextureAccess
-			? clientAssetDownloadedTextureAccess.cp$getImageData()
+			? clientAssetDownloadedTextureAccess.cpGetImageData()
 			: null;
 	}
 }
