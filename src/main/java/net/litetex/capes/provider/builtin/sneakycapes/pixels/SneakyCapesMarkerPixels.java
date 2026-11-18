@@ -14,9 +14,11 @@ public final class SneakyCapesMarkerPixels
 		new MarkerPixelInfo(60, 51, 0xFF292929)
 	);
 	
-	public static boolean markersPresent(final NativeImage body)
+	public static boolean validAndMarkersPresent(final NativeImage body)
 	{
-		return MARKER_PIXELS.stream()
+		return body.getWidth() == 64
+			&& body.getHeight() == 64
+			&& MARKER_PIXELS.stream()
 			.allMatch(marker -> body.getPixel(marker.x(), marker.y()) == marker.rgba());
 	}
 	

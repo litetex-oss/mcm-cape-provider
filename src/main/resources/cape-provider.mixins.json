@@ -12,7 +12,10 @@
     "SkinOptionsScreenMixin",
     "SkinTextureDownloaderMixin",
     "compat.minecraftcapes.MinecraftCapesConfigMixin",
-    "compat.skinshuffle.CapesCompatMixin"
+    "compat.skinshuffle.CapesCompatMixin",
+    "skin_body_access.ClientAssetDownloadedTextureMixin",
+    "skin_body_access.SkinManagerMixin",
+    "skin_body_access.SkinTextureDownloaderMixin"
   ],
   "injectors": {
     "defaultRequire": 1

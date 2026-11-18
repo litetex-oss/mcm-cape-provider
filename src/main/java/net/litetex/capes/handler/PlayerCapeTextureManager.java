@@ -62,22 +62,23 @@ public class PlayerCapeTextureManager
 			final TextureResources textureResources = this.textures.remove(id);
 			if(textureResources != null)
 			{
-				this.safeCloseTexture(id, textureResources);
+				this.freeTexture(id, textureResources);
 			}
 		}
 	}
 	
 	public void clear()
 	{
-		this.textures.forEach(this::safeCloseTexture);
+		this.textures.forEach(this::freeTexture);
 		this.textures.clear();
 	}
 	
-	private void safeCloseTexture(final Identifier id, final TextureResources t)
+	private void freeTexture(final Identifier id, final TextureResources t)
 	{
 		try
 		{
 			t.close();
+			Minecraft.getInstance().getTextureManager().release(id);
 		}
 		catch(final Exception ex)
 		{

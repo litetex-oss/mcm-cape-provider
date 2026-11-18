@@ -14,6 +14,7 @@ import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.platform.NativeImage;
 
+import net.litetex.capes.access.skin_body_access.ClientAssetDownloadedTextureAccess;
 import net.litetex.capes.provider.CapeProvider;
 import net.litetex.capes.provider.ResolvedTextureInfo;
 import net.litetex.capes.provider.builtin.sneakycapes.menu.SneakyCapesEditScreen;
@@ -21,7 +22,6 @@ import net.litetex.capes.provider.builtin.sneakycapes.pixels.SneakyCapesCopyPixe
 import net.litetex.capes.provider.builtin.sneakycapes.pixels.SneakyCapesMarkerPixels;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.world.entity.player.PlayerSkin;
 
 
@@ -69,33 +69,24 @@ public class SneakyCapesCapeProvider implements CapeProvider
 			return null;
 		}
 		
-		final PlayerSkin playerSkin = optPlayerSkin.orElseThrow();
-		
-		if(!(TextureManagerReader.getTextureSafe(client.getTextureManager(), playerSkin.body().id())
-			instanceof final DynamicTexture dynamicTexture))
+		final byte[] imgData = ClientAssetDownloadedTextureAccess.extractBodyImageData(optPlayerSkin.orElseThrow());
+		if(imgData == null)
 		{
 			return null;
 		}
 		
-		final NativeImage bodyImg = dynamicTexture.getPixels();
-		if(bodyImg == null)
+		try(final NativeImage bodyImg = NativeImage.read(imgData))
 		{
-			return null;
-		}
-		
-		// Check if skin is legacy format
-		if(bodyImg.getWidth() != 64
-			|| bodyImg.getHeight() != 64
-			// Markers must be present
-			|| !SneakyCapesMarkerPixels.markersPresent(bodyImg))
-		{
-			return null;
-		}
-		
-		try(final SeekableInMemoryByteChannel channel = new SeekableInMemoryByteChannel(CAPE_WIDTH * CAPE_HEIGHT))
-		{
-			this.extractCapeTextureFromUnusedBitsInBodyTexture(bodyImg).writeToChannel(channel);
-			return new ResolvedTextureInfo.ByteArrayTextureInfo(channel.array());
+			if(!SneakyCapesMarkerPixels.validAndMarkersPresent(bodyImg))
+			{
+				return null;
+			}
+			
+			try(final SeekableInMemoryByteChannel channel = new SeekableInMemoryByteChannel(CAPE_WIDTH * CAPE_HEIGHT))
+			{
+				this.extractCapeTextureFromUnusedBitsInBodyTexture(bodyImg).writeToChannel(channel);
+				return new ResolvedTextureInfo.ByteArrayTextureInfo(channel.array());
+			}
 		}
 	}
 	
