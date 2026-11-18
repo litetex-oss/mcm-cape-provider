@@ -1,3 +1,6 @@
+# 6.1.0
+* Updated to 26.4
+
 # 6.0.0
 * Sneaky Capes
   * Added basic built-in editor #314

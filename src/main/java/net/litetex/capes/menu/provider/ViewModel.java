@@ -6,6 +6,8 @@ import java.util.function.Supplier;
 
 import org.jspecify.annotations.Nullable;
 
+import com.mojang.authlib.GameProfile;
+
 import net.litetex.capes.Capes;
 import net.litetex.capes.handler.PlayerCapeHandler;
 import net.litetex.capes.handler.PlayerCapeHandlerManager;
@@ -13,7 +15,6 @@ import net.litetex.capes.handler.TextureProvider;
 import net.litetex.capes.provider.CapeProvider;
 import net.litetex.capes.ui.playerpreview.BaseViewModel;
 import net.litetex.capes.ui.playerpreview.render.PlayerDisplayGuiPayload;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.ClientAsset;
 
 
@@ -28,9 +29,9 @@ class ViewModel extends BaseViewModel
 	private Supplier<ClientAsset.Texture> capeTextureSupplier;
 	private Supplier<ClientAsset.Texture> elytraTextureSupplier = DEFAULT_ELYTRA_SUPPLIER;
 	
-	ViewModel()
+	ViewModel(final GameProfile gameProfile)
 	{
-		super(Minecraft.getInstance().getGameProfile());
+		super(gameProfile);
 		
 		this.refreshActiveCapeProviders();
 		this.rebuildPayload();
