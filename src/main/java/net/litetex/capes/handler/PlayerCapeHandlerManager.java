@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
@@ -23,15 +24,21 @@ import net.litetex.capes.Capes;
 import net.litetex.capes.provider.CapeProvider;
 import net.litetex.capes.provider.ratelimit.CapeProviderRateLimits;
 import net.litetex.capes.util.collections.DiscardingQueue;
-import net.litetex.capes.util.collections.MaxSizedHashMap;
+import net.litetex.capes.util.collections.MaxSizedHashMapWithCallback;
 import net.minecraft.DefaultUncaughtExceptionHandlerWithName;
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.Identifier;
 
 
 @SuppressWarnings("checkstyle:MagicNumber")
 public class PlayerCapeHandlerManager
 {
 	private static final Logger LOG = LoggerFactory.getLogger(PlayerCapeHandlerManager.class);
+	
+	private final Capes capes;
+	private final boolean debugEnabled;
+	
+	private final PlayerCapeTextureManager capeTextureManager;
 	
 	private final ExecutorService loadExecutors;
 	
@@ -40,14 +47,12 @@ public class PlayerCapeHandlerManager
 	private final Map<Future<?>, UUID> submittedTasks = Collections.synchronizedMap(new WeakHashMap<>());
 	private final CapeProviderRateLimits capeProviderRateLimits = new CapeProviderRateLimits();
 	
-	private final Capes capes;
-	private final boolean debugEnabled;
-	
 	@SuppressWarnings("PMD.CollectionTypeMismatch")
 	public PlayerCapeHandlerManager(final Capes capes)
 	{
 		this.capes = capes;
 		this.debugEnabled = LOG.isDebugEnabled();
+		this.capeTextureManager = new PlayerCapeTextureManager();
 		
 		final int nThreads = Optional.ofNullable(capes.config().getLoadThreads())
 			.filter(x -> x > 0 && x < 1_000)
@@ -61,9 +66,8 @@ public class PlayerCapeHandlerManager
 				0L,
 				TimeUnit.MILLISECONDS,
 				new DiscardingQueue<>(
-					loadExecutorWorkQueueSize, r -> {
-					LOG.warn("Overloaded - Discarded loading task for {}", this.submittedTasks.get(r));
-				}),
+					loadExecutorWorkQueueSize, r ->
+					LOG.warn("Overloaded - Discarded loading task for {}", this.submittedTasks.get(r))),
 				new ThreadFactory()
 				{
 					private static final AtomicInteger COUNTER = new AtomicInteger(0);
@@ -79,7 +83,15 @@ public class PlayerCapeHandlerManager
 					}
 				});
 		
-		this.instances = Collections.synchronizedMap(new MaxSizedHashMap<>(capes.playerCacheSize()));
+		this.instances = Collections.synchronizedMap(new MaxSizedHashMapWithCallback<>(
+			capes.playerCacheSize(),
+			e -> {
+				final Set<Identifier> registeredTextureIds = e.getValue().registeredTextureIds();
+				if(registeredTextureIds != null)
+				{
+					this.capeTextureManager.unload(registeredTextureIds);
+				}
+			}));
 		this.realPlayerValidator = new RealPlayerValidator(
 			capes.playerCacheSize(),
 			capes.useRealPlayerOnlineValidation());
@@ -93,11 +105,16 @@ public class PlayerCapeHandlerManager
 	// Only use this when required to keep RAM consumption low!
 	public PlayerCapeHandler getOrCreateProfile(final GameProfile profile)
 	{
-		return this.instances.computeIfAbsent(profile.id(), ignored -> new PlayerCapeHandler(this.capes, profile));
+		return this.instances.computeIfAbsent(
+			profile.id(), _ -> new PlayerCapeHandler(
+				this.capes,
+				this.capeTextureManager,
+				profile));
 	}
 	
 	public void clearCache()
 	{
+		this.capeTextureManager.clear();
 		this.instances.clear();
 	}
 	

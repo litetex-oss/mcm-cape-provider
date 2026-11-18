@@ -21,6 +21,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
@@ -33,7 +34,6 @@ import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -336,28 +336,23 @@ public class ProviderListWidget extends ObjectSelectionList<ProviderListWidget.P
 		
 		void upVisible(final boolean visible)
 		{
-			this.icoMoveUp.visible = visible;
+			this.icoMoveUp.setVisible(visible);
 		}
 		
 		void downVisible(final boolean visible)
 		{
-			this.icoMoveDown.visible = visible;
+			this.icoMoveDown.setVisible(visible);
 		}
 		
 		@Override
-		public void extractContent(
-			final GuiGraphicsExtractor graphics,
-			final int mouseX,
-			final int mouseY,
-			final boolean hovered,
-			final float tickDelta)
+		public void extractContent(final GuiGraphicsExtractor graphics, final boolean hovered)
 		{
 			final int x = this.getContentX();
 			final int y = this.getContentY();
 			final int entryWidth = this.getContentWidth();
 			
 			this.chbxActive.setPosition(x, y + (ITEM_HEIGHT - this.chbxActive.getHeight() - 4) / 2);
-			this.chbxActive.extractRenderState(graphics, mouseX, mouseY, tickDelta);
+			this.chbxActive.extractRenderState(graphics);
 			
 			if(this.onTxtClick != null)
 			{
@@ -376,7 +371,7 @@ public class ProviderListWidget extends ObjectSelectionList<ProviderListWidget.P
 			this.txtName.setPosition(
 				x + this.chbxActive.getWidth() + 4,
 				y + ((ITEM_HEIGHT - this.txtName.getHeight()) / 2) - 1);
-			this.txtName.extractRenderState(graphics, mouseX, mouseY, tickDelta);
+			this.txtName.extractRenderState(graphics);
 			
 			if(this.icoWarn != null)
 			{
@@ -384,7 +379,7 @@ public class ProviderListWidget extends ObjectSelectionList<ProviderListWidget.P
 					x + entryWidth
 						- this.icoWarn.getWidth() - BTN_EDIT_CAPE_WIDTH - this.icoMoveUp.getWidth() - (4 * 3),
 					y + ((ITEM_HEIGHT - this.icoWarn.getHeight()) / 2) - 2);
-				this.icoWarn.extractRenderState(graphics, mouseX, mouseY, tickDelta);
+				this.icoWarn.extractRenderState(graphics);
 			}
 			
 			if(this.btnEditCape != null)
@@ -392,14 +387,14 @@ public class ProviderListWidget extends ObjectSelectionList<ProviderListWidget.P
 				this.btnEditCape.setPosition(
 					x + entryWidth - BTN_EDIT_CAPE_WIDTH - this.icoMoveUp.getWidth() - (4 * 2),
 					y);
-				this.btnEditCape.extractRenderState(graphics, mouseX, mouseY, tickDelta);
+				this.btnEditCape.extractRenderState(graphics);
 			}
 			
 			this.icoMoveUp.setPosition(x + entryWidth - this.icoMoveUp.getWidth() - 4, y);
-			this.icoMoveUp.extractRenderState(graphics, mouseX, mouseY, tickDelta);
+			this.icoMoveUp.extractRenderState(graphics);
 			
 			this.icoMoveDown.setPosition(x + entryWidth - this.icoMoveDown.getWidth() - 4, y + (ITEM_HEIGHT / 2));
-			this.icoMoveDown.extractRenderState(graphics, mouseX, mouseY, tickDelta);
+			this.icoMoveDown.extractRenderState(graphics);
 		}
 		
 		@Override
@@ -450,12 +445,12 @@ public class ProviderListWidget extends ObjectSelectionList<ProviderListWidget.P
 			
 			if(input.hasShiftDown())
 			{
-				if(input.isUp() && this.icoMoveUp.visible)
+				if(input.isUp() && this.icoMoveUp.isVisible())
 				{
 					this.icoMoveUp.click();
 					return true;
 				}
-				else if(input.isDown() && this.icoMoveDown.visible)
+				else if(input.isDown() && this.icoMoveDown.isVisible())
 				{
 					this.icoMoveDown.click();
 					return true;
@@ -531,15 +526,11 @@ public class ProviderListWidget extends ObjectSelectionList<ProviderListWidget.P
 		}
 		
 		@Override
-		protected void extractWidgetRenderState(
-			final GuiGraphicsExtractor graphics,
-			final int mouseX,
-			final int mouseY,
-			final float delta)
+		protected void extractWidgetRenderState(final GuiGraphicsExtractor graphics)
 		{
 			graphics.blit(
-				RenderPipelines.GUI_TEXTURED,
-				this.isMouseOver(mouseX, mouseY) ? this.hoverTexture : this.texture,
+				GuiPipeline.TEXTURED,
+				this.isMouseOver(graphics.mouseX(), graphics.mouseY()) ? this.hoverTexture : this.texture,
 				this.getX() + this.drawOffsetX,
 				this.getY() + this.drawOffsetY,
 				0.0F,
@@ -567,14 +558,10 @@ public class ProviderListWidget extends ObjectSelectionList<ProviderListWidget.P
 		}
 		
 		@Override
-		public void extractWidgetRenderState(
-			final GuiGraphicsExtractor graphics,
-			final int mouseX,
-			final int mouseY,
-			final float deltaTicks)
+		public void extractWidgetRenderState(final GuiGraphicsExtractor graphics)
 		{
-			super.extractWidgetRenderState(graphics, mouseX, mouseY, deltaTicks);
-			if(this.isMouseOver(mouseX, mouseY))
+			super.extractWidgetRenderState(graphics);
+			if(this.isMouseOver(graphics.mouseX(), graphics.mouseY()))
 			{
 				graphics.requestCursor(CursorTypes.POINTING_HAND);
 			}

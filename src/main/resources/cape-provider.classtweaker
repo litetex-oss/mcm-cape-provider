@@ -4,4 +4,3 @@ extendable method net/minecraft/client/gui/components/AbstractSelectionList getF
 accessible field net/minecraft/client/gui/components/PlayerSkinWidget rotationX F
 accessible field net/minecraft/client/gui/components/PlayerSkinWidget rotationY F
 accessible method com/mojang/blaze3d/platform/NativeImage writeToChannel (Ljava/nio/channels/WritableByteChannel;)Z
-accessible field net/minecraft/client/renderer/texture/TextureManager byPath Ljava/util/Map;

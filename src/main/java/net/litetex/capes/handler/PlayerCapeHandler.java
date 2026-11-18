@@ -10,14 +10,15 @@ import java.net.http.HttpRequest;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,8 +33,6 @@ import net.litetex.capes.provider.CapeProvider;
 import net.litetex.capes.provider.ResolvedTextureInfo;
 import net.litetex.capes.util.CapeProviderTextureAsset;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.core.ClientAsset;
 import net.minecraft.resources.Identifier;
 
@@ -44,13 +43,20 @@ public class PlayerCapeHandler
 	private static final Logger LOG = LoggerFactory.getLogger(PlayerCapeHandler.class);
 	
 	private final Capes capes;
+	private final PlayerCapeTextureManager capeTextureManager;
 	private final GameProfile profile;
+	
+	private Set<Identifier> registeredTextureIds;
 	private Optional<TextureProvider> optTextureProvider = Optional.empty();
 	private boolean hasElytraTexture = true;
 	
-	public PlayerCapeHandler(final Capes capes, final GameProfile profile)
+	public PlayerCapeHandler(
+		final Capes capes,
+		final PlayerCapeTextureManager capeTextureManager,
+		final GameProfile profile)
 	{
 		this.capes = capes;
+		this.capeTextureManager = capeTextureManager;
 		this.profile = profile;
 	}
 	
@@ -232,29 +238,28 @@ public class PlayerCapeHandler
 			return Optional.empty();
 		}
 		
-		final TextureManager textureManager = Minecraft.getInstance().getTextureManager();
-		// Do texturing work NOT on Render thread
-		CompletableFuture.runAsync(
-				() -> texturesToRegister.forEach(t ->
-					textureManager.register(
-						t.identifier(),
-						new DynamicTexture(t.identifier()::toString, t.image()))),
-				Minecraft.getInstance())
-			.exceptionally(ex -> {
-				LOG.warn("Failed to register textures", ex);
-				return null;
-			});
+		this.storeRegisteredTextureIds(texturesToRegister);
+		this.capeTextureManager.registerTextures(texturesToRegister);
 		
 		return Optional.of(texturesToRegister.size() == 1
 			? new DefaultTextureProvider(texturesToRegister.getFirst().identifier())
 			: new AnimatedTextureProvider(texturesToRegister));
 	}
 	
+	private void storeRegisteredTextureIds(final List<TextureToRegister> texturesToRegister)
+	{
+		if(this.registeredTextureIds == null)
+		{
+			this.registeredTextureIds = new HashSet<>();
+		}
+		texturesToRegister.stream().map(TextureToRegister::identifier).forEach(this.registeredTextureIds::add);
+	}
+	
 	record TextureToRegister(
 		Identifier identifier,
 		NativeImage image,
 		int delayMs
-	)
+	) implements PlayerCapeTextureManager.TextureToRegister
 	{
 		TextureToRegister(final Identifier identifier, final NativeImage image)
 		{
@@ -273,6 +278,12 @@ public class PlayerCapeHandler
 	}
 	
 	// region Getter
+	
+	@Nullable
+	Set<Identifier> registeredTextureIds()
+	{
+		return this.registeredTextureIds;
+	}
 	
 	public UUID uuid()
 	{

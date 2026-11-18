@@ -9,7 +9,6 @@ import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.CommonComponents;
-import net.minecraft.util.Mth;
 
 
 // See PlayerSkinWidget
@@ -29,7 +28,7 @@ public abstract class SimplifiedPlayerSkinWidget extends AbstractWidget
 	@Override
 	protected void onDrag(final MouseButtonEvent event, final double dx, final double dy)
 	{
-		this.rotationX = Mth.clamp(this.rotationX - (float)dy * 2.5F, -50.0F, 50.0F);
+		this.rotationX = Math.clamp(this.rotationX - (float)dy * 2.5F, -50.0F, 50.0F);
 		this.rotationY += (float)dx * 2.5F;
 	}
 	

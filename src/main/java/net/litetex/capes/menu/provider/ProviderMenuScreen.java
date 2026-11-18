@@ -17,9 +17,11 @@ public class ProviderMenuScreen extends PreviewPlayerScreen<ViewModel>
 {
 	public static final String CAPE_OPTIONS = "Cape Options";
 	
+	private boolean changedProvider;
+	
 	public ProviderMenuScreen(final Minecraft client, final Screen lastScreen)
 	{
-		super(client, lastScreen, CAPE_OPTIONS, new ViewModel());
+		super(client, lastScreen, CAPE_OPTIONS, new ViewModel(client.getGameProfile()));
 	}
 	
 	@Override
@@ -44,7 +46,10 @@ public class ProviderMenuScreen extends PreviewPlayerScreen<ViewModel>
 			contentWidth,
 			this.layout.getContentHeight(),
 			this,
-			this.viewModel::changeProviderTo
+			cp -> {
+				this.changedProvider = true;
+				this.viewModel.changeProviderTo(cp);
+			}
 		));
 		providerListWidget.setPosition(DEFAULT_SPACING, contentY);
 		
@@ -59,5 +64,11 @@ public class ProviderMenuScreen extends PreviewPlayerScreen<ViewModel>
 	{
 		super.onClose();
 		Capes.instance().refreshIfMarked();
+		
+		if(this.changedProvider)
+		{
+			// Reset active providers for current PlayerHandler
+			Capes.instance().playerCapeHandlerManager().onLoadTexture(this.minecraft.getGameProfile());
+		}
 	}
 }

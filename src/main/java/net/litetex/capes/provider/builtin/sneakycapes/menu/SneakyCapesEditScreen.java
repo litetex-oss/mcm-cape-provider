@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -19,21 +20,22 @@ import com.mojang.blaze3d.Blaze3D;
 import com.mojang.blaze3d.platform.NativeImage;
 
 import net.litetex.capes.Capes;
-import net.litetex.capes.provider.builtin.sneakycapes.TextureManagerReader;
+import net.litetex.capes.access.skin_body_access.ClientAssetDownloadedTextureAccess;
 import net.litetex.capes.provider.builtin.sneakycapes.pixels.SneakyCapesCopyPixels;
 import net.litetex.capes.provider.builtin.sneakycapes.pixels.SneakyCapesMarkerPixels;
 import net.litetex.capes.ui.playerpreview.PreviewPlayerScreen;
 import net.litetex.capes.util.CapeProviderTextureAsset;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.AbstractScrollArea;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.components.ScrollableLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.texture.AbstractTexture;
-import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.renderer.texture.ExternalTextureProvider;
+import net.minecraft.client.renderer.texture.TextureResources;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.Identifier;
@@ -67,6 +69,7 @@ public class SneakyCapesEditScreen extends PreviewPlayerScreen<ViewModel>
 	
 	private ScrollableLayout scrollableLayout;
 	
+	private final AtomicReference<TextureResources> loadedCapeTextureResources = new AtomicReference<>();
 	private Optional<PathAndNativeImage> loadedCapeInfo = Optional.empty();
 	
 	@SuppressWarnings("checkstyle:MagicNumber")
@@ -123,7 +126,10 @@ public class SneakyCapesEditScreen extends PreviewPlayerScreen<ViewModel>
 			this.minecraft,
 			this.contentLayout,
 			this.layout.getContentHeight(),
-			ScrollableLayout.ReserveStrategy.RIGHT);
+			AbstractScrollArea.defaultSettings(10),
+			DEFAULT_SPACING,
+			ScrollableLayout.ReserveStrategy.BOTH,
+			null);
 		this.scrollableLayout.visitWidgets(this::addSelfManagedDrawableChild);
 		this.scrollableLayout.setPosition(DEFAULT_SPACING, contentY);
 		this.scrollableLayout.arrangeElements();
@@ -138,6 +144,7 @@ public class SneakyCapesEditScreen extends PreviewPlayerScreen<ViewModel>
 		this.lblLoadResult.setMessage(Component.empty());
 		this.viewModel.updateCapeTextureSupplier(null);
 		this.btnApplyAndDownload.active = false;
+		this.freeCurrentLoadedCapeTextureResources();
 		this.loadedCapeInfo = Optional.empty();
 		
 		final Result<PathAndNativeImage> loadedNativeImage = checkCapeFileAtPath(path)
@@ -163,8 +170,11 @@ public class SneakyCapesEditScreen extends PreviewPlayerScreen<ViewModel>
 		{
 			this.loadedCapeInfo = Optional.ofNullable(loadedNativeImage.result());
 			this.loadedCapeInfo.map(PathAndNativeImage::nativeImage).ifPresent(ni -> {
-				this.minecraft.getTextureManager()
-					.register(ID_CAPE_TEXTURE, new DynamicTexture(ID_CAPE_TEXTURE::toString, ni));
+				final TextureResources textureResources = TextureResources.from2dImage(ID_CAPE_TEXTURE::toString, ni);
+				this.loadedCapeTextureResources.set(textureResources);
+				this.minecraft.getTextureManager().registerProvider(
+					ID_CAPE_TEXTURE,
+					new ExternalTextureProvider(textureResources));
 				this.viewModel.updateCapeTextureSupplier(() -> new CapeProviderTextureAsset(ID_CAPE_TEXTURE));
 			});
 			this.btnApplyAndDownload.active = true;
@@ -178,37 +188,31 @@ public class SneakyCapesEditScreen extends PreviewPlayerScreen<ViewModel>
 		this.lblSaveResult.setMessage(Component.empty());
 		
 		// Find the native image of the body
-		final AbstractTexture texture = TextureManagerReader.getTextureSafe(
-			this.minecraft.getTextureManager(),
-			this.viewModel.skin().body().texturePath());
-		if(!(texture instanceof final DynamicTexture dynamicBodyTexture))
+		final byte[] bodyImageData = ClientAssetDownloadedTextureAccess.extractBodyImageData(this.viewModel.skin());
+		if(bodyImageData == null)
 		{
-			LOG.warn("Failed to find body texture - was: {}", texture);
 			this.lblSaveResult.setMessage(errorComp("Failed to find body texture"));
-			// Otherwise multi line text might be incorrectly aligned
 			this.scrollableLayout.arrangeElements();
 			return;
 		}
 		
-		final NativeImage img = new NativeImage(64, 64, true);
-		final NativeImage originalBodyImg = dynamicBodyTexture.getPixels();
-		
-		// Copy everything from body over
-		originalBodyImg.copyRect(
-			img,
-			0, 0,
-			0, 0,
-			originalBodyImg.getWidth(), originalBodyImg.getHeight(),
-			false, false);
-		
-		// Copy cape
-		SneakyCapesCopyPixels.capeToBody(pathAndNativeImage.nativeImage(), img);
-		
-		// Add markers
-		SneakyCapesMarkerPixels.applyMarkers(img);
-		
-		try
+		try(final NativeImage originalBodyImg = NativeImage.read(bodyImageData);
+			final NativeImage img = new NativeImage(64, 64, true))
 		{
+			// Copy everything from body over
+			originalBodyImg.copyRect(
+				img,
+				0, 0,
+				0, 0,
+				originalBodyImg.getWidth(), originalBodyImg.getHeight(),
+				false, false);
+			
+			// Copy cape
+			SneakyCapesCopyPixels.capeToBody(pathAndNativeImage.nativeImage(), img);
+			
+			// Add markers
+			SneakyCapesMarkerPixels.applyMarkers(img);
+			
 			final Path tempDir = BASE_TEMP_DIR_PATH.get().resolve(String.valueOf(img.getPixelBytes().hashCode()));
 			if(!Files.exists(tempDir))
 			{
@@ -225,13 +229,16 @@ public class SneakyCapesEditScreen extends PreviewPlayerScreen<ViewModel>
 					.withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD)));
 			Blaze3D.openPath(tempDir);
 		}
-		catch(final IOException e)
+		catch(final Exception e)
 		{
 			LOG.warn("Unexpected problem while saving generated file", e);
 			this.lblSaveResult.setMessage(errorComp("Failed to save generated file: " + e.getMessage()));
 		}
-		// Otherwise multi line text might be incorrectly aligned
-		this.scrollableLayout.arrangeElements();
+		finally
+		{
+			// Otherwise multi line text might be incorrectly aligned
+			this.scrollableLayout.arrangeElements();
+		}
 	}
 	
 	@Override
@@ -248,8 +255,18 @@ public class SneakyCapesEditScreen extends PreviewPlayerScreen<ViewModel>
 	@Override
 	public void removed()
 	{
+		this.freeCurrentLoadedCapeTextureResources();
 		this.releaseTempCapeTexture();
 		super.removed();
+	}
+	
+	private void freeCurrentLoadedCapeTextureResources()
+	{
+		final TextureResources prevTextureResources = this.loadedCapeTextureResources.getAndSet(null);
+		if(prevTextureResources != null)
+		{
+			prevTextureResources.close();
+		}
 	}
 	
 	private void releaseTempCapeTexture()

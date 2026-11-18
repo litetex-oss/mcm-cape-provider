@@ -28,11 +28,7 @@ public class TickBoxWidget extends AbstractWidget
 	}
 	
 	@Override
-	protected void extractWidgetRenderState(
-		final GuiGraphicsExtractor graphics,
-		final int mouseX,
-		final int mouseY,
-		final float delta)
+	protected void extractWidgetRenderState(final GuiGraphicsExtractor graphics)
 	{
 		final int x = this.getX();
 		final int y = this.getY();
