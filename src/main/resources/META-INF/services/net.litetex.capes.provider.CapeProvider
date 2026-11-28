@@ -1,0 +1,5 @@
+net.litetex.capes.provider.builtin.minecraftcapes.MinecraftCapesCapeProvider
+net.litetex.capes.provider.builtin.optifine.OptiFineCapeProvider
+net.litetex.capes.provider.builtin.sneakycapes.SneakyCapesCapeProvider
+net.litetex.capes.provider.builtin.cosmetica.CosmeticaProvider
+net.litetex.capes.provider.builtin.labymod.LabyModProvider
